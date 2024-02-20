@@ -7,8 +7,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import android.os.Bundle;
+import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+//used to implement NewEventNavHostFragment.AddEventListener
+public class MainActivity extends AppCompatActivity{
     private NavHostFragment navHostFragment;
 //    private NavController navController = Navigation.findNavController(this, R.id.new_event_nav_host);
     private NavController navController;
@@ -17,7 +19,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.new_event_nav_host);
-        navController = navHostFragment.getNavController();
+        //I DONT THINK I NEED ANY OF THIS
+//        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.new_event_nav_host);
+        //navHostFragment = NewEventNavHostFragment.newInstance();
+        //navController = navHostFragment.getNavController();
+
     }
+
+    //I DONT THINK I NEED ANY OF THIS
+//    @Override
+//    public void setNavController() {
+//
+//        //navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.new_event_nav_host);
+//        //navController = navHostFragment.getNavController();
+//    }
 }

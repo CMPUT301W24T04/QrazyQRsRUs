@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/new_event_nav_graph"
-    app:startDestination="@id/placeholder">
+    app:startDestination="@id/newEventTextFragment">
 
-    <fragment android:id="@+id/placeholder" />
+    <fragment
+        android:id="@+id/newEventTextFragment"
+        android:name="com.example.qrazyqrsrus.NewEventTextFragment"
+        android:label="new_event_text_fragment"
+        tools:layout="@layout/new_event_text_fragment" >
+        <action
+            android:id="@+id/action_newEventTextFragment_to_newEventImageFragment2"
+            app:destination="@id/newEventImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventImageFragment"
+        android:name="com.example.qrazyqrsrus.NewEventImageFragment"
+        android:label="new_event_image_fragment"
+        tools:layout="@layout/new_event_image_fragment" >
+        <action
+            android:id="@+id/action_newEventImageFragment_to_newEventQrFragment"
+            app:destination="@id/newEventQrFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventQrFragment"
+        android:name="com.example.qrazyqrsrus.NewEventQrFragment"
+        android:label="new_event_qr_fragment"
+        tools:layout="@layout/new_event_qr_fragment" />
 </navigation>
