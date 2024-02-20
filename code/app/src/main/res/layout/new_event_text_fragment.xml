@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/new_event_text_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <EditText
+        android:id="@+id/event_name_edit_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Event Name"
+        android:maxLength="256">
+<!--        enforce input type-->
+    </EditText>
+    <EditText
+        android:id="@+id/event_location_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/event_name_edit_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Location"
+        android:maxLength="256">
+    </EditText>
+    <EditText
+        android:id="@+id/event_date_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/event_location_edit_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Date"
+        android:maxLength="256">
+<!--        change so date can be input in a nice way-->
+    </EditText>
+    <EditText
+
+        android:id="@+id/event_details_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/event_date_edit_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Details"
+        android:maxLength="256">
+        <!--        make tall to indicate description can be large-->
+    </EditText>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
