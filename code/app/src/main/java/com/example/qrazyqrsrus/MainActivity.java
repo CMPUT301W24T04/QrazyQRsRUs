@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
         final CollectionReference usersCollection = db.collection("Users");
         final CollectionReference eventsCollection = db.collection("Events");
-        final CollectionReference qrCodesCollection = db.collection("QRCodes");
-        final CollectionReference imagesCollection = db.collection("Images");
+        final CollectionReference qrCodesCollection = db.collection("QRCodes"); // Have not completed template yet
+        final CollectionReference imagesCollection = db.collection("Images"); // Have not completed template yet
     }
 
     public void userExample(CollectionReference usersCollection) {
