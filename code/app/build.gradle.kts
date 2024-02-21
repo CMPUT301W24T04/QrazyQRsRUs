@@ -56,4 +56,7 @@ dependencies {
 
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    //ZXing QR Codes
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

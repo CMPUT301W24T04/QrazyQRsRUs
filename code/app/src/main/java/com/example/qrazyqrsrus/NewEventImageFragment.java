@@ -6,12 +6,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
     private Toolbar toolbar;
@@ -40,9 +43,16 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View returnView = inflater.inflate(R.layout.new_event_image_fragment, container, false);
-        createToolbar(returnView);
-        return returnView;
+        View view = inflater.inflate(R.layout.new_event_image_fragment, container, false);
+        createToolbar(view);
+        //temporarily display event name here
+        ((TextView) view.findViewById(R.id.new_event_image_text)).setText(((Event) getArguments().getSerializable("event")).getEventName());
+        FloatingActionButton fab = view.findViewById(R.id.image_screen_next_screen_button);
+        //pass bundle ahead to qr code
+        fab.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_newEventImageFragment_to_newEventQrFragment, getArguments());
+        });
+        return view;
     }
 
     private void createToolbar(View view){

@@ -9,11 +9,14 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.os.Bundle;
 import android.view.View;
 
-//used to implement NewEventNavHostFragment.AddEventListener
-public class MainActivity extends AppCompatActivity{
+import java.util.ArrayList;
+
+//temporarily implements NewEventTextFragment.AdddEventListener until we get firestore functionality
+public class MainActivity extends AppCompatActivity implements NewEventTextFragment.AddEventListener {
     private NavHostFragment navHostFragment;
 //    private NavController navController = Navigation.findNavController(this, R.id.new_event_nav_host);
     private NavController navController;
+    private ArrayList<Event> eventList = new ArrayList<Event>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,4 +36,8 @@ public class MainActivity extends AppCompatActivity{
 //        //navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.new_event_nav_host);
 //        //navController = navHostFragment.getNavController();
 //    }
+    //temporarily have an addEvent method. should eventuall be changed to be an observer and update when model (firestore) is changed.
+    public void addEvent(Event event){
+        eventList.add(event);
+    }
 }

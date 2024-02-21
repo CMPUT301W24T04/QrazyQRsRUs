@@ -37,21 +37,20 @@
         android:hint="Location"
         android:maxLength="256">
     </EditText>
-    <EditText
-        android:id="@+id/event_date_edit_text"
+    <DatePicker
+        android:id="@+id/event_date_picker"
         app:layout_constraintTop_toBottomOf="@id/event_location_edit_text"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Date"
-        android:maxLength="256">
-<!--        change so date can be input in a nice way-->
-    </EditText>
+        android:layout_height="wrap_content">
+
+    </DatePicker>
+
     <EditText
 
         android:id="@+id/event_details_edit_text"
-        app:layout_constraintTop_toBottomOf="@id/event_date_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/event_date_picker"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="wrap_content"

@@ -31,12 +31,19 @@
         <action
             android:id="@+id/action_newEventImageFragment_to_newEventFragment"
             app:destination="@id/newEventFragment" />
+        <argument
+            android:name="new_event"
+            app:argType="com.example.qrazyqrsrus.Event" />
     </fragment>
     <fragment
         android:id="@+id/newEventQrFragment"
         android:name="com.example.qrazyqrsrus.NewEventQrFragment"
         android:label="new_event_qr_fragment"
-        tools:layout="@layout/new_event_qr_fragment" />
+        tools:layout="@layout/new_event_qr_fragment" >
+        <argument
+            android:name="new_event"
+            app:argType="com.example.qrazyqrsrus.Event" />
+    </fragment>
     <fragment
         android:id="@+id/newEventFragment"
         android:name="com.example.qrazyqrsrus.NewEventFragment"
