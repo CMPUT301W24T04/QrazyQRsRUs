@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -59,4 +60,11 @@ dependencies {
 
     //ZXing QR Codes
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    //firestore
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation("com.google.firebase:firebase-firestore")
+
+    //photo picker
+    implementation("androidx.activity:activity:1.8.2")
 }

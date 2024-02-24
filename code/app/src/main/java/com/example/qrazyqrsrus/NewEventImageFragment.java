@@ -1,13 +1,22 @@
 package com.example.qrazyqrsrus;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -15,6 +24,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.IOException;
 
 public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
     private Toolbar toolbar;
@@ -52,6 +63,33 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         fab.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_newEventImageFragment_to_newEventQrFragment, getArguments());
         });
+
+        //we make a new activity with the uri result that will provide us with the uri of the uploaded image on the user's system locally
+        //https://developer.android.com/training/data-storage/shared/photopicker on February 23rd, 2024
+        // Registers a photo picker activity launcher in single-select mode.
+        ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    // Callback is invoked after the user selects a media item or closes the
+                    // photo picker.
+                    if (uri != null) {
+//                        Log.d("PhotoPicker", "Selected URI: " + uri);
+                        //as long as the user selected an image, we invoke our function to update the imageView to display the uploaded poster, and save the event's poster
+                        updateImage(uri, (ImageView) view.findViewById(R.id.new_event_display_event_poster));
+                    } else {
+//                        Log.d("PhotoPicker", "No media selected");
+                    }
+                });
+
+        //we set an onclick listener for the upload image button
+        //upon clicking, we launch the pickVisualMediaRequest acitivity
+        Button button = view.findViewById(R.id.new_event_image_button);
+        button.setOnClickListener(v -> {
+            pickMedia.launch(new PickVisualMediaRequest.Builder()
+                    //we only want images
+                    .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                    .build());
+        });
+
         return view;
     }
 
@@ -80,5 +118,22 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
             return true;
         }
         return false;
+    }
+
+    private void updateImage(Uri uri, ImageView imageView){
+        //we get the bitmap from the uri that is returned by the imagePicker activity
+        //we upload this bitmap to the database, and display it on-screen
+        Bitmap bitmap;
+        try {
+            //deprecated, see https://developer.android.com/reference/android/provider/MediaStore.Images.Media#getBitmap(android.content.ContentResolver,%20android.net.Uri)
+            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+            imageView.setImageBitmap(bitmap);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void saveImage(Uri uri){
+
     }
 }

@@ -47,7 +47,7 @@ public class NewEventQrFragment extends Fragment {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             //content is a string that should tie the qr code to the event.
             //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-            Bitmap bitmap = barcodeEncoder.encodeBitmap("content", BarcodeFormat.QR_CODE, 400, 400);
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(((Event) (getArguments().getSerializable("event"))).getEventName(), BarcodeFormat.QR_CODE, 400, 400);
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
             imageViewQrCode.setImageBitmap(bitmap);
