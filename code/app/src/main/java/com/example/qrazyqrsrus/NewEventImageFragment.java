@@ -1,8 +1,15 @@
 package com.example.qrazyqrsrus;
 
+import static android.graphics.ImageDecoder.createSource;
+import static android.graphics.ImageDecoder.decodeBitmap;
+import static android.graphics.ImageDecoder.decodeDrawable;
+import static android.os.Environment.getExternalStoragePublicDirectory;
+
 import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +24,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -25,9 +33,14 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
+public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuItemClickListener, ImageDecoder.OnHeaderDecodedListener {
+
+    private ImageView imageView;
     private Toolbar toolbar;
     public static NewEventImageFragment newInstance(String param1, String param2) {
         NewEventImageFragment fragment = new NewEventImageFragment();
@@ -74,7 +87,8 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
                     if (uri != null) {
 //                        Log.d("PhotoPicker", "Selected URI: " + uri);
                         //as long as the user selected an image, we invoke our function to update the imageView to display the uploaded poster, and save the event's poster
-                        updateImage(uri, (ImageView) view.findViewById(R.id.new_event_display_event_poster));
+                        imageView = (ImageView) view.findViewById(R.id.new_event_display_event_poster);
+                        updateImage(uri);
                     } else {
 //                        Log.d("PhotoPicker", "No media selected");
                     }
@@ -120,20 +134,27 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         return false;
     }
 
-    private void updateImage(Uri uri, ImageView imageView){
+    private void updateImage(Uri uri){
         //we get the bitmap from the uri that is returned by the imagePicker activity
         //we upload this bitmap to the database, and display it on-screen
-        Bitmap bitmap;
+        ImageDecoder.Source imageSource;
         try {
+            //this requires API 28; if this is a problem, we will have to use a bitmap
+            //if we use a Source instead of a bitmap, it allows us to use the same source to display the photo in multiple sizes/orientations
+            imageSource = createSource(getContext().getContentResolver(), uri);
+            imageView.setImageBitmap(decodeBitmap(imageSource, this));
             //deprecated, see https://developer.android.com/reference/android/provider/MediaStore.Images.Media#getBitmap(android.content.ContentResolver,%20android.net.Uri)
-            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-            imageView.setImageBitmap(bitmap);
+//            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+//            imageView.setImageBitmap(bitmap);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void saveImage(Uri uri){
+    @Override
+    public void onHeaderDecoded(@NonNull ImageDecoder decoder, @NonNull ImageDecoder.ImageInfo info, @NonNull ImageDecoder.Source source) {
+        decoder.setTargetSize(800, 400);
+
 
     }
 }
