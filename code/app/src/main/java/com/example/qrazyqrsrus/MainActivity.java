@@ -82,8 +82,9 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> eventInfo = new HashMap<>();
         LocalDateTime start = LocalDateTime.of(2024, 3, 23, 10, 30);
         LocalDateTime end = LocalDateTime.of(2024, 3, 23, 11, 30);
+        String details = "This is a test event. If you're reading this from the app then it worked!";
         List<Integer> signUps = new ArrayList<>();
-        signUps.add(11111111);
+        signUps.add(11113311);
         signUps.add(22222222);
         signUps.add(33333333);
 
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         // Creating second check-in
         Map<String, Object> checkIn2 = new HashMap<>();
         checkIn2.put("attendee_id", 66754329);
-        checkIn2.put("times", 2);
+        checkIn2.put("times", 1);
         checkIn2.put("location", new Geolocation(40.7128, -74.0060));
 
         // Add check-in to list
@@ -105,15 +106,16 @@ public class MainActivity extends AppCompatActivity {
         checkIns.add(checkIn2);
 
         // Now add everything to your document
-        eventInfo.put("owner_id", 00000000); // 8 digits long
+        eventInfo.put("owner_id", 11111111); // 8 digits long
         eventInfo.put("name", "Event Name");
         eventInfo.put("location", "Event Location");
+        eventInfo.put("details", details);
         eventInfo.put("start_date", start.toEpochSecond(java.time.ZoneOffset.UTC)); // Will need to convert it back when you fetch
         eventInfo.put("end_date", end.toEpochSecond(java.time.ZoneOffset.UTC));
         eventInfo.put("geolocation_on", 1); // 1 if true, 0 otherwise
-        eventInfo.put("poster_id", 00000000); // 8 digits long
-        eventInfo.put("qr_code_id", 00000000); // 8 digits long
-        eventInfo.put("promo_qr_code", 00000000); // 8 digits long
+        eventInfo.put("poster_id", 43244444); // 8 digits long
+        eventInfo.put("qr_code_id", 55555555); // 8 digits long
+        eventInfo.put("promo_qr_code", 88888888); // 8 digits long
         eventInfo.put("sign_ups_id", signUps);
         eventInfo.put("check_ins", checkIns);
         eventsCollection.add(eventInfo); // Add to collection
