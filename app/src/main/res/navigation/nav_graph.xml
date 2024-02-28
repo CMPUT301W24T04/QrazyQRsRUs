@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainMenu">
+    <fragment
+        android:id="@+id/mainMenu"
+        android:name="com.example.crazyqrtest.MainMenu"
+        android:label="MainMenu" >
+        <action
+            android:id="@+id/action_mainMenu_to_organizerMain"
+            app:destination="@id/organizerMain" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizerMain"
+        android:name="com.example.crazyqrtest.OrganizerMain"
+        android:label="fragment_organizer_main"
+        tools:layout="@layout/fragment_organizer_main" >
+        <action
+            android:id="@+id/action_organizerMain_to_attendeeList"
+            app:destination="@id/attendeeList" />
+        <action
+            android:id="@+id/action_organizerMain_to_mainMenu"
+            app:destination="@id/mainMenu" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeList"
+        android:name="com.example.crazyqrtest.AttendeeList"
+        android:label="AttendeeList" >
+        <action
+            android:id="@+id/action_attendeeList_to_organizerMain"
+            app:destination="@id/organizerMain" />
+    </fragment>
+
+</navigation>
