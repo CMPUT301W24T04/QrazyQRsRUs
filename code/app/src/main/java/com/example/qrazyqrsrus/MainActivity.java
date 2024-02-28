@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
+import android.view.View;
+
 
 public class MainActivity extends AppCompatActivity {
 
