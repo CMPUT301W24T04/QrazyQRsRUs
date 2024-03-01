@@ -5,16 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+
 import android.os.Bundle;
-import android.view.View;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
+
 
 import java.util.ArrayList;
 
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
 //    private NavController navController = Navigation.findNavController(this, R.id.new_event_nav_host);
     private NavController navController;
     private ArrayList<Event> eventList = new ArrayList<Event>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
         // When the navigation bar is clicked
         binding.BottomNavView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
+
 
             if (id == R.id.home) {
                 ChangeFragment(new HomeFragment());
@@ -82,5 +86,6 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
+
 
 }
