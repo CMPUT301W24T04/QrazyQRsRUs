@@ -5,6 +5,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+
 import android.os.Bundle;
 
 import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
@@ -12,11 +16,19 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
-public class MainActivity extends AppCompatActivity {
 
+import java.util.ArrayList;
+
+//temporarily implements NewEventTextFragment.AdddEventListener until we get firestore functionality
+public class MainActivity extends AppCompatActivity implements NewEventTextFragment.AddEventListener {
     private ActivityMainBinding binding;
 
     private FirebaseFirestore db;
+    private NavHostFragment navHostFragment;
+//    private NavController navController = Navigation.findNavController(this, R.id.new_event_nav_host);
+    private NavController navController;
+    private ArrayList<Event> eventList = new ArrayList<Event>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         binding.BottomNavView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
-            if (id == R.id.home){
+
+            if (id == R.id.home) {
                 ChangeFragment(new HomeFragment());
             } else if (id == R.id.scan) {
                 // TO DO
@@ -47,7 +60,17 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         });
-
+    }
+    //I DONT THINK I NEED ANY OF THIS
+//    @Override
+//    public void setNavController() {
+//
+//        //navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.new_event_nav_host);
+//        //navController = navHostFragment.getNavController();
+//    }
+    //temporarily have an addEvent method. should eventuall be changed to be an observer and update when model (firestore) is changed.
+    public void addEvent(Event event){
+        eventList.add(event);
     }
 
     /**
@@ -62,5 +85,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
+
 
 }
