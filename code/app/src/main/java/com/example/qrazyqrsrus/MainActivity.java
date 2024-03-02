@@ -1,6 +1,5 @@
 package com.example.qrazyqrsrus;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -8,10 +7,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
+import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
