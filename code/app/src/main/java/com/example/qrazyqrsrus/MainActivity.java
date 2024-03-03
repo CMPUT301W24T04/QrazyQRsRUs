@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -10,25 +11,20 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 
 import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-
 
 import java.util.ArrayList;
 
-//temporarily implements NewEventTextFragment.AdddEventListener until we get firestore functionality
 public class MainActivity extends AppCompatActivity implements NewEventTextFragment.AddEventListener {
     private ActivityMainBinding binding;
 
-    private FirebaseFirestore db;
-    private NavHostFragment navHostFragment;
-//    private NavController navController = Navigation.findNavController(this, R.id.new_event_nav_host);
     private NavController navController;
     private ArrayList<Event> eventList = new ArrayList<Event>();
 
+    private String deviceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +32,18 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        db = FirebaseFirestore.getInstance();
+        String TAG = "Sample";
 
-        final CollectionReference usersCollection = db.collection("Users");
-        final CollectionReference eventsCollection = db.collection("Events");
         // At the start we want to be at the Home screen
         ChangeFragment(new HomeFragment());
+
+        // Apparently this is not good practice, but if it works, it works.
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+
+        if (deviceId == null) {
+            return;
+        }
 
         // When the navigation bar is clicked
         binding.BottomNavView.setOnItemSelectedListener(item -> {
@@ -61,14 +63,7 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
             return true;
         });
     }
-    //I DONT THINK I NEED ANY OF THIS
-//    @Override
-//    public void setNavController() {
-//
-//        //navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.new_event_nav_host);
-//        //navController = navHostFragment.getNavController();
-//    }
-    //temporarily have an addEvent method. should eventuall be changed to be an observer and update when model (firestore) is changed.
+
     public void addEvent(Event event){
         eventList.add(event);
     }
