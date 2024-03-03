@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -64,11 +65,11 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-firestore")
 
-    //push notifications
-    //https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner on February 28th, 2024
-    implementation("com.google.firebase:firebase-messaging")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+//    //push notifications
+//    //https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner on February 28th, 2024
+//    implementation("com.google.firebase:firebase-messaging")
+//    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+//    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     //photo picker
     implementation("androidx.activity:activity:1.8.2")

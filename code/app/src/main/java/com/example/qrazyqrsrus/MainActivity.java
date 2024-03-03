@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -10,11 +11,15 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 
 import java.util.ArrayList;
@@ -25,10 +30,22 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
 
     private FirebaseFirestore db;
     private NavHostFragment navHostFragment;
-//    private NavController navController = Navigation.findNavController(this, R.id.new_event_nav_host);
-    private NavController navController;
     private ArrayList<Event> eventList = new ArrayList<Event>();
 
+    //we create an ActivityResultLauncher to use when we want to scan a QR code.
+    //this code snippet is from ZXings Android Embedded README, which details how to use the ZXing library.
+    //it can be foundhttps://github.com/journeyapps/zxing-android-embedded?tab=readme-ov-file#usage-with-scancontract and was accessed March 3rd, 2024
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
+            result -> {
+                //this ActivityResultCallback lambda function handles the results of the scanning activity
+                //we check if there is a result
+                if(result.getContents() == null) {
+                    ((TextView) findViewById(R.id.bar_code_output)).setText("Error! No barcode scanned.");
+                } else {
+                    //TODO: handle result, i.e., check if this qr code was a check in, or promotion qr code, and go to the corresponding screen
+                    ((TextView) findViewById(R.id.bar_code_output)).setText(result.getContents());
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
             if (id == R.id.home) {
                 ChangeFragment(new HomeFragment());
             } else if (id == R.id.scan) {
-                // TO DO
+
+                barcodeLauncher.launch(new ScanOptions());
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
@@ -61,13 +79,7 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
             return true;
         });
     }
-    //I DONT THINK I NEED ANY OF THIS
-//    @Override
-//    public void setNavController() {
-//
-//        //navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.new_event_nav_host);
-//        //navController = navHostFragment.getNavController();
-//    }
+
     //temporarily have an addEvent method. should eventuall be changed to be an observer and update when model (firestore) is changed.
     public void addEvent(Event event){
         eventList.add(event);
