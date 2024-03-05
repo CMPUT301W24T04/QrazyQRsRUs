@@ -27,13 +27,17 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.example.qrazyqrsrus.Attendee;
 import com.example.qrazyqrsrus.AttendeeListAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -96,59 +100,9 @@ public class AttendeeList extends Fragment implements com.example.qrazyqrsrus.Ad
                         }
                     });
         }
-//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-//                attendeeDataList.clear();
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-//                {
-//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-//                    String name = doc.getId();
-//                    String num_checkins = (String) doc.getData().get("Name");
-//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Adding the cities and provinces from FireStore
-//                }
-//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-//            }
-//        });
+
     }
 
-
-//                        .document(attendeeName)
-//                        .set(data)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                // These are a method which gets executed when the task is succeeded
-//                                Log.d(TAG, "Data has been added successfully!");
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                // These are a method which gets executed if there’s any problem
-//                                Log.d(TAG, "Data could not be added!" + e.toString());
-//                            }
-//                        });
-
-
-
-
-//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-//            FirebaseFirestoreException error) {
-//                // Clear the old list
-//                attendeeDataList.clear();
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-//                {
-//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-//                    String name = doc.getId();
-//                    String num_checkins = (String) doc.getData().get("Name");
-//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Adding the cities and provinces from FireStore
-//                }
-//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-//            }
-//        });
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -157,32 +111,63 @@ public class AttendeeList extends Fragment implements com.example.qrazyqrsrus.Ad
         View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_list, container, false);
         //**************************************************************************************************************
         //INITIAL LIST FOR TESTING
-        String[] attendees = {
-                "John", "Mikail", "Arber", "???", "Ikjyot"
-        };
-        String[] num_checkins = {
-                "3", "7", "4", "???", "123"
-        };
+//        String[] attendees = {
+//                "John", "Mikail", "Arber", "???", "Ikjyot"
+//        };
+//        String[] num_checkins = {
+//                "3", "7", "4", "???", "123"
+//        };
         attendeeDataList = new ArrayList<>();
+        final CollectionReference collectionReference = db.collection("Attendees");
+        final String TAG = "Sample";
+
+//        db.collection("Attendees")
+//                .whereEqualTo("user-uid",uid)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()){
+//                            Toast.makeText(getActivity(),"success accessing database",Toast.LENGTH_SHORT).show();
+//                            for (QueryDocumentSnapshot document : task.getResult()){
+//                                //Fetch from database as Map
+//                                user_name = (String) document.getData().get("user-name");
+//                                user_last_name =(String) document.getData().get("user-last-name");
+//                                user_phone_number =(String) document.getData().get("user-phone-number");
+//                                user_email =(String) document.getData().get("user-email");
+        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
+                attendeeDataList.clear();
+                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+                {
+                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
+                    String name = doc.getId();
+                    String num_checkins = (String) doc.getData().get("Name");
+                    attendeeDataList.add(new Attendee(name, num_checkins)); // Add data from firestore
+                }
+                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+            }
+        });
 
 //         Creates list locally for testing
-        for (int i = 0; i < attendees.length; i++) {
-            attendeeDataList.add(new Attendee(attendees[i], num_checkins[i]));
-        }
+//        for (int i = 0; i < attendees.length; i++) {
+//            attendeeDataList.add(new Attendee(attendees[i], num_checkins[i]));
+//        }
         // update attendee list adapter
         attendeeList = attendeeListLayout.findViewById(R.id.attendee_list_view);
         attendeeListAdapter = new AttendeeListAdapter(getActivity(), attendeeDataList);
         attendeeList.setAdapter(attendeeListAdapter);
 
-        attendeeListLayout.findViewById(R.id.button_add_attendee).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new com.example.qrazyqrsrus.AddAttendee().show(getActivity().getSupportFragmentManager(), "Add Attendee");
-            }
-        });
+//        attendeeListLayout.findViewById(R.id.button_add_attendee).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                new com.example.qrazyqrsrus.AddAttendee().show(getActivity().getSupportFragmentManager(), "Add Attendee");
+//            }
+//        });
 
         // FIRESTORE IMPLEMENTATION
-        createList(attendeeDataList);
+//        createList(attendeeDataList);
 
         attendeeListLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
             @Override
