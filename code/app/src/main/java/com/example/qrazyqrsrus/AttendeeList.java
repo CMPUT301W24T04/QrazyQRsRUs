@@ -33,6 +33,7 @@ import com.example.qrazyqrsrus.AttendeeListAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -64,58 +65,90 @@ public class AttendeeList extends Fragment implements com.example.qrazyqrsrus.Ad
         createList(attendeeDataList);
     }
 
-    public void createList(ArrayList<Attendee> attendeeDataList){
+    public void createList(ArrayList<Attendee> attendeeDataList) {
         final String TAG = "Sample";
         final CollectionReference collectionReference = db.collection("Attendees");
-        for(int i=0;i<attendeeDataList.size();i++) {
+        for (Attendee attendee : attendeeDataList) { // iterate through attendees in attendee list     //for(int i=0;i<attendeeDataList.size();i++)
             // Retrieving the city name and the province name from the EditText fields
-            final String attendeeName = attendeeDataList.get(i).getName(); // attendees[i];
-            final String attendee_checkins = attendeeDataList.get(i).getNum_checkins();
+//            final String attendeeName = attendee.getName() //.get(i).getName(); // attendees[i];
+//            final String attendee_checkins = attendeeDataList.get(i).getNum_checkins();
             //HASHMAP TO STORE THE DATA IN FORM OF KEY-VALUE PAIRS
-            HashMap<String, String> data = new HashMap<>();
+//            HashMap<String, String> data = new HashMap<>();
             // check if user entered something
-            if (attendeeName.length() > 0) {
-                // If there’s some data in the EditText field, then we create a new key-value pair.
-                data.put("Name", attendeeName);
+//            if (attendeeName.length() > 0) {
+//                // If there’s some data in the EditText field, then we create a new key-value pair.
+//                data.put("Name", attendeeName); //add
 //                data.put("Number of checkins", attendee_checkins); //.toString()
-                // ADD DATA TO THE FIRE STORE
-                collectionReference
-                        .document(attendeeName)
-                        .set(data)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                // These are a method which gets executed when the task is succeeded
-                                Log.d(TAG, "Data has been added successfully!");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // These are a method which gets executed if there’s any problem
-                                Log.d(TAG, "Data could not be added!" + e.toString());
-                            }
-                        });
-            }
+            // ADD DATA TO THE FIRE STORE
+            collectionReference
+                    // add attendee to database
+                    .add(attendee)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.d(TAG, "Data has been added successfully!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Data could not be added!" + e.toString());
+                        }
+                    });
         }
-
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-            FirebaseFirestoreException error) {
-                // Clear the old list
-                attendeeDataList.clear();
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-                {
-                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-                    String name = doc.getId();
-                    String num_checkins = (String) doc.getData().get("Name");
-                    attendeeDataList.add(new Attendee(name, num_checkins)); // Adding the cities and provinces from FireStore
-                }
-                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-            }
-        });
+//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//                attendeeDataList.clear();
+//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+//                {
+//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
+//                    String name = doc.getId();
+//                    String num_checkins = (String) doc.getData().get("Name");
+//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Adding the cities and provinces from FireStore
+//                }
+//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+//            }
+//        });
     }
+
+
+//                        .document(attendeeName)
+//                        .set(data)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                // These are a method which gets executed when the task is succeeded
+//                                Log.d(TAG, "Data has been added successfully!");
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                // These are a method which gets executed if there’s any problem
+//                                Log.d(TAG, "Data could not be added!" + e.toString());
+//                            }
+//                        });
+
+
+
+
+//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
+//            FirebaseFirestoreException error) {
+//                // Clear the old list
+//                attendeeDataList.clear();
+//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+//                {
+//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
+//                    String name = doc.getId();
+//                    String num_checkins = (String) doc.getData().get("Name");
+//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Adding the cities and provinces from FireStore
+//                }
+//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+//            }
+//        });
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,10 +158,10 @@ public class AttendeeList extends Fragment implements com.example.qrazyqrsrus.Ad
         //**************************************************************************************************************
         //INITIAL LIST FOR TESTING
         String[] attendees = {
-                "John", "Mikail", "Arber", "???"
+                "John", "Mikail", "Arber", "???", "Ikjyot"
         };
         String[] num_checkins = {
-                "3", "7", "4", "???"
+                "3", "7", "4", "???", "123"
         };
         attendeeDataList = new ArrayList<>();
 
