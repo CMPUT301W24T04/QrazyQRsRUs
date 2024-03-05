@@ -25,8 +25,10 @@ import android.widget.Toast;
 //import com.google.firebase.firestore.QueryDocumentSnapshot;
 //import com.google.firebase.firestore.QuerySnapshot;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,8 +36,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class EventList extends Fragment {  // FIX LATER
     /**
@@ -153,24 +157,60 @@ public class EventList extends Fragment {  // FIX LATER
 //            eventDataList.add(new Event(events[i], locations[i], dates[i], details[i]));
 //        }
         // get events collection from firebase
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-            FirebaseFirestoreException error) {
-                // Clear the old list
-                eventDataList.clear();
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-                {
-                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-                    String name = doc.getId();
-                    String location = (String) doc.getData().get("Location");
-                    String date = (String) doc.getData().get("Date");
-                    String detail = (String) doc.getData().get("Detail");
-                    eventDataList.add(new Event(name, location, date, detail)); // Adding the cities and provinces from FireStore
-                }
-                eventListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-            }
-        });
+//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
+//            FirebaseFirestoreException error) {
+//                // Clear the old list
+//                eventDataList.clear();
+//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+//                {
+//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
+//                    String name = doc.getId();
+//                    String location = (String) doc.getData().get("Location");
+//                    String date = (String) doc.getData().get("Date");
+//                    String detail = (String) doc.getData().get("Detail");
+//                    eventDataList.add(new Event(name, location, date, detail)); // Adding the cities and provinces from FireStore
+//                }
+//                eventListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+//            }
+//        });
+
+        collectionReference
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("Events", "Retrieved all events");
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String id = document.getId();
+                                String eventName = (String) document.getData().get("name");
+                                String organizerId = (String) document.getData().get("organizerId");
+                                String details = (String) document.getData().get("details");
+                                String location = (String) document.getData().get("location");
+                                //LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");    FIX LATER
+                                String startDate = (String) document.getData().get("startDate");
+                                LocalDateTime endDate = (LocalDateTime) document.getData().get("endDate");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                String posterPath = (String) document.getData().get("posterPath");
+                                String qrCodePath = (String) document.getData().get("qrCodePath");
+                                String qrCodePromoPath = (String) document.getData().get("qrCodePromoPath");
+                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                                ArrayList<Map<String, Object>> checkIns = (ArrayList<Map<String, Object>>) document.getData().get("checkIns");
+
+
+                                Event event = new Event(eventName, location, startDate, details);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                eventDataList.add(event);
+                                eventListAdapter.notifyDataSetChanged();
+                            }
+                        } else {
+                            Log.d("Events", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
         // update attendee list adapter
         eventList = eventListLayout.findViewById(R.id.event_list_view);
         eventListAdapter = new com.example.qrazyqrsrus.EventListAdapter(getActivity(), eventDataList);

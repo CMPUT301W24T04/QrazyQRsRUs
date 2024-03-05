@@ -139,20 +139,46 @@ public class AttendeeList extends Fragment {
 //                                user_last_name =(String) document.getData().get("user-last-name");
 //                                user_phone_number =(String) document.getData().get("user-phone-number");
 //                                user_email =(String) document.getData().get("user-email");
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
-                attendeeDataList.clear();
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-                {
-                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-                    String name = doc.getId();
-                    String num_checkins = (String) doc.getData().get("Name");
-                    attendeeDataList.add(new Attendee(name, num_checkins)); // Add data from firestore
-                }
-                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-            }
-        });
+//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
+//                attendeeDataList.clear();
+//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+//                {
+//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
+//                    String name = doc.getId();
+//                    String num_checkins = (String) doc.getData().get("Name");
+//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Add data from firestore
+//                }
+//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+//            }
+//        });
+
+        collectionReference
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("Users", "Retrieved all users");
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("id");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+
+
+                                 Attendee attendee = new Attendee(name, id);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                 attendeeDataList.add(attendee);
+                                 attendeeListAdapter.notifyDataSetChanged();
+                            }
+                        } else {
+                            Log.d("Users", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
 //         Creates list locally for testing
 //        for (int i = 0; i < attendees.length; i++) {
@@ -163,11 +189,11 @@ public class AttendeeList extends Fragment {
         attendeeListAdapter = new AttendeeListAdapter(getActivity(), attendeeDataList);
         attendeeList.setAdapter(attendeeListAdapter);
 
-//        attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                //change the view to city_content fragment
-//                //get the textview id from city_content fragment
+        attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //change the view to city_content fragment
+                //get the textview id from city_content fragment
 //                ConstraintLayout layout = (ConstraintLayout) attendeeListLayout.findViewById(R.id.attendee_info_view);
 //                TextView Name = attendeeListLayout.findViewById(R.id.attendee_name);
 //                Attendee current_attendee = attendeeListAdapter.getItem(i);
@@ -175,9 +201,9 @@ public class AttendeeList extends Fragment {
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-//                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView);
-//            }
-//        });
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView);
+            }
+        });
 
 //        attendeeListLayout.findViewById(R.id.button_add_attendee).setOnClickListener(new View.OnClickListener() {
 //            @Override
