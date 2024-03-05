@@ -139,7 +139,6 @@ public class FirebaseDB {
                     }
                 });
     }
-
     /**
      * Updates the document that represents the event in the database.
      * @param event The event that needs its document updated.
@@ -294,7 +293,7 @@ public class FirebaseDB {
 
     /**
      * Retrieves all users in the users collection
-     * @param attendeeList The list we're going to hold the ausers in.
+     * @param attendeeList The list we're going to hold the users in.
      * @param attendeeArrayAdapter The ArrayAdapter of attendeeList.
      * */
     public void getAllUsers(ArrayList<String> attendeeList, ArrayAdapter<String> attendeeArrayAdapter) {
