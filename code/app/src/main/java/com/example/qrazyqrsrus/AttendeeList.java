@@ -2,6 +2,7 @@ package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -233,8 +234,25 @@ public class AttendeeList extends Fragment {
 
 
 //        new com.example.crazyqrtest.AddAttendee().show(getSupportFragmentManager(), "Add Book");
-
-        //******************************************************************************************************************************
+//        public static void addUser(String user) {
+//            usersCollection
+//                    .add(user)
+//                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                        @Override
+//                        public void onSuccess(DocumentReference documentReference) {
+//                            Log.d(usersTAG, "User document snapshot written with ID:" + documentReference.getId());
+//                            // user.setDocumentId(documentReference.getId())
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Log.w(usersTAG, "Error while adding user document", e);
+//                        }
+//                    });
+//        }
+//
+//        //******************************************************************************************************************************
 //        // CHECK IF QR CODE IS SCANNED
 //        // Register the launcher and result handler
 //        private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -243,9 +261,33 @@ public class AttendeeList extends Fragment {
 //                        Toast.makeText(MyActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
 //                    } else {
 //                        Toast.makeText(MyActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+//                        usersCollection
+//                                .whereEqualTo("id", userId)
+//                                .get()
+//                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                        if (task.isSuccessful()) {
+//                                            int i = 0;
+//                                            for (DocumentSnapshot documentSnapshot: task.getResult()) {
+//                                                // user = documentSnapshot.toObject(Attendee.class);
+//                                                i += 1;
+//                                            }
+//                                            if (i == 0) {
+//                                                // This means that Attendee needs a constructor where it only accepts userId and sets the rest to default
+//                                                // user = new Attendee(userId);
+//                                                // addUser(user);
+//                                            }
+//                                        }
+//                                        else {
+//                                            Log.e("MainActivity", "Error trying to login");
+//                                        }
+//                                    }
+//                                });
 //                    }
 //                });
-//        // Launch
+
+        // Launch
 //        public void onButtonClick(View view) {
 //            barcodeLauncher.launch(new ScanOptions());
 //        }
