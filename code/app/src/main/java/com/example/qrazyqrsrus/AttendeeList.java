@@ -132,7 +132,7 @@ public class AttendeeList extends Fragment implements com.example.qrazyqrsrus.Ad
         };
         attendeeDataList = new ArrayList<>();
 
-//         Creates list locally
+//         Creates list locally for testing
         for (int i = 0; i < attendees.length; i++) {
             attendeeDataList.add(new Attendee(attendees[i], num_checkins[i]));
         }
