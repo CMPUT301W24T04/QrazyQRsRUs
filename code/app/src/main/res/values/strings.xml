@@ -1,11 +1,5 @@
 <resources>
-    <string name="app_name">QrazyQRsRUs</string>
-    <string name="home">Home</string>
-    <string name="scan">Scan</string>
-    <string name="my_events">My Events</string>
+    <string name="app_name">CrazyQRTest</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="events_attending">Events Attending:</string>
-    <string name="welcome_name_select_an_event_for_more_details"><![CDATA[Welcome, <NAME>! Select an event for more details]]></string>
-    <string name="profile">Profile</string>
 </resources>
