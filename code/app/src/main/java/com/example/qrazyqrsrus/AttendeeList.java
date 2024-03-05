@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -11,7 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.example.crazyqrtest.Attendee;
@@ -46,7 +50,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
-public class AttendeeList extends Fragment implements com.example.qrazyqrsrus.AddAttendee.AddAttendeeDialogListener {
+public class AttendeeList extends Fragment {
     /**
      * Contains a list of attendees for the event
      */
@@ -158,6 +162,22 @@ public class AttendeeList extends Fragment implements com.example.qrazyqrsrus.Ad
         attendeeList = attendeeListLayout.findViewById(R.id.attendee_list_view);
         attendeeListAdapter = new AttendeeListAdapter(getActivity(), attendeeDataList);
         attendeeList.setAdapter(attendeeListAdapter);
+
+//        attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                //change the view to city_content fragment
+//                //get the textview id from city_content fragment
+//                ConstraintLayout layout = (ConstraintLayout) attendeeListLayout.findViewById(R.id.attendee_info_view);
+//                TextView Name = attendeeListLayout.findViewById(R.id.attendee_name);
+//                Attendee current_attendee = attendeeListAdapter.getItem(i);
+//                String attendee_value = current_attendee.getName();
+//
+//                //turn the textviews into the desired names based on the name lists
+//                Name.setText(attendee_value);
+//                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView);
+//            }
+//        });
 
 //        attendeeListLayout.findViewById(R.id.button_add_attendee).setOnClickListener(new View.OnClickListener() {
 //            @Override
