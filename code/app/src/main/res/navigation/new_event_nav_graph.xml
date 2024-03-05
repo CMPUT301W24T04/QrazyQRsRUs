@@ -25,7 +25,7 @@
         tools:layout="@layout/new_event_image_fragment" >
         <action
             android:id="@+id/action_newEventImageFragment_to_newEventQrFragment"
-            app:destination="@id/newEventQrFragment" />
+            app:destination="@id/newEventPromoQrFragment" />
         <action
             android:id="@+id/action_newEventImageFragment_to_newEventTextFragment"
             app:destination="@id/newEventTextFragment" />
@@ -53,5 +53,14 @@
         <action
             android:id="@+id/action_newEventFragment_to_newEventTextFragment"
             app:destination="@id/newEventTextFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventPromoQrFragment"
+        android:name="com.example.qrazyqrsrus.NewEventPromoQrFragment"
+        android:label="new_event_promo_qr_fragment"
+        tools:layout="@layout/new_event_promo_qr_fragment" >
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_newEventQrFragment"
+            app:destination="@id/newEventQrFragment" />
     </fragment>
 </navigation>

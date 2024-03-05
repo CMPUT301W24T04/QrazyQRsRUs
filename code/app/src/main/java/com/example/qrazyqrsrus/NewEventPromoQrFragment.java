@@ -1,5 +1,8 @@
 package com.example.qrazyqrsrus;
 
+import static android.graphics.ImageDecoder.createSource;
+import static android.graphics.ImageDecoder.decodeBitmap;
+
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
@@ -17,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
@@ -31,9 +35,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class NewEventQrFragment extends Fragment {
-    public static NewEventQrFragment newInstance(String param1, String param2) {
-        NewEventQrFragment fragment = new NewEventQrFragment();
+public class NewEventPromoQrFragment extends Fragment {
+    //private ImageView imageView;
+    public static NewEventPromoQrFragment newInstance(String param1, String param2) {
+        NewEventPromoQrFragment fragment = new NewEventPromoQrFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -51,7 +56,7 @@ public class NewEventQrFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.new_event_qr_fragment, container, false);
+        View view = inflater.inflate(R.layout.new_event_promo_qr_fragment, container, false);
 
         //we define the activity to launch where the user will select a qr code from their gallery
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
@@ -68,13 +73,17 @@ public class NewEventQrFragment extends Fragment {
                     }
                 });
 
-        Button button = view.findViewById(R.id.new_event_generate_qr_button);
-        button.setOnClickListener(v -> {
+        Button newQrButton = view.findViewById(R.id.new_event_generate_qr_button);
+        newQrButton.setOnClickListener(v -> {
             generateNewQR();
         });
         Button uploadQrButton = view.findViewById(R.id.new_event_upload_qr_button);
         uploadQrButton.setOnClickListener(v -> {
             uploadQr(pickMedia);
+        });
+        FloatingActionButton fab = view.findViewById(R.id.promo_screen_next_screen);
+        fab.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment, getArguments());
         });
         return view;
     }
@@ -90,7 +99,7 @@ public class NewEventQrFragment extends Fragment {
             imageViewQrCode.setImageBitmap(bitmap);
             saveImage(bitmap);
         } catch(Exception e) {
-
+            //it would be unexpected that qr generation fails
         }
     }
 
