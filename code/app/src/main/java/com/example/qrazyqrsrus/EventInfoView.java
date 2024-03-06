@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 /**
  * Shows attendee information when list is clicked
  */
-public class AttendeeInfoView extends Fragment {
+public class EventInfoView extends Fragment {
     /**
      *
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -28,14 +28,14 @@ public class AttendeeInfoView extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View attendeeInfoLayout = inflater.inflate(R.layout.fragment_attendee_info_view, container, false);
-        attendeeInfoLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
+        View eventInfoLayout = inflater.inflate(R.layout.fragment_event_info_view, container, false);
+        eventInfoLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(attendeeInfoLayout).navigate(R.id.action_attendeeInfoView_to_attendeeList);
+                Navigation.findNavController(eventInfoLayout).navigate(R.id.action_eventInfoView_to_eventList);
             }
         });
         // Inflate the layout for this fragment
-        return attendeeInfoLayout;
+        return eventInfoLayout;
     }
 }

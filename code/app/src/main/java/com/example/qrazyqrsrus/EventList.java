@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -115,6 +116,21 @@ public class EventList extends Fragment {  // FIX LATER
         eventList = eventListLayout.findViewById(R.id.event_list_view);
         eventListAdapter = new com.example.qrazyqrsrus.EventListAdapter(getActivity(), eventDataList);
         eventList.setAdapter(eventListAdapter);
+
+        // When list is clicked, go to event view with event information
+        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                ConstraintLayout layout = (ConstraintLayout) eventListLayout.findViewById(R.id.event_info_view);
+//                TextView Name = attendeeListLayout.findViewById(R.id.event_name);
+//                Event current_event = eventListAdapter.getItem(i);
+//                String event_value = current_event.getName();
+//
+//                //turn the textviews into the desired names based on the name lists
+//                Name.setText(attendee_value);
+                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList_to_eventInfoView);
+            }
+        });
 
         // FIRESTORE IMPLEMENTATION
 //        createList(eventDataList);

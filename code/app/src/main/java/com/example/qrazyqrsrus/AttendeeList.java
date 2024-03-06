@@ -177,8 +177,6 @@ public class AttendeeList extends Fragment {
         attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //change the view to city_content fragment
-                //get the textview id from city_content fragment
 //                ConstraintLayout layout = (ConstraintLayout) attendeeListLayout.findViewById(R.id.attendee_info_view);
 //                TextView Name = attendeeListLayout.findViewById(R.id.attendee_name);
 //                Attendee current_attendee = attendeeListAdapter.getItem(i);
