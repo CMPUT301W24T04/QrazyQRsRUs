@@ -1,49 +1,64 @@
 package com.example.qrazyqrsrus;
-public class UserProfile {
-    private String fullName;
-    private String age;
-    private String emailAddress;
 
-    // Constructor
-    public UserProfile(String fullName, String age, String emailAddress) {
-        this.fullName = fullName;
-        this.age = age;
-        this.emailAddress = emailAddress;
+public class UserProfile {
+    private String name;
+    private String age;
+    private String email;
+    private boolean geolocation_on;
+
+    // Empty constructor is required for Firestore data mapping
+    public UserProfile() {
     }
 
-    // Getters
-    public String getFullName() {
-        return fullName;
+    // Full constructor is provided for creating instances if needed
+    public UserProfile(String name, String age, String email, boolean geolocation_on) {
+        this.name = name;
+        this.age = age;
+        this.email = email;
+        this.geolocation_on = geolocation_on;
+    }
+
+    // Standard getters and setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getAge() {
         return age;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    // Setters
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     public void setAge(String age) {
         this.age = age;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public String getEmail() {
+        return email;
     }
 
-    // ToString method to print the user profile details
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    // Boolean getter is prefixed with 'is' which is standard Java convention
+    public boolean isGeolocationOn() {
+        return geolocation_on;
+    }
+
+    public void setGeolocationOn(boolean geolocation_on) {
+        this.geolocation_on = geolocation_on;
+    }
+
     @Override
     public String toString() {
         return "UserProfile{" +
-                "fullName='" + fullName + '\'' +
+                "name='" + name + '\'' +
                 ", age='" + age + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
+                ", email='" + email + '\'' +
+                ", geolocation_on=" + geolocation_on +
                 '}';
     }
 }
