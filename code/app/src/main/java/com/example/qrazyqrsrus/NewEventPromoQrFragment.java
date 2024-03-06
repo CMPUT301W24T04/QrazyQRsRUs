@@ -8,11 +8,13 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -20,7 +22,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
@@ -37,6 +44,7 @@ import java.util.Date;
 
 public class NewEventPromoQrFragment extends Fragment {
     //private ImageView imageView;
+    private boolean successfulQRSelection;
     public static NewEventPromoQrFragment newInstance(String param1, String param2) {
         NewEventPromoQrFragment fragment = new NewEventPromoQrFragment();
         Bundle args = new Bundle();
@@ -96,14 +104,25 @@ public class NewEventPromoQrFragment extends Fragment {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             //content is a string that should tie the qr code to the event.
             //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-
-            Bitmap bitmap = barcodeEncoder.encodeBitmap(((Event) (getArguments().getSerializable("event"))).getEventName() + "_" + timeStamp + "_promo", BarcodeFormat.QR_CODE, 400, 400);
+            String qrContent = ((Event) (getArguments().getSerializable("event"))).getEventName() + "_" + timeStamp + "_promo";
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, 400, 400);
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
             imageViewQrCode.setImageBitmap(bitmap);
-            saveImage(bitmap);
+            if (checkUnique(qrContent)){
+                saveImage(bitmap);
+                successfulQRSelection = true;
+            } else{
+                TextView errorBar = getView().findViewById(R.id.error_bar);
+                errorBar.setText("Error: " + R.string.qr_not_unique);
+                errorBar.setVisibility(View.VISIBLE);
+            }
+
         } catch(Exception e) {
-            //it would be unexpected that qr generation fails
+            //it would be unexpected that qr generation fails, but for now we will display error bar and prompt user to try again
+            TextView errorBar = getView().findViewById(R.id.error_bar);
+            errorBar.setText("Error: " + R.string.qr_generation_failed);
+            errorBar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -117,9 +136,19 @@ public class NewEventPromoQrFragment extends Fragment {
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
             imageViewQrCode.setImageBitmap(bitmap);
-            saveImage(bitmap);
+            if (checkUnique(result.getText())){
+                saveImage(bitmap);
+                successfulQRSelection = true;
+            } else{
+                TextView errorBar = getView().findViewById(R.id.error_bar);
+                errorBar.setText("Error: " + R.string.qr_not_unique);
+                errorBar.setVisibility(View.VISIBLE);
+            }
         } catch(Exception e) {
-            //it would be unexpected that qr generation fails
+            //it would be unexpected that qr generation when we provide it with the content.
+            TextView errorBar = getView().findViewById(R.id.error_bar);
+            errorBar.setText("Error: " + R.string.qr_generation_failed);
+            errorBar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -156,7 +185,10 @@ public class NewEventPromoQrFragment extends Fragment {
             //we try to get the bitmap of the image uploaded by the user
             bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            //it is unexpected that image upload would fail. if it does, we will make the error bar visible with the unique image upload failed string
+            TextView errorBar = getView().findViewById(R.id.error_bar);
+            errorBar.setText("Error: " + R.string.image_upload_failed);
+            errorBar.setVisibility(View.VISIBLE);
         }
         //we will convert the bitmap of the uploaded image to an RGB luminance source
         //this sequence was made with the help of ZXing documentation, and https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing Accessed on Mar. 5th, 2024
@@ -178,9 +210,52 @@ public class NewEventPromoQrFragment extends Fragment {
             generateNewQR(result);
 
         } catch (NotFoundException e) {
-            //TODO: handle case when user selects an image that is not a QR code
-            throw new RuntimeException(e);
+            //if a user selects an image that is not qr code, it may fail to be decoded. in that case we prompt the user to select something else, or generate a qr code
+            showErrorBar(String.valueOf(R.string.qr_upload_error));
+            TextView errorBar = getView().findViewById(R.id.error_bar);
+            errorBar.setText("Error: " + R.string.qr_upload_error);
+            errorBar.setVisibility(View.VISIBLE);
         }
+    }
+
+    /**\
+     * Return a boolean that indicates whether or not the content of a QR code is already in use by
+     * an event created in the app.
+     * @param qrContent     a string that represents the content field of the QR code we are checking
+     * @return              a boolean value, true of the QR code is not already in use, false otherwise
+     */
+    private boolean checkUnique(String qrContent){
+        boolean isUnique = false;
+        //FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //CollectionReference events = db.collection("Events");
+        //events
+        //      .whereEqualTo("promo_qr_code", qrContent)
+        //      .get()
+        //      .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        //            @Override
+        //            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        //                if (task.isSuccessful()) {
+        //                    int i = 0;
+        //                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
+        //                        i += 1;
+        //                    }
+        //                    if (i == 0) {
+        //                        // This means that no Event in the database has the same promo qr code as the qr code we have selected
+        //                        isUnique = true;
+        //                    }
+        //                }
+        //                else {
+        //                    Log.e("MainActivity", "Error checking existing Event QR codes");
+        //                }
+        //            }
+        //        })
+        return isUnique;
+    }
+
+    private void showErrorBar(String errorMessage){
+        TextView errorBar = getView().findViewById(R.id.error_bar);
+        errorBar.setText("Error: " + errorMessage);
+        errorBar.setVisibility(View.VISIBLE);
     }
 
 }

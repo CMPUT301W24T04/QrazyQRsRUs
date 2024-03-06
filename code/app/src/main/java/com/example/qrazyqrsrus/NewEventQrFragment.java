@@ -180,4 +180,38 @@ public class NewEventQrFragment extends Fragment {
         }
     }
 
+    /**\
+     * Return a boolean that indicates whether or not the content of a QR code is already in use by
+     * an event created in the app.
+     * @param qrContent     a string that represents the content field of the QR code we are checking
+     * @return              a boolean value, true of the QR code is not already in use, false otherwise
+     */
+    private boolean checkUnique(String qrContent){
+        boolean isUnique = false;
+        //FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //CollectionReference events = db.collection("Events");
+        //events
+        //      .whereEqualTo("promo_qr_code", qrContent)
+        //      .get()
+        //      .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        //            @Override
+        //            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        //                if (task.isSuccessful()) {
+        //                    int i = 0;
+        //                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
+        //                        i += 1;
+        //                    }
+        //                    if (i == 0) {
+        //                        // This means that no Event in the database has the same promo qr code as the qr code we have selected
+        //                        isUnique = true;
+        //                    }
+        //                }
+        //                else {
+        //                    Log.e("MainActivity", "Error checking existing Event QR codes");
+        //                }
+        //            }
+        //        })
+        return isUnique;
+    }
+
 }
