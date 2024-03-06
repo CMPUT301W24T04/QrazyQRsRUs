@@ -90,10 +90,14 @@ public class NewEventPromoQrFragment extends Fragment {
 
     private void generateNewQR(){
         try {
+            //we generate a timestamp that contains the date and time the qr was generated. this allows us to prevent naming our qrcode as something already saved in the database
+            //this idea for safe name generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             //content is a string that should tie the qr code to the event.
             //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-            Bitmap bitmap = barcodeEncoder.encodeBitmap(((Event) (getArguments().getSerializable("event"))).getEventName(), BarcodeFormat.QR_CODE, 400, 400);
+
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(((Event) (getArguments().getSerializable("event"))).getEventName() + "_" + timeStamp + "_promo", BarcodeFormat.QR_CODE, 400, 400);
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
             imageViewQrCode.setImageBitmap(bitmap);
@@ -124,7 +128,7 @@ public class NewEventPromoQrFragment extends Fragment {
         //we generate a timestamp that contains the date and time the image was saved. this allows us to prevent naming our file as something already saved in the phone's gallery
         //this idea for safe filename generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "JPEG_" + timeStamp + "_promo_";
         //we save the image using MediaStore
         MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, imageFileName, "should be qr code");
     }

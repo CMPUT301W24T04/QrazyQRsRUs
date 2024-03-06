@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
@@ -76,15 +77,23 @@ public class NewEventQrFragment extends Fragment {
         uploadQrButton.setOnClickListener(v -> {
             uploadQr(pickMedia);
         });
+        FloatingActionButton fab = view.findViewById(R.id.qr_screen_finish_button);
+        fab.setOnClickListener(v -> {
+            //TODO: store event to firebase before navigating back
+            Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_newEventFragment, getArguments());
+        });
         return view;
     }
 
     private void generateNewQR(){
         try {
+            //we generate a timestamp that contains the date and time the qr was generated. this allows us to prevent naming our qrcode as something already saved in the database
+            //this idea for safe name generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             //content is a string that should tie the qr code to the event.
             //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-            Bitmap bitmap = barcodeEncoder.encodeBitmap(((Event) (getArguments().getSerializable("event"))).getEventName(), BarcodeFormat.QR_CODE, 400, 400);
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(((Event) (getArguments().getSerializable("event"))).getEventName() + "_" + timeStamp, BarcodeFormat.QR_CODE, 400, 400);
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
             imageViewQrCode.setImageBitmap(bitmap);
@@ -97,6 +106,7 @@ public class NewEventQrFragment extends Fragment {
     //this function generates a qr code from the user's uploaded qr code after scanning it to verify it's contents
     private void generateNewQR(Result result){
         try {
+
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             //content is a string that should tie the qr code to the event.
             //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event

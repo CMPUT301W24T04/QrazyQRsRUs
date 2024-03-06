@@ -13,7 +13,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/new_event_qr_text"
-        android:text="Your event needs a QR Code that attendees use to check in to the event when they arrive"/>
+        android:text="Your event needs a QR Code that directs users in the app to your event details screen, where they can discover your event and sign up"/>
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
