@@ -77,38 +77,55 @@ public class AttendeeList extends Fragment {
     public void createList(ArrayList<Attendee> attendeeDataList) {
         final String TAG = "Sample";
         final CollectionReference collectionReference = db.collection("Attendees");
-        for (Attendee attendee : attendeeDataList) { // iterate through attendees in attendee list     //for(int i=0;i<attendeeDataList.size();i++)
-            // Retrieving the city name and the province name from the EditText fields
-//            final String attendeeName = attendee.getName() //.get(i).getName(); // attendees[i];
-//            final String attendee_checkins = attendeeDataList.get(i).getNum_checkins();
-            //HASHMAP TO STORE THE DATA IN FORM OF KEY-VALUE PAIRS
-//            HashMap<String, String> data = new HashMap<>();
-            // check if user entered something
-//            if (attendeeName.length() > 0) {
-//                // If there’s some data in the EditText field, then we create a new key-value pair.
-//                data.put("Name", attendeeName); //add
-//                data.put("Number of checkins", attendee_checkins); //.toString()
-            // ADD DATA TO THE FIRE STORE
-            collectionReference
-                    // add attendee to database
-                    .add(attendee)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d(TAG, "Data has been added successfully!");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG, "Data could not be added!" + e.toString());
-                        }
-                    });
-        }
+        HashMap<String, String> data = new HashMap<>();
+        collectionReference
+                .document("111")
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // These are a method which gets executed when the task is succeeded
+                        Log.d(TAG, "Data has been added successfully!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // These are a method which gets executed if there’s any problem
+                        Log.d(TAG, "Data could not be added!" + e.toString());
+                    }
+                });
+//        for (Attendee attendee : attendeeDataList) { // iterate through attendees in attendee list     //for(int i=0;i<attendeeDataList.size();i++)
+//            // Retrieving the city name and the province name from the EditText fields
+////            final String attendeeName = attendee.getName() //.get(i).getName(); // attendees[i];
+////            final String attendee_checkins = attendeeDataList.get(i).getNum_checkins();
+//            //HASHMAP TO STORE THE DATA IN FORM OF KEY-VALUE PAIRS
+////            HashMap<String, String> data = new HashMap<>();
+//            // check if user entered something
+////            if (attendeeName.length() > 0) {
+////                // If there’s some data in the EditText field, then we create a new key-value pair.
+////                data.put("Name", attendeeName); //add
+////                data.put("Number of checkins", attendee_checkins); //.toString()
+//            // ADD DATA TO THE FIRE STORE
+//            collectionReference
+//                    // add attendee to database
+//                    .document("added new document");
+////                    .add(attendee)
+////                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+////                        @Override
+////                        public void onSuccess(DocumentReference documentReference) {
+////                            Log.d(TAG, "Data has been added successfully!");
+////                        }
+////                    })
+////                    .addOnFailureListener(new OnFailureListener() {
+////                        @Override
+////                        public void onFailure(@NonNull Exception e) {
+////                            Log.d(TAG, "Data could not be added!" + e.toString());
+////                        }
+////                    });
+//        }
 
     }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -214,7 +231,7 @@ public class AttendeeList extends Fragment {
 //        });
 
         // FIRESTORE IMPLEMENTATION
-//        createList(attendeeDataList);
+        createList(attendeeDataList);
 
         attendeeListLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
             @Override
