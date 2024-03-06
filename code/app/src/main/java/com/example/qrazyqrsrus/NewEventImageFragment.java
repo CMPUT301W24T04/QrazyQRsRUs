@@ -71,7 +71,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         View view = inflater.inflate(R.layout.new_event_image_fragment, container, false);
         createToolbar(view);
         //temporarily display event name here
-        ((TextView) view.findViewById(R.id.new_event_image_text)).setText(((Event) getArguments().getSerializable("event")).getEventName());
+        ((TextView) view.findViewById(R.id.new_event_image_text)).setText(((Event) getArguments().getSerializable("event")).getName());
         FloatingActionButton fab = view.findViewById(R.id.image_screen_next_screen_button);
         //pass bundle ahead to qr code
         fab.setOnClickListener(v -> {
