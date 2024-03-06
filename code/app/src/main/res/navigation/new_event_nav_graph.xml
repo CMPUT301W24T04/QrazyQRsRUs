@@ -13,7 +13,7 @@
         tools:layout="@layout/new_event_text_fragment" >
         <action
             android:id="@+id/action_newEventTextFragment_to_newEventImageFragment2"
-            app:destination="@id/newEventImageFragment" />
+            app:destination="@id/newEventStartTimeFragment" />
         <action
             android:id="@+id/action_newEventTextFragment_to_newEventFragment"
             app:destination="@id/newEventFragment" />
@@ -28,7 +28,7 @@
             app:destination="@id/newEventPromoQrFragment" />
         <action
             android:id="@+id/action_newEventImageFragment_to_newEventTextFragment"
-            app:destination="@id/newEventTextFragment" />
+            app:destination="@id/newEventEndTimeFragment" />
         <action
             android:id="@+id/action_newEventImageFragment_to_newEventFragment"
             app:destination="@id/newEventFragment" />
@@ -65,5 +65,35 @@
         <action
             android:id="@+id/action_newEventPromoQrFragment_to_newEventQrFragment"
             app:destination="@id/newEventQrFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventStartTimeFragment"
+        android:name="com.example.qrazyqrsrus.NewEventStartTimeFragment"
+        android:label="new_event_start_time_fragment"
+        tools:layout="@layout/new_event_start_time_fragment" >
+        <action
+            android:id="@+id/action_newEventStartTimeFragment_to_newEventTextFragment"
+            app:destination="@id/newEventTextFragment" />
+        <action
+            android:id="@+id/action_newEventStartTimeFragment_to_newEventFragment"
+            app:destination="@id/newEventFragment" />
+        <action
+            android:id="@+id/action_newEventStartTimeFragment_to_newEventEndTimeFragment"
+            app:destination="@id/newEventEndTimeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventEndTimeFragment"
+        android:name="com.example.qrazyqrsrus.NewEventEndTimeFragment"
+        android:label="new_event_end_time_fragment"
+        tools:layout="@layout/new_event_end_time_fragment" >
+        <action
+            android:id="@+id/action_newEventEndTimeFragment_to_newEventStartTimeFragment"
+            app:destination="@id/newEventStartTimeFragment" />
+        <action
+            android:id="@+id/action_newEventEndTimeFragment_to_newEventFragment"
+            app:destination="@id/newEventFragment" />
+        <action
+            android:id="@+id/action_newEventEndTimeFragment_to_newEventImageFragment"
+            app:destination="@id/newEventImageFragment" />
     </fragment>
 </navigation>
