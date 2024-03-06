@@ -95,7 +95,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         String eventDetails = ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString();
 
         //temporary add event, we should be storing the event into firestore
-        return new Event(eventName, eventLocation, eventDate, eventDetails);
+        return new Event(eventName, eventDetails, eventLocation, eventDate);
     }
 
     //we must convert the date that was picked by the user into an Date (java.util.Date)
