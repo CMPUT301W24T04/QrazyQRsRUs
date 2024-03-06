@@ -13,11 +13,10 @@ import androidx.annotation.Nullable;
 import com.example.qrazyqrsrus.Event;
 
 import java.util.ArrayList;
-
+/**
+ * Updates the attendee list contents and saves it
+ */
 public class EventListAdapter extends ArrayAdapter<Event> {
-    /**
-     * Updates the attendee list contents and saves it
-     */
     private ArrayList<Event> events;
     private Context context;
 
@@ -46,9 +45,9 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         TextView details = view.findViewById(R.id.event_details);
 
         // set values of textviews based on the object attributes
-        Name.setText(event.getEventName());
+        Name.setText(event.getName()); //.getEventName());
         location.setText(event.getLocation());
-        date.setText(event.getDate());
+//        date.setText(event.getStartDate().toString());
         details.setText(event.getDetails());
 //        num_checkins = "0"; //.setText(attendee.getNum_checkins().toString());
 

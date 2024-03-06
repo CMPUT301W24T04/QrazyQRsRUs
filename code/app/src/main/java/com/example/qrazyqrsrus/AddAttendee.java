@@ -55,31 +55,31 @@ public class AddAttendee extends DialogFragment {
         return fragment;
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // make view content the fragment_add_attendee
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_add_attendee, null);
-        EditText addName = view.findViewById(R.id.add_name);
-        EditText addNumCheckins = view.findViewById(R.id.add_num_checkins);
-        // get the attendee added as an argument on the bundle
-//        Bundle bundle = getArguments();
-//        Attendee newAttendee = (Attendee) bundle.getSerializable("attendee");
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        return builder
-                .setView(view)
-                .setTitle("Add an attendee")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("OK", (dialog, which) -> {
-                    String Name = addName.getText().toString();
-                    String numCheckins = addNumCheckins.getText().toString();
-//                    addName.setText(newAttendee.getName());
-//                    addNumCheckins.setText(newAttendee.getNum_checkins());
-                    listener.addAttendeeToList(new Attendee(Name, numCheckins));
-                })
-                .create();
-    }
+//    @NonNull
+//    @Override
+//    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+//        // make view content the fragment_add_attendee
+//        View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_add_attendee, null);
+//        EditText addName = view.findViewById(R.id.add_name);
+//        EditText addNumCheckins = view.findViewById(R.id.add_num_checkins);
+//        // get the attendee added as an argument on the bundle
+////        Bundle bundle = getArguments();
+////        Attendee newAttendee = (Attendee) bundle.getSerializable("attendee");
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//        return builder
+//                .setView(view)
+//                .setTitle("Add an attendee")
+//                .setNegativeButton("Cancel", null)
+//                .setPositiveButton("OK", (dialog, which) -> {
+//                    String Name = addName.getText().toString();
+//                    String numCheckins = addNumCheckins.getText().toString();
+////                    addName.setText(newAttendee.getName());
+////                    addNumCheckins.setText(newAttendee.getNum_checkins());
+//                    listener.addAttendeeToList(new Attendee(Name, numCheckins));
+//                })
+//                .create();
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

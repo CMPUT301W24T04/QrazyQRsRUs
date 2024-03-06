@@ -5,13 +5,17 @@ import java.io.Serializable;
 public class Attendee implements Serializable {
     private String name;
     private String num_checkins;
+    private String id;
+    private Boolean geolocation;
 
-    public Attendee(String name, String num_checkins) {
+    public Attendee(String id, String name, String num_checkins, Boolean geolocation) {
         /**
          * Holds attendee information
          */
+        this.id = id;
         this.name = name;
         this.num_checkins = num_checkins;
+        this.geolocation = geolocation;
     }
 
     public String getName() {
@@ -19,6 +23,22 @@ public class Attendee implements Serializable {
          * gets attendee name
          */
         return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Boolean getGeolocation() {
+        return geolocation;
+    }
+
+    public void setGeolocation(Boolean geolocation) {
+        this.geolocation = geolocation;
     }
 
     public void setName(String name) {

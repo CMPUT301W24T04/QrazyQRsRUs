@@ -95,36 +95,46 @@ public class AttendeeList extends Fragment {
                         Log.d(TAG, "Data could not be added!" + e.toString());
                     }
                 });
-//        for (Attendee attendee : attendeeDataList) { // iterate through attendees in attendee list     //for(int i=0;i<attendeeDataList.size();i++)
-//            // Retrieving the city name and the province name from the EditText fields
-////            final String attendeeName = attendee.getName() //.get(i).getName(); // attendees[i];
-////            final String attendee_checkins = attendeeDataList.get(i).getNum_checkins();
-//            //HASHMAP TO STORE THE DATA IN FORM OF KEY-VALUE PAIRS
-////            HashMap<String, String> data = new HashMap<>();
-//            // check if user entered something
-////            if (attendeeName.length() > 0) {
-////                // If there’s some data in the EditText field, then we create a new key-value pair.
-////                data.put("Name", attendeeName); //add
-////                data.put("Number of checkins", attendee_checkins); //.toString()
-//            // ADD DATA TO THE FIRE STORE
-//            collectionReference
-//                    // add attendee to database
-//                    .document("added new document");
-////                    .add(attendee)
-////                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-////                        @Override
-////                        public void onSuccess(DocumentReference documentReference) {
-////                            Log.d(TAG, "Data has been added successfully!");
-////                        }
-////                    })
-////                    .addOnFailureListener(new OnFailureListener() {
-////                        @Override
-////                        public void onFailure(@NonNull Exception e) {
-////                            Log.d(TAG, "Data could not be added!" + e.toString());
-////                        }
-////                    });
-//        }
+        for (Attendee attendee : attendeeDataList) { // iterate through attendees in attendee list     //for(int i=0;i<attendeeDataList.size();i++)
+            // Retrieving the city name and the province name from the EditText fields
+//            final String attendeeName = attendee.getName() //.get(i).getName(); // attendees[i];
+//            final String attendee_checkins = attendeeDataList.get(i).getNum_checkins();
+            //HASHMAP TO STORE THE DATA IN FORM OF KEY-VALUE PAIRS
+//            HashMap<String, String> data = new HashMap<>();
+            // check if user entered something
+//            if (attendeeName.length() > 0) {
+//                // If there’s some data in the EditText field, then we create a new key-value pair.
+//                data.put("Name", attendeeName); //add
+//                data.put("Number of checkins", attendee_checkins); //.toString()
+            // ADD DATA TO THE FIRE STORE
+            collectionReference
+                    // add attendee to database
+                    .document("added new document");
+//                    .add(attendee)
+//                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                        @Override
+//                        public void onSuccess(DocumentReference documentReference) {
+//                            Log.d(TAG, "Data has been added successfully!");
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Log.d(TAG, "Data could not be added!" + e.toString());
+//                        }
+//                    });
+        }
 
+    }
+    static AttendeeList newInstance(Attendee attendee){
+        /**
+         * Allows the attendee to be saved as an instance using a bundle
+         */
+        Bundle args = new Bundle();
+        args.putSerializable("attendee", attendee);
+        AttendeeList fragment = new AttendeeList();
+        fragment.setArguments(args);
+        return fragment;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -178,19 +188,33 @@ public class AttendeeList extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            Log.d("Users", "Retrieved all users");
+                            Log.d("Attendees", "Retrieved all Attendees");
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                String id = (String) document.getData().get("id");
-                                String name = (String) document.getData().get("name");
-                                String email = (String) document.getData().get("email");
-                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                //
+                                if(document.getData().size()==0){
+                                    String documentId = document.getId();
+                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+                                    attendeeDataList.add(attendee);
+                                    attendeeListAdapter.notifyDataSetChanged();
+                                }
+                                if(document.getData().size()==1){
+                                    String documentId = document.getId();
+                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+                                    attendeeDataList.add(attendee);
+                                    attendeeListAdapter.notifyDataSetChanged();
+                                }
+                                else{
+                                    String documentId = document.getId();
+                                    String id = (String) document.getData().get("id");
+                                    String name = (String) document.getData().get("name");
+                                    String email = (String) document.getData().get("email");
+                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                    Attendee attendee = new Attendee(documentId, name, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                    attendeeDataList.add(attendee);
+                                    attendeeListAdapter.notifyDataSetChanged();
+                                }
 
-
-                                 Attendee attendee = new Attendee(name, id);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                 attendeeDataList.add(attendee);
-                                 attendeeListAdapter.notifyDataSetChanged();
                             }
                         } else {
                             Log.d("Users", "Error getting documents: ", task.getException());

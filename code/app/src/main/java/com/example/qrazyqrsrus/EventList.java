@@ -129,52 +129,29 @@ public class EventList extends Fragment {  // FIX LATER
 //        });
     }
 
+    /**
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // DEFINE VIEW
         View eventListLayout = inflater.inflate(R.layout.fragment_event_list, container, false);
         //**************************************************************************************************************
-        //INITIAL LIST FOR TESTING
-//        String[] events = {
-//                "CS conference", "???"
-//        };
-//        String[] locations = {
-//                "Edmonton", "???"
-//        };
-//        String[] dates = {
-//                "3/27/2024", "???"
-//        };
-//        String[] details = {
-//                "A conference about Computer Science","???"
-//        };
+
         eventDataList = new ArrayList<>();
         final CollectionReference collectionReference = db.collection("Events");
         final String TAG = "Sample";
-
-//         Creates list locally
-//        for (int i = 0; i < events.length; i++) {
-//            eventDataList.add(new Event(events[i], locations[i], dates[i], details[i]));
-//        }
-        // get events collection from firebase
-//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-//            FirebaseFirestoreException error) {
-//                // Clear the old list
-//                eventDataList.clear();
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-//                {
-//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-//                    String name = doc.getId();
-//                    String location = (String) doc.getData().get("Location");
-//                    String date = (String) doc.getData().get("Date");
-//                    String detail = (String) doc.getData().get("Detail");
-//                    eventDataList.add(new Event(name, location, date, detail)); // Adding the cities and provinces from FireStore
-//                }
-//                eventListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-//            }
-//        });
 
         collectionReference
                 .get()
@@ -190,7 +167,7 @@ public class EventList extends Fragment {  // FIX LATER
                                 String details = (String) document.getData().get("details");
                                 String location = (String) document.getData().get("location");
                                 //LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");    FIX LATER
-                                String startDate = (String) document.getData().get("startDate");
+                                LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");
                                 LocalDateTime endDate = (LocalDateTime) document.getData().get("endDate");
                                 Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
                                 String posterPath = (String) document.getData().get("posterPath");
@@ -201,7 +178,7 @@ public class EventList extends Fragment {  // FIX LATER
                                 ArrayList<Map<String, Object>> checkIns = (ArrayList<Map<String, Object>>) document.getData().get("checkIns");
 
 
-                                Event event = new Event(eventName, location, startDate, details);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                Event event = new Event(eventName, organizerId, details, location, startDate, endDate); // new Event(eventName, location, startDate, details,);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
                                 eventDataList.add(event);
                                 eventListAdapter.notifyDataSetChanged();
                             }
@@ -228,26 +205,6 @@ public class EventList extends Fragment {  // FIX LATER
         return eventListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
 
 //        new com.example.crazyqrtest.AddAttendee().show(getSupportFragmentManager(), "Add Book");
-
-        //******************************************************************************************************************************
-//        // CHECK IF QR CODE IS SCANNED
-//        // Register the launcher and result handler
-//        private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
-//                result -> {
-//                    if(result.getContents() == null) {
-//                        Toast.makeText(MyActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
-//                    } else {
-//                        Toast.makeText(MyActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//        // Launch
-//        public void onButtonClick(View view) {
-//            barcodeLauncher.launch(new ScanOptions());
-//        }
-        //******************************************************************************************************************************
-
-
-
 //        final String TAG = "Sample";
 //        final CollectionReference collectionReference = db.collection("Events");
 //        for(int i=0;i<eventDataList.size();i++) {
