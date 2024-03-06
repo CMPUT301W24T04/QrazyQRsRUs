@@ -1,5 +1,9 @@
 package com.example.qrazyqrsrus;
 
+import static android.graphics.ImageDecoder.createSource;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -30,7 +34,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
-
+/**
+ * This is a utility class that does all the Firebase related actions.
+ */
 public class FirebaseDB {
 
     final static FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -48,14 +54,14 @@ public class FirebaseDB {
      * Adds a document that represents a user in the database
      * @param user The user we want to add
      */
-    public static void addUser(String user) {
+    public static void addUser(Attendee user) {
         usersCollection
                 .add(user)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(usersTAG, "User document snapshot written with ID:" + documentReference.getId());
-                        // user.setDocumentId(documentReference.getId())
+                        user.setDocumentId(documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -70,8 +76,9 @@ public class FirebaseDB {
      * the first time they have opened the app.
      * @param userId The unique identifier of the user that has opened the app
      */
-    public static void loginUser(String userId) {
-        // Attendee user;
+
+    public static Attendee loginUser(String userId) {
+        ArrayList<Attendee> user = new ArrayList<Attendee>();
         usersCollection
                 .whereEqualTo("id", userId)
                 .get()
@@ -81,13 +88,13 @@ public class FirebaseDB {
                         if (task.isSuccessful()) {
                             int i = 0;
                             for (DocumentSnapshot documentSnapshot: task.getResult()) {
-                                // user = documentSnapshot.toObject(Attendee.class);
+                                user.add(documentSnapshot.toObject(Attendee.class));
                                 i += 1;
                             }
                             if (i == 0) {
                                 // This means that Attendee needs a constructor where it only accepts userId and sets the rest to default
-                                // user = new Attendee(userId);
-                                // addUser(user);
+                                user.add(new Attendee(userId));
+                                addUser(user.get(0));
                             }
                         }
                         else {
@@ -95,7 +102,7 @@ public class FirebaseDB {
                         }
                     }
                 });
-        // return user
+        return user.get(0);
     }
 
     /**
@@ -124,13 +131,13 @@ public class FirebaseDB {
      * Updates the document that represents the user in the database.
      * @param user The user that needs their document updated.
      */
-    public static void updateUser(String user) {
+    public static void updateUser(Attendee user) {
         usersCollection
-                .document("user.getDocumentId()")
-                .update("name", "Attendee.getName()",
-                        "email", "Attendee.getEmail()",
-                        "geolocationOn", "Attendee.getGeolocationOn()",
-                        "profilePicturePath", "Attendee.getProfilePicturePath()")
+                .document(user.getDocumentId())
+                .update("name", user.getName(),
+                        "email", user.getEmail(),
+                        "geolocationOn", user.getGeolocationOn(),
+                        "profilePicturePath", user.getProfilePicturePath())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -154,7 +161,7 @@ public class FirebaseDB {
                 .update("announcements", event.getAnnouncements(),
                         "checkIns", event.getCheckIns(), "signUps",
                         event.getSignUps(), "posterPath", event.getPosterPath(),
-                        "qrCodePath", event.getQrCodePath())
+                        "qrCode", event.getQrCode())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -199,61 +206,55 @@ public class FirebaseDB {
      * Retrieves an image from the database
      * @param user This is the user we want to retrieve their profile picture
      */
-    public static void retrieveImage(String user) { // Change this to Attendee class when implemented
-//        try {
-//            StorageReference storageRef = storage.getReference(user.getProfilePicturePath()+".jpg");
-//            File localFile = File.createTempFile(user.getProfilePicturePath().split("/")[1], "jpg");
-//            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-//                    user.setProfilePicture(localFile);
-//                    Log.d(imagesTAG, "Successfully retrieved image");
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
-//                }
-//            });
-//        }
-//        catch (IOException exception) {
-//            Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
-//        }
+    public static Bitmap retrieveImage(Attendee user) {
+        ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
+        try {
+            StorageReference storageRef = storage.getReference(user.getProfilePicturePath()+".jpg");
+            File localFile = File.createTempFile(user.getProfilePicturePath().split("/")[1], "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    Log.d(imagesTAG, "Successfully retrieved image");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
+                }
+            });
+        }
+        catch (IOException exception) {
+            Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
+        }
+        return localBitMap.get(0);
     }
     /**
      * Retrieves an image from the database
-     * @param event This is the event we're trying to get its image.
-     * @param imageType This string clarifies what type of File we're retrieving, it could be
-     *                  a poster, a QR code, or a promotion QR code
+     * @param event This is the event we're trying to get its poster.
      */
-    public static void retrieveImage(Event event, String imageType) {
-//        try {
-//            StorageReference storageRef = storage.getReference(event.getProfilePicturePath()+".jpg");
-//            File localFile = File.createTempFile(event.getProfilePicturePath().split("/")[1], "jpg");
-//            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-//                    if (imageType.equals("poster")){
-//                        event.setPosterImage(localFile);
-//                    } else if (imageType.equals("qrCode")) {
-//                        event.setQrCode(localFile);
-//                    }
-//                    else {
-//                        event.setPromoQrCode(localFile);
-//                    }
-//                    Log.d(imagesTAG, "Successfully retrieved image");
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
-//                }
-//            });
-//        }
-//        catch (IOException exception) {
-//            Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
-//        }
-
+    public static Bitmap retrieveImage(Event event) {
+        ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
+        try {
+            StorageReference storageRef = storage.getReference(event.getPosterPath()+".jpg");
+            File localFile = File.createTempFile(event.getPosterPath().split("/")[1], "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    Log.d(imagesTAG, "Successfully retrieved image");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
+                }
+            });
+        }
+        catch (IOException exception) {
+            Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
+        }
+        return localBitMap.get(0);
     }
     /**
      * Retrieves all events in the events collection
@@ -278,13 +279,13 @@ public class FirebaseDB {
                                 LocalDateTime endDate = (LocalDateTime) document.getData().get("endDate");
                                 Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
                                 String posterPath = (String) document.getData().get("posterPath");
-                                String qrCodePath = (String) document.getData().get("qrCodePath");
-                                String qrCodePromoPath = (String) document.getData().get("qrCodePromoPath");
+                                String qrCode = (String) document.getData().get("qrCode");
+                                String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
                                 ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCodePath, qrCodePromoPath, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
                                 eventList.add(event);
                                 eventArrayAdapter.notifyDataSetChanged();
                             }
@@ -301,7 +302,7 @@ public class FirebaseDB {
      * @param attendeeList The list we're going to hold the users in.
      * @param attendeeArrayAdapter The ArrayAdapter of attendeeList.
      */
-    public static void getAllUsers(ArrayList<String> attendeeList, ArrayAdapter<String> attendeeArrayAdapter) {
+    public static void getAllUsers(ArrayList<Attendee> attendeeList, ArrayAdapter<Attendee> attendeeArrayAdapter) {
         usersCollection
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -318,9 +319,9 @@ public class FirebaseDB {
                                 Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
 
 
-                                // Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                // attendeeList.add(attendee);
-                                // attendeeArrayAdapter.notifyDataSetChanged;
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                attendeeList.add(attendee);
+                                attendeeArrayAdapter.notifyDataSetChanged();
                             }
                         } else {
                             Log.d(usersTAG, "Error getting documents: ", task.getException());
@@ -335,10 +336,10 @@ public class FirebaseDB {
      * @param user the user who as signed up to events
      * @return all events user has signed up to
      */
-    public static ArrayList<Event> getAttendeeSignedUpEvents(String user) {
+    public static ArrayList<Event> getAttendeeSignedUpEvents(Attendee user) {
         ArrayList<Event> events = new ArrayList<>();
         eventsCollection
-                .whereArrayContains("signUps", "user.getDocumentId()")
+                .whereArrayContains("signUps", user.getDocumentId())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -358,12 +359,16 @@ public class FirebaseDB {
                 });
         return events;
     }
-
-    public static ArrayList<Event> getAttendeeCheckedInEvents(String user) {
+    /**
+     * Retrieves all the events an user has checked in to
+     * @param user the user who as checked in to events
+     * @return all events user has checked in to
+     */
+    public static ArrayList<Event> getAttendeeCheckedInEvents(Attendee user) {
         ArrayList<String> attendeeCheckIns = new ArrayList<>();
         ArrayList<Event> attendeeEvents = new ArrayList<>();
         checkInsCollection
-                .whereEqualTo("attendeeDocId", "user.getDocumentId()")
+                .whereEqualTo("attendeeDocId", user.getDocumentId())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -398,8 +403,8 @@ public class FirebaseDB {
      * @param event the event we're getting the attendees
      * @return A list of the attendees who have signed up
      */
-    public static ArrayList<String> getEventSignedUp(Event event) {
-        ArrayList<String> attendeeList = new ArrayList<>();
+    public static ArrayList<Attendee> getEventSignedUp(Event event) {
+        ArrayList<Attendee> attendeeList = new ArrayList<>();
         for (String signUps : event.getSignUps()) {
             usersCollection
                     .document(signUps)
@@ -407,7 +412,7 @@ public class FirebaseDB {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            String attendee = documentSnapshot.toObject(String.class);
+                            Attendee attendee = documentSnapshot.toObject(Attendee.class);
                             attendeeList.add(attendee);
                         }
                     })
@@ -427,8 +432,8 @@ public class FirebaseDB {
      * @param event the event we're getting the attendees
      * @return A list of the attendees who have checked in
      */
-    public static ArrayList<String> getEventCheckedIn(Event event) {
-        ArrayList<String> attendeeList = new ArrayList<>();
+    public static ArrayList<Attendee> getEventCheckedIn(Event event) {
+        ArrayList<Attendee> attendeeList = new ArrayList<>();
         checkInsCollection
                 .whereEqualTo("eventId", event.getDocumentId())
                 .get()
@@ -442,7 +447,7 @@ public class FirebaseDB {
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            String attendee = documentSnapshot.toObject(String.class);
+                                            Attendee attendee = documentSnapshot.toObject(Attendee.class);
                                             attendeeList.add(attendee);
                                         }
                                     })

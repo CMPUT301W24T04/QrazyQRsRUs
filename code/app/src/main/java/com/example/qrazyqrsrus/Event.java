@@ -17,8 +17,8 @@ public class Event implements Serializable {
     private LocalDateTime endDate;
     private Boolean geolocationOn;
     private String posterPath;
-    private String qrCodePath;
-    private String qrCodePromoPath;
+    private String qrCode;
+    private String qrCodePromo;
     private ArrayList<String> announcements;
     private ArrayList<String> signUps;
     private ArrayList<String> checkIns;
@@ -28,7 +28,6 @@ public class Event implements Serializable {
     }
     // Constructor when Organizer creates the event
     public Event(String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate) {
-        this.documentId = "0";
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
@@ -43,8 +42,8 @@ public class Event implements Serializable {
     // Constructor when getting retrieving from database
     public Event(String documentId, String name, String organizerId, String details,
                  String location, LocalDateTime startDate, LocalDateTime endDate,
-                 Boolean geolocationOn, String posterPath, String qrCodePath,
-                 String qrCodePromoPath, ArrayList<String> announcements, ArrayList<String> signUps,
+                 Boolean geolocationOn, String posterPath, String qrCode,
+                 String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
         this.documentId = documentId;
         this.name = name;
@@ -55,8 +54,8 @@ public class Event implements Serializable {
         this.endDate = endDate;
         this.geolocationOn = geolocationOn;
         this.posterPath = posterPath;
-        this.qrCodePath = qrCodePath;
-        this.qrCodePromoPath = qrCodePromoPath;
+        this.qrCode = qrCode;
+        this.qrCodePromo = qrCodePromo;
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
@@ -132,20 +131,20 @@ public class Event implements Serializable {
         this.posterPath = posterPath;
     }
 
-    public String getQrCodePath() {
-        return qrCodePath;
+    public String getQrCode() {
+        return qrCode;
     }
 
-    public void setQrCodePath(String qrCodePath) {
-        this.qrCodePath = qrCodePath;
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 
-    public String getQrCodePromoPath() {
-        return qrCodePromoPath;
+    public String getQrCodePromo() {
+        return qrCodePromo;
     }
 
-    public void setQrCodePromoPath(String qrCodePromoPath) {
-        this.qrCodePromoPath = qrCodePromoPath;
+    public void setQrCodePromo(String qrCodePromo) {
+        this.qrCodePromo = qrCodePromo;
     }
 
     public ArrayList<String> getAnnouncements() {
@@ -172,6 +171,10 @@ public class Event implements Serializable {
         this.signUps.add(signUp);
     }
 
+    public void deleteSignUp(String userId) {
+        this.signUps.remove(userId);
+    }
+
     public ArrayList<String> getCheckIns() {
         return checkIns;
     }
@@ -182,5 +185,9 @@ public class Event implements Serializable {
 
     public void addCheckIn(String checkIn) {
         this.checkIns.add(checkIn);
+    }
+
+    public void deleteCheckIn(String userId) {
+        this.checkIns.remove(userId);
     }
 }
