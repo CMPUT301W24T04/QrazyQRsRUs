@@ -32,14 +32,11 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        String TAG = "Sample";
-
         // At the start we want to be at the Home screen
         ChangeFragment(new HomeFragment());
 
         // Apparently this is not good practice, but if it works, it works.
         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
 
         if (deviceId == null) {
             return;
