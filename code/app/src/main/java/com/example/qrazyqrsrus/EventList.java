@@ -40,11 +40,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * Gets database information about event attendee is signed up for and displays it
+ */
 public class EventList extends Fragment {  // FIX LATER
-    /**
-     * Contains a list of attendees for the event
-     */
+
     ListView eventList;
     ArrayList<Event> eventDataList;
     com.example.qrazyqrsrus.EventListAdapter eventListAdapter;
@@ -52,85 +52,8 @@ public class EventList extends Fragment {  // FIX LATER
     // FIREBASE
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public void addEventToList(Event event){
-        /**
-         * Adds an attendee to the list of attendees
-         * Inputs: Attendee class
-         * Outputs: None
-         */
-        // add attendee to list and update the list
-        eventDataList.add(event);
-        eventList.setAdapter(eventListAdapter);
-
-        createList(eventDataList);
-    }
-
-    public void createList(ArrayList<Event> eventDataList){
-//        /**
-//         * Creates the firebase list
-//         */
-//        final String TAG = "Sample";
-//        final CollectionReference collectionReference = db.collection("_Events_");
-//        for(int i=0;i<eventDataList.size();i++) {
-//            // Retrieving the city name and the province name from the EditText fields
-//            final String eventName = eventDataList.get(i).getEventName(); //events[i];
-//            final String eventLocation = eventDataList.get(i).getLocation(); //locations[i];
-//            final String eventDate = eventDataList.get(i).getDate(); //dates[i];
-//            final String eventDetail = eventDataList.get(i).getDetails(); //details[i];
-//            //HASHMAP TO STORE THE DATA IN FORM OF KEY-VALUE PAIRS
-//            HashMap<String, String> data = new HashMap<>();
-//            // check if user entered something
-//            if (eventName.length() > 0) {
-//                // If there’s some data in the EditText field, then we create a new key-value pair.
-//                data.put("Name", eventName);
-//                data.put("Location", eventLocation);
-//                data.put("Date", eventDate);
-//                data.put("Detail", eventDetail);
-//
-////                data.put("Number of checkins", attendee_checkins); //.toString()
-//                // ADD DATA TO THE FIRE STORE
-//                collectionReference
-//                        .document(eventName)
-//                        .set(data)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                // These are a method which gets executed when the task is succeeded
-//                                Log.d(TAG, "Data has been added successfully!");
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                // These are a method which gets executed if there’s any problem
-//                                Log.d(TAG, "Data could not be added!" + e.toString());
-//                            }
-//                        });
-//            }
-//        }
-//
-//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-//            FirebaseFirestoreException error) {
-//                // Clear the old list
-//                eventDataList.clear();
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-//                {
-//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-//                    String name = doc.getId();
-//                    String location = (String) doc.getData().get("Location");
-//                    String date = (String) doc.getData().get("Date");
-//                    String detail = (String) doc.getData().get("Detail");
-//                    eventDataList.add(new Event(name, location, date, detail)); // Adding the cities and provinces from FireStore
-//                }
-//                eventListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-//            }
-//        });
-    }
-
     /**
-     *
+     * Gets data from firestore and displays it on a listview
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
      * @param container If non-null, this is the parent view that the fragment's
@@ -139,7 +62,7 @@ public class EventList extends Fragment {  // FIX LATER
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return view
      */
 
     @Override
@@ -204,67 +127,6 @@ public class EventList extends Fragment {  // FIX LATER
         });
         return eventListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
 
-//        new com.example.crazyqrtest.AddAttendee().show(getSupportFragmentManager(), "Add Book");
-//        final String TAG = "Sample";
-//        final CollectionReference collectionReference = db.collection("Events");
-//        for(int i=0;i<eventDataList.size();i++) {
-//            // Retrieving the city name and the province name from the EditText fields
-//            final String eventName = eventDataList.get(i).getEventName(); //events[i];
-//            final String eventLocation = eventDataList.get(i).getLocation(); //locations[i];
-//            final String eventDate = eventDataList.get(i).getDate(); //dates[i];
-//            final String eventDetail = eventDataList.get(i).getDetails(); //details[i];
-//            //HASHMAP TO STORE THE DATA IN FORM OF KEY-VALUE PAIRS
-//            HashMap<String, String> data = new HashMap<>();
-//            // check if user entered something
-//            if (eventName.length() > 0) {
-//                // If there’s some data in the EditText field, then we create a new key-value pair.
-//                data.put("Name", eventName);
-//                data.put("Location", eventLocation);
-//                data.put("Date", eventDate);
-//                data.put("Detail", eventDetail);
-//
-////                data.put("Number of checkins", attendee_checkins); //.toString()
-//                // ADD DATA TO THE FIRE STORE
-//                collectionReference
-//                        .document(eventName)
-//                        .set(data)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                // These are a method which gets executed when the task is succeeded
-//                                Log.d(TAG, "Data has been added successfully!");
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                // These are a method which gets executed if there’s any problem
-//                                Log.d(TAG, "Data could not be added!" + e.toString());
-//                            }
-//                        });
-//            }
-//        }
-//
-//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-//            FirebaseFirestoreException error) {
-//                // Clear the old list
-//                eventDataList.clear();
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-//                {
-//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-//                    String name = doc.getId();
-//                    String location = (String) doc.getData().get("Location");
-//                    String date = (String) doc.getData().get("Date");
-//                    String detail = (String) doc.getData().get("Detail");
-//                    eventDataList.add(new Event(name, location, date, detail)); // Adding the cities and provinces from FireStore
-//                }
-//                eventListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-//            }
-//        });
-
-        //*********************************************************************************************************************
 
 
 

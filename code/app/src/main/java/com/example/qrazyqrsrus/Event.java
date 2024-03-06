@@ -24,6 +24,12 @@ public class Event implements Serializable {
     private ArrayList<String> checkIns;
 
     // Default constructor
+
+    /**
+     * Holds the event
+     * inputs: String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate
+     * outputs: the getters and setters
+     */
     public Event() {
     }
     // Constructor when Organizer creates the event
@@ -40,6 +46,24 @@ public class Event implements Serializable {
         this.signUps = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
     }
+
+    /**
+     *
+     * @param documentId
+     * @param name
+     * @param organizerId
+     * @param details
+     * @param location
+     * @param startDate
+     * @param endDate
+     * @param geolocationOn
+     * @param posterPath
+     * @param qrCodePath
+     * @param qrCodePromoPath
+     * @param announcements
+     * @param signUps
+     * @param checkIns
+     */
     // Constructor when getting retrieving from database
     public Event(String documentId, String name, String organizerId, String details,
                  String location, LocalDateTime startDate, LocalDateTime endDate,
@@ -62,8 +86,15 @@ public class Event implements Serializable {
         this.checkIns = checkIns;
     }
 
+    /**
+     * gets document id
+     * @return documentId
+     */
     public String getDocumentId() { return documentId; }
-
+    /**
+     *
+     * @return documentId
+     */
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }

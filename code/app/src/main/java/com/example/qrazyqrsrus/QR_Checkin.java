@@ -30,12 +30,12 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
+/**
+ * This is not meant to be run here, just as an example of how promotional QR code scan adds attendees
+ * addUser() is relevant here to add a user by their id to the firestore
+ */
 public class QR_Checkin {
-    /**
-     * This is not meant to be run here, just as an example of how promotional QR code scan adds attendees
-     * addUser() is relevant here to add a user by their id to the firestore
-     */
+
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
     final CollectionReference attendeesCollection = db.collection("Attendees");
 
