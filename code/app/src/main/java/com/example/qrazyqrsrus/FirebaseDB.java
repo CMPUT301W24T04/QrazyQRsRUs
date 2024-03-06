@@ -470,4 +470,24 @@ public class FirebaseDB {
         return attendeeList;
     }
 
+    public static String getUserName(String userDocumentId) {
+        ArrayList<String> user = new ArrayList<String>();
+        usersCollection.document(userDocumentId).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Log.d(usersTAG, "Success");
+                        Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                        user.add(attendee.getName());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(usersTAG, "Failed "+e);
+                    }
+                });
+        return user.get(0);
+    }
+
 }
