@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
                         event = findEventWithCheckin(result.getContents());
                         if (event == null){
                             //throw error, qr code does not belong to any event
+                            //TODO: add error bar for scanning qr code that no event has
                         } else{
                             //if qr code was a checkin qr code, add the user to the event's checkin list
                             event.addToCheckinList(userID);
@@ -141,8 +142,44 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
                         }
                     }
                 });
-        if ()
-        return event;
+        if (matchingEvents.size() == 1){
+            //if we find an event with the promo QR code matching the scanned QR code content, return it
+            return matchingEvents.get(0);
+        } else{
+            //if we do not find an event with the promo QR code matching the scanned QR code content, return null
+            //this amy also occur if there are more than one event with the same QR promo QR code, but that should never be the case
+            //TODO: add handling for more than one event with the same QR promo code
+            return null;
+        }
+    }
+
+    private Event findEventWithCheckin(String qrContent){
+        ArrayList<Event> matchingEvents = new ArrayList<Event>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference events = db.collection("Events");
+        events
+                .whereEqualTo("qr_code_id", qrContent)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                matchingEvents.add(documentSnapshot.toObject(Event.class));
+                            }
+
+                        }
+                    }
+                });
+        if (matchingEvents.size() == 1){
+            //if we find an event with the checkin QR code matching the scanned QR code content, return it
+            return matchingEvents.get(0);
+        } else{
+            //if we do not find an event with the promo QR code matching the scanned QR code content, return null
+            //this amy also occur if there are more than one event with the same checkin QR code, but that should never be the case
+            //TODO: add handling for more than one event with the same QR checkin code
+            return null;
+        }
     }
 
 //    public static void loginUser(String userId) {
