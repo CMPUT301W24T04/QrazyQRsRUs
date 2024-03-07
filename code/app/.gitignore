@@ -32,12 +32,12 @@ google-services.json
 # Android Profiling
 *.hprof
 
-src/main/java/com.example.qrazyqrsrus/AddAttendee.java
-src/main/java/com.example.qrazyqrsrus/Attendee.java
-src/main/java/com.example.qrazyqrsrus/Event.java
-src/main/java/com.example.qrazyqrsrus/MainActivity.java
-src/main/java/com.example.qrazyqrsrus/MainMenu.java
-src/main/java/com.example.qrazyqrsrus/QR_Checkin.java
+src/main/java/com/example/qrazyqrsrus/AddAttendee.java
+src/main/java/com/example/qrazyqrsrus/Attendee.java
+src/main/java/com/example/qrazyqrsrus/Event.java
+src/main/java/com/example/qrazyqrsrus/MainActivity.java
+src/main/java/com/example/qrazyqrsrus/MainMenu.java
+src/main/java/com/example/qrazyqrsrus/QR_Checkin.java
 
 src/res/layout/activity_main.xml
 src/res/layout/fragment_add_attendee.xml
