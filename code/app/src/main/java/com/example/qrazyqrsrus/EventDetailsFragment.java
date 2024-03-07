@@ -11,7 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
 import android.widget.ArrayAdapter;
+
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -21,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -50,6 +54,7 @@ public class EventDetailsFragment extends Fragment {
             return null;
         }
         Event event = (Event) getArguments().get("event");
+        Attendee attendee = (Attendee) getArguments().get("attendee");
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = view.findViewById(R.id.event_detail_name);
@@ -60,8 +65,16 @@ public class EventDetailsFragment extends Fragment {
         TextView endDateView = view.findViewById(R.id.event_detail_end_date);
         ImageView posterView = view.findViewById(R.id.posterView);
         ListView announcementListView = view.findViewById(R.id.announcement_list_view);
+        Button signUpEvent = view.findViewById(R.id.sign_up_button);
+        signUpEvent.setOnClickListener(new View.OnClickListener() {
+            // need to get attendeeID and eventID first
+            @Override
+            public void onClick(View view) {
+                event.addSignUp(attendee.getDocumentId());
+                FirebaseDB.updateEvent(event);
+            }
+        });
         Button viewAttendeesButton = view.findViewById(R.id.attendee_list_button);
-
         String nameString = "Name: "+event.getName();
         //String organizerString = "Organized by: ";
         FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
