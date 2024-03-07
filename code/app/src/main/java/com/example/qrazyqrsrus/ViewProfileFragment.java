@@ -8,7 +8,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -31,10 +34,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ViewProfileFragment extends Fragment {
+    private Attendee attendee;
     private EditText etFullName, etAge, etEmailAddress;
     private ImageView imgProfilePicture;
     private FirebaseStorage storage;
@@ -62,16 +68,23 @@ public class ViewProfileFragment extends Fragment {
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);
         switchGeolocation = view.findViewById(R.id.switchGeolocation);
-        SharedPreferences preferences = getSharedPreferences("USER_PREF", MODE_PRIVATE);
+//        SharedPreferences preferences = getSharedPreferences("USER_PREF", MODE_PRIVATE);
 
         // Restore state here
-        boolean switchState = preferences.getBoolean("GeolocationSwitchState", false);
-        switchGeolocation.setChecked(switchState);
-        String userId = "11111111"; // replace with dynamic user ID later
-        loadUserProfile(userId);
+//        boolean switchState = preferences.getBoolean("GeolocationSwitchState", false);
+//        switchGeolocation.setChecked(switchState);
+        String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        //loadUserProfile(userId);
+        FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+            @Override
+            public void onResult(Attendee attendee) {
+                loadInitialAttendee(attendee);
+            }
+        });
 
-        btnUpdateProfile.setOnClickListener(v -> updateUserProfile(userId));
+        btnUpdateProfile.setOnClickListener(v -> updateUserProfile(this.attendee));
 
+        //IF WE ARE GETTING ATTENDEE FROM LIST VIEW (not editing) WE WILL ALREADY HAVE ATTENDEE
         //************************************************************************************
         // Get bundle from attendee click to be displayed on the profile view
 //        Bundle bundle = getArguments();
@@ -79,94 +92,94 @@ public class ViewProfileFragment extends Fragment {
 //        etFullName.setText(attendee.getName());
         //*************************************************************************************
 
-        switchGeolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateGeolocation(userId, isChecked);
-            }
-        });
+//        switchGeolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                updateGeolocation(userId, isChecked);
+//            }
+//        });
 
-        etFullName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (isProfileLoaded) {
-                    String initials = getInitials(editable.toString());
-                    Bitmap bitmap = createInitialsImage(initials);
-                    imgProfilePicture.setImageBitmap(bitmap);
-                    uploadImageToStorage(bitmap, userId);
-                }
-            }
-        });
+//        etFullName.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                if (isProfileLoaded) {
+//                    String initials = getInitials(editable.toString());
+//                    Bitmap bitmap = createInitialsImage(initials);
+//                    imgProfilePicture.setImageBitmap(bitmap);
+////                    uploadImageToStorage(bitmap, userId);
+//                }
+//            }
+//        });
 
         return view;
     }
-    private void loadUserProfile(String userId) {
-        db.collection("Users").document(userId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        UserProfile userProfile = documentSnapshot.toObject(UserProfile.class);
-                        if (userProfile != null) {
-                            etFullName.setText(userProfile.getName());
-                            etAge.setText(userProfile.getAge());
-                            etEmailAddress.setText(userProfile.getEmail());
-                            switchGeolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                @Override
-                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                    // Save state here
-                                    SharedPreferences preferences = getSharedPreferences("USER_PREF", MODE_PRIVATE);
-                                    preferences.edit().putBoolean("GeolocationSwitchState", isChecked).apply();
+//    private void loadUserProfile(String userId) {
+//        db.collection("Users").document(userId).get()
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    if (documentSnapshot.exists()) {
+//                        UserProfile userProfile = documentSnapshot.toObject(UserProfile.class);
+//                        if (userProfile != null) {
+//                            etFullName.setText(userProfile.getName());
+//                            etAge.setText(userProfile.getAge());
+//                            etEmailAddress.setText(userProfile.getEmail());
+//                            switchGeolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                                @Override
+//                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                                    // Save state here
+//                                    SharedPreferences preferences = getSharedPreferences("USER_PREF", MODE_PRIVATE);
+//                                    preferences.edit().putBoolean("GeolocationSwitchState", isChecked).apply();
+//
+//                                    // Update Firestore
+//                                    updateGeolocation(userId, isChecked);
+//                                }
+//                            });
+//
+//
+//                            String initials = getInitials(userProfile.getName());
+//                            Bitmap bitmap = createInitialsImage(initials);
+//                            imgProfilePicture.setImageBitmap(bitmap);
+//                            isProfileLoaded = true;
+//                        } else {
+//                            Log.e("LoadUser", "UserProfile is null");
+//                        }
+//                    } else {
+//                        Toast.makeText(this, "Profile does not exist.", Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e("FirestoreError", "Error loading profile", e);
+//                    Toast.makeText(this, "Error loading profile.", Toast.LENGTH_SHORT).show();
+//                });
+//    }
 
-                                    // Update Firestore
-                                    updateGeolocation(userId, isChecked);
-                                }
-                            });
+//    private void updateUserProfile(String userId) {
+//        String fullName = etFullName.getText().toString().trim();
+//        String age = etAge.getText().toString().trim();
+//        String emailAddress = etEmailAddress.getText().toString().trim();
+//
+//
+//        Map<String, Object> userProfileMap = new HashMap<>();
+//        userProfileMap.put("name", fullName);
+//        userProfileMap.put("age", age);
+//        userProfileMap.put("email", emailAddress);
+//
+//        db.collection("Users").document(userId)
+//                .update(userProfileMap)
+//                .addOnSuccessListener(aVoid -> Toast.makeText(this, "Profile Updated Successfully!", Toast.LENGTH_LONG).show())
+//                .addOnFailureListener(e -> Log.e("FirestoreError", "Failed to update profile", e));
+//    }
 
-
-                            String initials = getInitials(userProfile.getName());
-                            Bitmap bitmap = createInitialsImage(initials);
-                            imgProfilePicture.setImageBitmap(bitmap);
-                            isProfileLoaded = true;
-                        } else {
-                            Log.e("LoadUser", "UserProfile is null");
-                        }
-                    } else {
-                        Toast.makeText(this, "Profile does not exist.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("FirestoreError", "Error loading profile", e);
-                    Toast.makeText(this, "Error loading profile.", Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    private void updateUserProfile(String userId) {
-        String fullName = etFullName.getText().toString().trim();
-        String age = etAge.getText().toString().trim();
-        String emailAddress = etEmailAddress.getText().toString().trim();
-
-
-        Map<String, Object> userProfileMap = new HashMap<>();
-        userProfileMap.put("name", fullName);
-        userProfileMap.put("age", age);
-        userProfileMap.put("email", emailAddress);
-
-        db.collection("Users").document(userId)
-                .update(userProfileMap)
-                .addOnSuccessListener(aVoid -> Toast.makeText(this, "Profile Updated Successfully!", Toast.LENGTH_LONG).show())
-                .addOnFailureListener(e -> Log.e("FirestoreError", "Failed to update profile", e));
-    }
-
-    private void updateGeolocation(String userId, boolean isOn) {
-        db.collection("Users").document(userId).update("geolocation_on", isOn)
-                .addOnSuccessListener(aVoid -> Log.d("UpdateProfileActivity", "Geolocation updated successfully"))
-                .addOnFailureListener(e -> Log.e("UpdateProfileActivity", "Failed to update geolocation", e));
-    }
+//    private void updateGeolocation(String userId, boolean isOn) {
+//        db.collection("Users").document(userId).update("geolocation_on", isOn)
+//                .addOnSuccessListener(aVoid -> Log.d("UpdateProfileActivity", "Geolocation updated successfully"))
+//                .addOnFailureListener(e -> Log.e("UpdateProfileActivity", "Failed to update geolocation", e));
+//    }
 
     private String getInitials(String name) {
         String[] parts = name.trim().split("\\s+");
@@ -194,14 +207,51 @@ public class ViewProfileFragment extends Fragment {
         return image;
     }
 
-    private void uploadImageToStorage(Bitmap bitmap, String userId) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] data = baos.toByteArray();
+//    private void uploadImageToStorage(Bitmap bitmap, String userId) {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+//        byte[] data = baos.toByteArray();
+//
+//        StorageReference profileImagesRef = storageRef.child("profileImages/" + userId + ".png");
+//        profileImagesRef.putBytes(data)
+//                .addOnSuccessListener(aVoid -> Toast.makeText(UpdateProfileActivity.this, "Profile Image Uploaded Successfully!", Toast.LENGTH_SHORT).show())
+//                .addOnFailureListener(e -> Log.e("UpdateProfileActivity", "Failed to upload profile image", e));
+//    }
 
-        StorageReference profileImagesRef = storageRef.child("profileImages/" + userId + ".png");
-        profileImagesRef.putBytes(data)
-                .addOnSuccessListener(aVoid -> Toast.makeText(UpdateProfileActivity.this, "Profile Image Uploaded Successfully!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Log.e("UpdateProfileActivity", "Failed to upload profile image", e));
+    private void loadInitialAttendee(Attendee attendee){
+        this.attendee = attendee;
+        etFullName.setText(attendee.getName());
+        etEmailAddress.setText(attendee.getEmail());
+        switchGeolocation.setChecked(attendee.getGeolocationOn());
+        if (attendee.getProfilePicturePath() == null){
+            Bitmap profileBitmap = createInitialsImage(getInitials(attendee.getName()));
+            imgProfilePicture.setImageBitmap(profileBitmap);
+            //the idea to get a uri from a bitmap was taken from https://stackoverflow.com/questions/12555420/how-to-get-a-uri-object-from-bitmap Accessed on March 7th, 2024
+            //posted by user Ajay (https://stackoverflow.com/users/840802/ajay) in the post https://stackoverflow.com/a/16167993
+            String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), profileBitmap, "generatedProfilePicture", "the profile picture we generated");
+            Uri uri = Uri.parse(localFilePath);
+            String pathName = generatePathName(attendee.getName());
+            FirebaseDB.uploadImage(uri, pathName);
+            this.attendee.setProfilePicturePath(pathName);
+        } else{
+            FirebaseDB.retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
+                @Override
+                public void onResult(Bitmap bitmap) {
+                    imgProfilePicture.setImageBitmap(bitmap);
+                }
+            });
+        }
+    }
+
+    private void updateUserProfile(Attendee attendee){
+        attendee.setName(etFullName.getText().toString());
+        attendee.setGeolocationOn(switchGeolocation.isChecked());
+        attendee.setEmail(etEmailAddress.getText().toString());
+    }
+
+    private String generatePathName(String attendeeName){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String pathName = "profile/" + attendeeName + timeStamp;
+        return pathName;
     }
 }

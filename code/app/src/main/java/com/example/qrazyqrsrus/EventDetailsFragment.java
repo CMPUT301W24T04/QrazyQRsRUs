@@ -102,9 +102,10 @@ public class EventDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
-    public static EventDetailsFragment newInstance(Event i){
+    public static EventDetailsFragment newInstance(Event i, Attendee attendee){
         Bundle args = new Bundle();
         args.putSerializable("event", i);
+        args.putSerializable("attendee", attendee);
 
         EventDetailsFragment fragment = new EventDetailsFragment();
         fragment.setArguments(args);
