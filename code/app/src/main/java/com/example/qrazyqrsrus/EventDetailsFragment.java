@@ -66,6 +66,7 @@ public class EventDetailsFragment extends Fragment {
         String startDateString = "Starts: "+event.getStartDate();
         String endDateString = "Ends: "+event.getEndDate();
 
+
         nameView.setText(nameString);
         organizerView.setText(organizerString);
         locationView.setText(locationString);

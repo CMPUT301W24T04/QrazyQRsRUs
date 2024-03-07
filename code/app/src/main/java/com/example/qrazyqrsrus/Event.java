@@ -6,9 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Event class represents the events that are created
- */
+
 public class Event implements Serializable {
 
     private String documentId;
@@ -27,54 +25,26 @@ public class Event implements Serializable {
     private ArrayList<String> checkIns;
 
     // Default constructor
-
     public Event() {
     }
     // Constructor when Organizer creates the event
-
-    /**
-     * COnstructor for event with partial information
-     * @param name
-     * @param organizerId
-     * @param details
-     * @param location
-     * @param startDate
-     * @param endDate
-     */
-    public Event(String name, String organizerId, String details, String location, String startDate, String endDate) {
+    public Event(String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
-        this.startDate = startDate; //startDate.format(formatter);
-        this.endDate = endDate; //endDate.format(formatter);
+        this.startDate = startDate.format(formatter);
+        this.endDate = endDate.format(formatter);
         this.geolocationOn = true;
         this.announcements = new ArrayList<String>();
         this.signUps = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
     }
 
-    /**
-     * Constructor for event with full information
-     * @param documentId
-     * @param name
-     * @param organizerId
-     * @param details
-     * @param location
-     * @param startDate
-     * @param endDate
-     * @param geolocationOn
-     * @param posterPath
-     * @param qrCode
-     * @param qrCodePromo
-     * @param announcements
-     * @param signUps
-     * @param checkIns
-     */
     // Constructor when getting retrieving from database
     public Event(String documentId, String name, String organizerId, String details,
-                 String location, String startDate, String endDate,
+                 String location, LocalDateTime startDate, LocalDateTime endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
@@ -84,8 +54,8 @@ public class Event implements Serializable {
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
-        this.startDate = startDate; //startDate.format(formatter);
-        this.endDate = endDate; //endDate.format(formatter);
+        this.startDate = startDate.format(formatter);
+        this.endDate = endDate.format(formatter);
         this.geolocationOn = geolocationOn;
         this.posterPath = posterPath;
         this.qrCode = qrCode;
@@ -95,10 +65,6 @@ public class Event implements Serializable {
         this.checkIns = checkIns;
     }
 
-    /**
-     * Getters and setters for event class
-     * @return what the event attributes get from other classes and why they provide to other classes
-     */
     public String getDocumentId() { return documentId; }
 
     public void setDocumentId(String documentId) {

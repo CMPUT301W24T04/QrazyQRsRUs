@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/new_event_nav_graph"
+    app:startDestination="@id/newEventFragment">
+
+
+
+    <fragment
+        android:id="@+id/newEventTextFragment"
+        android:name="com.example.qrazyqrsrus.NewEventTextFragment"
+        android:label="new_event_text_fragment"
+        tools:layout="@layout/new_event_text_fragment" >
+        <action
+            android:id="@+id/action_newEventTextFragment_to_newEventImageFragment2"
+            app:destination="@id/newEventImageFragment" />
+        <action
+            android:id="@+id/action_newEventTextFragment_to_newEventFragment"
+            app:destination="@id/newEventFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventImageFragment"
+        android:name="com.example.qrazyqrsrus.NewEventImageFragment"
+        android:label="new_event_image_fragment"
+        tools:layout="@layout/new_event_image_fragment" >
+        <action
+            android:id="@+id/action_newEventImageFragment_to_newEventQrFragment"
+            app:destination="@id/newEventQrFragment" />
+        <action
+            android:id="@+id/action_newEventImageFragment_to_newEventTextFragment"
+            app:destination="@id/newEventTextFragment" />
+        <action
+            android:id="@+id/action_newEventImageFragment_to_newEventFragment"
+            app:destination="@id/newEventFragment" />
+        <argument
+            android:name="new_event"
+            app:argType="com.example.qrazyqrsrus.Event" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventQrFragment"
+        android:name="com.example.qrazyqrsrus.NewEventQrFragment"
+        android:label="new_event_qr_fragment"
+        tools:layout="@layout/new_event_qr_fragment" >
+        <argument
+            android:name="new_event"
+            app:argType="com.example.qrazyqrsrus.Event" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventFragment"
+        android:name="com.example.qrazyqrsrus.NewEventFragment"
+        android:label="new_event_fragment"
+        tools:layout="@layout/new_event_fragment" >
+        <action
+            android:id="@+id/action_newEventFragment_to_newEventTextFragment"
+            app:destination="@id/newEventTextFragment" />
+    </fragment>
+</navigation>
