@@ -19,6 +19,7 @@ import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 
+
 public class MainActivity extends AppCompatActivity implements NewEventTextFragment.AddEventListener {
     private ActivityMainBinding binding;
 
