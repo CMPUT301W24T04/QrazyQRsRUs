@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -59,6 +60,7 @@ public class EventDetailsFragment extends Fragment {
         TextView endDateView = view.findViewById(R.id.event_detail_end_date);
         ImageView posterView = view.findViewById(R.id.posterView);
         ListView announcementListView = view.findViewById(R.id.announcement_list_view);
+        Button viewAttendeesButton = view.findViewById(R.id.attendee_list_button);
 
         String nameString = "Name: "+event.getName();
         //String organizerString = "Organized by: ";

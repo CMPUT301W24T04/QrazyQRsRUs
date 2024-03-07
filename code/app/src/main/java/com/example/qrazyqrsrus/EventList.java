@@ -149,11 +149,11 @@ public class EventList extends Fragment {  // FIX LATER
                 //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
                 Bundle bundle = new Bundle();
                 Event current_event = eventListAdapter.getItem(i);
-                bundle.putSerializable("current_event", current_event);
+                bundle.putSerializable("event", current_event);
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList_to_eventInfoView, bundle);
+                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_eventDetailsFragment, bundle);
             }
         });
 

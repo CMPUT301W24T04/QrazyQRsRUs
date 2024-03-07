@@ -96,5 +96,13 @@
         <action
             android:id="@+id/action_eventList2_to_newEventTextFragment"
             app:destination="@id/newEventTextFragment" />
+        <action
+            android:id="@+id/action_eventList2_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.example.qrazyqrsrus.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details" />
 </navigation>
