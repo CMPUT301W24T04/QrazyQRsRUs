@@ -8,4 +8,9 @@
     <string name="events_attending">Events Attending:</string>
     <string name="welcome_name_select_an_event_for_more_details"><![CDATA[Welcome, <NAME>! Select an event for more details]]></string>
     <string name="profile">Profile</string>
+    <string name="qr_upload_error">The selected image failed to be recognized as a QR code</string>
+    <string name="qr_not_unique">The generated QR code is already in use, try generating a new one</string>
+    <string name="qr_generation_failed">The QR generator failed to generate a QR code. Try again</string>
+    <string name="image_upload_failed">There was an error while selecting your image. Try again</string>
+    <string name="test_error_message">Error: This error is an error!</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.qrazyqrsrus;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import android.widget.ArrayAdapter;
+
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,6 +24,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,10 +52,12 @@ public class EventDetailsFragment extends Fragment {
             System.out.println("No Arguments provided");
             return null;
         }
+        Event event = (Event) getArguments().get("event");
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = view.findViewById(R.id.event_detail_name);
-        TextView organizerView = view.findViewById(R.id.event_detail_organizer);
+        //TextView organizerView = view.findViewById(R.id.event_detail_organizer);
+        TextView locationView = view.findViewById(R.id.event_detail_location);
         TextView descriptionView = view.findViewById(R.id.event_detail_details);
         TextView startDateView = view.findViewById(R.id.event_detail_start_date);
         TextView endDateView = view.findViewById(R.id.event_detail_end_date);
@@ -59,7 +69,6 @@ public class EventDetailsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 DocumentReference eventRef = db.collection("events").document(eventId);
-
                 eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -81,10 +90,47 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
+        String nameString = "Name: "+event.getName();
+        //String organizerString = "Organized by: ";
+        FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
+            @Override
+            public void onResult(String string) {
+                updateOrganizerString(string, view);
+            }
+        });
+        String locationString = "Location: "+event.getLocation();
+        String descriptionString = "Description: "+event.getDetails();
+        String startDateString = "Starts: "+event.getStartDate();
+        String endDateString = "Ends: "+event.getEndDate();
+
+
+        nameView.setText(nameString);
+        //organizerView.setText(organizerString);
+        locationView.setText(locationString);
+        descriptionView.setText(descriptionString);
+        startDateView.setText(startDateString);
+        endDateView.setText(endDateString);
+
+        if (event.getPosterPath() != null) {
+            FirebaseDB.retrieveImage(event, new FirebaseDB.GetBitmapCallBack() {
+                @Override
+                public void onResult(Bitmap bitmap) {
+                    posterView.setImageBitmap(bitmap);
+                }
+            });
+        }
+
+        ArrayList<String> announcementsList = event.getAnnouncements();
+        if (announcementsList == null){
+            announcementsList = new ArrayList<String>();
+        }
+        ArrayAdapter<String> announcementsAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, announcementsList);
+        announcementListView.setAdapter(announcementsAdapter);
+
         // Inflate the layout for this fragment
         return view;
     }
-    static EventDetailsFragment newInstance(String i){
+    public static EventDetailsFragment newInstance(Event i){
         Bundle args = new Bundle();
         args.putSerializable("event", i);
 
@@ -92,7 +138,9 @@ public class EventDetailsFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-    public void setValues(DocumentReference docRef) {
 
+    private void updateOrganizerString(String string, View view){
+        ((TextView) view.findViewById(R.id.event_detail_organizer)).setText("Organizer: " + string);
     }
+
 }

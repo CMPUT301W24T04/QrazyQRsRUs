@@ -13,6 +13,7 @@ import android.view.ViewGroup;
  * Use the {@link MyEventsFragment} factory method to
  * create an instance of this fragment.
  */
+
 public class MyEventsFragment extends Fragment {
     public MyEventsFragment() {
         // Required empty public constructor

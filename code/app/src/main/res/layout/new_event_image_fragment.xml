@@ -15,14 +15,16 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
     <TextView
         android:id="@+id/new_event_image_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/image_screen_toolbar"
+        android:text="Choose a poster to upload to capture the attention of your attendees:"
+        android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:text="Choose a poster to upload to capture the attention of your attendees:">
+        app:layout_constraintTop_toBottomOf="@id/image_screen_toolbar">
 
     </TextView>
     <Button
@@ -36,6 +38,7 @@
         android:text="Choose Image">
 
     </Button>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/image_screen_next_screen_button"
         android:layout_width="wrap_content"
