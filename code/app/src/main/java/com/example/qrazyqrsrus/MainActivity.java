@@ -51,8 +51,13 @@ public class MainActivity extends AppCompatActivity{
 
         });
 
-
-        FirebaseDB.loginUser(deviceId);
+        Attendee[] user = new Attendee[1];
+        FirebaseDB.loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
+            @Override
+            public void onResult(Attendee attendee) {
+                user[0] = attendee;
+            }
+        });
 
         // At the start we want to be at the Home screen
         ChangeFragment(new HomeFragment());
