@@ -36,7 +36,7 @@ public class NewEventFragment extends Fragment {
         View view = inflater.inflate(R.layout.new_event_fragment, container, false);
         Button button = view.findViewById(R.id.new_event_button);
         button.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_newEventFragment_to_newEventTextFragment);
+            //Navigation.findNavController(view).navigate(R.id.action_newEventFragment_to_newEventTextFragment);
         });
 
         return view;

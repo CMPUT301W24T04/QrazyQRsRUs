@@ -255,6 +255,7 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
+        //return localBitMap.get(0);
     }
 
     /**
