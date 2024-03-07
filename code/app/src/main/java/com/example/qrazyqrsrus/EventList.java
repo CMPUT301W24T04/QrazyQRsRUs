@@ -72,8 +72,10 @@ public class EventList extends Fragment {  // FIX LATER
                                 String details = (String) document.getData().get("details");
                                 String location = (String) document.getData().get("location");
                                 //LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");    FIX LATER
+
                                 String startDate = (String) document.getData().get("startDate");
                                 String endDate = (String) document.getData().get("endDate");
+
                                 Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCodePath = (String) document.getData().get("qrCodePath");
