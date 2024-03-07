@@ -62,6 +62,13 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
         btnUpdateProfile.setOnClickListener(v -> updateUserProfile(userId));
 
+        //************************************************************************************
+        // Get bundle from attendee click to be displayed on the profile view
+//        Bundle bundle = getArguments();
+//        Attendee attendee = (Attendee) bundle.getSerializable("current_attendee");
+//        etFullName.setText(attendee.getName());
+        //*************************************************************************************
+
         switchGeolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
