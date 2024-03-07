@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,7 +53,33 @@ public class EventDetailsFragment extends Fragment {
         TextView endDateView = view.findViewById(R.id.event_detail_end_date);
         ImageView posterView = view.findViewById(R.id.posterView);
         ListView announcementListView = view.findViewById(R.id.announcement_list_view);
+        Button signUpEvent = view.findViewById(R.id.sign_up_button);
+        signUpEvent.setOnClickListener(new View.OnClickListener() {
+            // need to get attendeeID and eventID first
+            @Override
+            public void onClick(View view) {
+                DocumentReference eventRef = db.collection("events").document(eventId);
 
+                eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // Update the "signups" array
+                                eventRef.update("signups", FieldValue.arrayUnion(attendeeId))
+                                        .addOnSuccessListener(aVoid -> Log.d("EventDetailsFragment", "Attendee added to signups successfully"))
+                                        .addOnFailureListener(e -> Log.w("EventDetailsFragment", "Error updating document", e));
+                            } else {
+                                Log.d("EventDetailsFragment", "No such document");
+                            }
+                        } else {
+                            Log.d("EventDetailsFragment", "get failed with ", task.getException());
+                        }
+                    }
+                });
+            }
+        });
 
         // Inflate the layout for this fragment
         return view;
