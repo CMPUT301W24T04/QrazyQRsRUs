@@ -87,14 +87,13 @@ public class FirebaseDB {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             int i = 0;
-                            for (DocumentSnapshot documentSnapshot: task.getResult()) {
-                                user.add(documentSnapshot.toObject(Attendee.class));
-                                i += 1;
-                            }
-                            if (i == 0) {
-                                // This means that Attendee needs a constructor where it only accepts userId and sets the rest to default
+                            if (task.getResult() == null || task.getResult().isEmpty()) {
                                 user.add(new Attendee(userId));
                                 addUser(user.get(0));
+                            } else {
+                                for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                    user.add(documentSnapshot.toObject(Attendee.class));
+                                }
                             }
                         }
                         else {

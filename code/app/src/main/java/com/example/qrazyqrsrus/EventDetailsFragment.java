@@ -63,10 +63,8 @@ public class EventDetailsFragment extends Fragment {
         String organizerString = "Organized by: "+FirebaseDB.getUserName(event.getOrganizerId());
         String locationString = "Location: "+event.getLocation();
         String descriptionString = "Description: "+event.getDetails();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String startDateString = "Starts: "+event.getStartDate().format(formatter);
-        String endDateString = "Ends: "+event.getEndDate().format(formatter);
+        String startDateString = "Starts: "+event.getStartDate();
+        String endDateString = "Ends: "+event.getEndDate();
 
         nameView.setText(nameString);
         organizerView.setText(organizerString);
@@ -94,7 +92,5 @@ public class EventDetailsFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-    public void setValues(DocumentReference docRef) {
 
-    }
 }
