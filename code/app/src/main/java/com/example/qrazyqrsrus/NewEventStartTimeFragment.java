@@ -25,12 +25,12 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 
     private androidx.appcompat.widget.Toolbar toolbar;
 
-    public static NewEventStartTimeFragment newInstance(String param1, String param2) {
-        NewEventStartTimeFragment fragment = new NewEventStartTimeFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
+//    public static NewEventStartTimeFragment newInstance(String param1, String param2) {
+//        NewEventStartTimeFragment fragment = new NewEventStartTimeFragment();
+//        Bundle args = new Bundle();
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     //temporarily set listener to be mainActivity. should eventually be adding events to firestore.
     @Override
@@ -54,9 +54,9 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
             //temporarily messily create a new event, put it in bundle to pass to next navigation destination
-            Bundle args =  getArguments();
-            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
-            args.putSerializable("event", modifiedEvent);
+            Bundle args =  makeNewBundle(getArguments());
+//            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
+//            args.putSerializable("event", modifiedEvent);
 
             Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
         });
@@ -90,13 +90,28 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
     //create new event from the user input. messy, needs error checking
 
 
-    //we must convert the date that was picked by the user into an LocalDateTime (java.time.LocalDateTime)
+//    we must convert the date that was picked by the user into an LocalDateTime (java.time.LocalDateTime)
     private LocalDateTime getLocalDateTime(DatePicker datePicker, TimePicker timePicker){
         return LocalDateTime.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
     }
+//    private String getDateString(DatePicker datePicker){
+//        int year = datePicker.getYear();
+//        int month = datePicker.getMonth();
+//        int day = datePicker.getDayOfMonth();
+//
+//        String yearString = Integer.toString(year);
+//        String monthString = Integer.toString(month);
+//        String dayString = Integer.toString(day);
+//
+//        String date = dayString + "/" + monthString + "/" + yearString;
+//        return date;
+//    }
 
-    private Event modifyEvent(Event event){
-        event.setStartDate(getLocalDateTime(getView().findViewById(R.id.event_date_picker), getView().findViewById(R.id.event_time_picker)));
-        return event;
+    private Bundle makeNewBundle(Bundle bundle){
+        DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
+        TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
+        LocalDateTime startDate = getLocalDateTime(datePicker, timePicker);
+        bundle.putSerializable("startDate", startDate);
+        return bundle;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.qrazyqrsrus;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -51,7 +52,7 @@ public class EventDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = view.findViewById(R.id.event_detail_name);
-        TextView organizerView = view.findViewById(R.id.event_detail_organizer);
+        //TextView organizerView = view.findViewById(R.id.event_detail_organizer);
         TextView locationView = view.findViewById(R.id.event_detail_location);
         TextView descriptionView = view.findViewById(R.id.event_detail_details);
         TextView startDateView = view.findViewById(R.id.event_detail_start_date);
@@ -60,7 +61,13 @@ public class EventDetailsFragment extends Fragment {
         ListView announcementListView = view.findViewById(R.id.announcement_list_view);
 
         String nameString = "Name: "+event.getName();
-        String organizerString = "Organized by: "+FirebaseDB.getUserName(event.getOrganizerId());
+        //String organizerString = "Organized by: ";
+        FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
+            @Override
+            public void onResult(String string) {
+                updateOrganizerString(string, view);
+            }
+        });
         String locationString = "Location: "+event.getLocation();
         String descriptionString = "Description: "+event.getDetails();
         String startDateString = "Starts: "+event.getStartDate();
@@ -68,30 +75,42 @@ public class EventDetailsFragment extends Fragment {
 
 
         nameView.setText(nameString);
-        organizerView.setText(organizerString);
+        //organizerView.setText(organizerString);
         locationView.setText(locationString);
         descriptionView.setText(descriptionString);
         startDateView.setText(startDateString);
         endDateView.setText(endDateString);
 
         if (event.getPosterPath() != null) {
-            posterView.setImageBitmap(FirebaseDB.retrieveImage(event));
+            FirebaseDB.retrieveImage(event, new FirebaseDB.GetBitmapCallBack() {
+                @Override
+                public void onResult(Bitmap bitmap) {
+                    posterView.setImageBitmap(bitmap);
+                }
+            });
         }
 
         ArrayList<String> announcementsList = event.getAnnouncements();
-        ArrayAdapter<String> announcementsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, announcementsList);
+        if (announcementsList == null){
+            announcementsList = new ArrayList<String>();
+        }
+        ArrayAdapter<String> announcementsAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, announcementsList);
         announcementListView.setAdapter(announcementsAdapter);
 
         // Inflate the layout for this fragment
         return view;
     }
-    static EventDetailsFragment newInstance(Event i){
+    public static EventDetailsFragment newInstance(Event i){
         Bundle args = new Bundle();
         args.putSerializable("event", i);
 
         EventDetailsFragment fragment = new EventDetailsFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    private void updateOrganizerString(String string, View view){
+        ((TextView) view.findViewById(R.id.event_detail_organizer)).setText("Organizer: " + string);
     }
 
 }

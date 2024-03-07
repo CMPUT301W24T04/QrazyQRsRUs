@@ -98,9 +98,9 @@ public class NewEventPromoQrFragment extends Fragment {
         });
         FloatingActionButton fab = view.findViewById(R.id.promo_screen_next_screen);
         fab.setOnClickListener(v -> {
-            Bundle args = getArguments();
-            Event event = modifyEvent(this.promoQRContent, (Event) args.getSerializable("event"));
-            args.putSerializable("event", event);
+            Bundle args = makeNewBundle(getArguments());
+//            Event event = modifyEvent(this.promoQRContent, (Event) args.getSerializable("event"));
+//            args.putSerializable("event", event);
             Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment, args);
         });
         return view;
@@ -114,7 +114,7 @@ public class NewEventPromoQrFragment extends Fragment {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             //content is a string that should tie the qr code to the event.
             //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-            String qrContent = ((Event) (getArguments().getSerializable("event"))).getName() + "_" + timeStamp + "_promo";
+            String qrContent = ((String) (getArguments().getSerializable("name"))) + "_" + timeStamp + "_promo";
             Bitmap bitmap = barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, 400, 400);
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
@@ -128,17 +128,19 @@ public class NewEventPromoQrFragment extends Fragment {
                         promoQRContent = qrContent;
                         //successfulQRSelection = true;
                     } else {
-                        TextView errorBar = getView().findViewById(R.id.error_bar);
-                        errorBar.setText("Error: " + R.string.qr_not_unique);
-                        errorBar.setVisibility(View.VISIBLE);
+                        new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+//                        TextView errorBar = getView().findViewById(R.id.error_bar);
+//                        errorBar.setText("Error: " + R.string.qr_not_unique);
+//                        errorBar.setVisibility(View.VISIBLE);
                     }
                 }
             });
         } catch(Exception e) {
+            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
             //it would be unexpected that qr generation fails, but for now we will display error bar and prompt user to try again
-            TextView errorBar = getView().findViewById(R.id.error_bar);
-            errorBar.setText("Error: " + R.string.qr_generation_failed);
-            errorBar.setVisibility(View.VISIBLE);
+//            TextView errorBar = getView().findViewById(R.id.error_bar);
+//            errorBar.setText("Error: " + R.string.qr_generation_failed);
+//            errorBar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -161,17 +163,19 @@ public class NewEventPromoQrFragment extends Fragment {
                         promoQRContent = result.getText();
                         //successfulQRSelection = true;
                     } else {
-                        TextView errorBar = getView().findViewById(R.id.error_bar);
-                        errorBar.setText("Error: " + R.string.qr_not_unique);
-                        errorBar.setVisibility(View.VISIBLE);
+                        new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+//                        TextView errorBar = getView().findViewById(R.id.error_bar);
+//                        errorBar.setText("Error: " + R.string.qr_not_unique);
+//                        errorBar.setVisibility(View.VISIBLE);
                     }
                 }
             });
         } catch(Exception e) {
+            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
             //it would be unexpected that qr generation when we provide it with the content.
-            TextView errorBar = getView().findViewById(R.id.error_bar);
-            errorBar.setText("Error: " + R.string.qr_generation_failed);
-            errorBar.setVisibility(View.VISIBLE);
+//            TextView errorBar = getView().findViewById(R.id.error_bar);
+//            errorBar.setText("Error: " + R.string.qr_generation_failed);
+//            errorBar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -209,9 +213,10 @@ public class NewEventPromoQrFragment extends Fragment {
             bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
         } catch (IOException e) {
             //it is unexpected that image upload would fail. if it does, we will make the error bar visible with the unique image upload failed string
-            TextView errorBar = getView().findViewById(R.id.error_bar);
-            errorBar.setText("Error: " + R.string.image_upload_failed);
-            errorBar.setVisibility(View.VISIBLE);
+            new ErrorDialog(R.string.image_upload_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+//            TextView errorBar = getView().findViewById(R.id.error_bar);
+//            errorBar.setText("Error: " + R.string.image_upload_failed);
+//            errorBar.setVisibility(View.VISIBLE);
         }
         //we will convert the bitmap of the uploaded image to an RGB luminance source
         //this sequence was made with the help of ZXing documentation, and https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing Accessed on Mar. 5th, 2024
@@ -234,26 +239,30 @@ public class NewEventPromoQrFragment extends Fragment {
 
         } catch (NotFoundException e) {
             //if a user selects an image that is not qr code, it may fail to be decoded. in that case we prompt the user to select something else, or generate a qr code
-            showErrorBar(String.valueOf(R.string.qr_upload_error));
-            TextView errorBar = getView().findViewById(R.id.error_bar);
-            errorBar.setText("Error: " + R.string.qr_upload_error);
-            errorBar.setVisibility(View.VISIBLE);
+            new ErrorDialog(R.string.qr_upload_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+//            showErrorBar(String.valueOf(R.string.qr_upload_error));
+//            TextView errorBar = getView().findViewById(R.id.error_bar);
+//            errorBar.setText("Error: " + R.string.qr_upload_error);
+//            errorBar.setVisibility(View.VISIBLE);
         }
     }
 
 
 
-    private void showErrorBar(String errorMessage){
-        TextView errorBar = getView().findViewById(R.id.error_bar);
-        errorBar.setText("Error: " + errorMessage);
-        errorBar.setVisibility(View.VISIBLE);
-    }
+//    private void showErrorBar(String errorMessage){
+//        TextView errorBar = getView().findViewById(R.id.error_bar);
+//        errorBar.setText("Error: " + errorMessage);
+//        errorBar.setVisibility(View.VISIBLE);
+//    }
 
-    private Event modifyEvent(String promoQR, Event event){
-        event.setQrCodePromo(promoQR);
-        return event;
+//    private Event modifyEvent(String promoQR, Event event){
+//        event.setQrCodePromo(promoQR);
+//        return event;
+//    }
+    private Bundle makeNewBundle(Bundle bundle){
+        bundle.putSerializable("qrCodePromo", this.promoQRContent);
+        return bundle;
     }
-
 
 
 }

@@ -60,14 +60,14 @@ public class AttendeeList extends Fragment {
                                 //
                                 if(document.getData().size()==0){
                                     String documentId = document.getId();
-                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
-                                    attendeeDataList.add(attendee);
+                                    //Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+                                    //attendeeDataList.add(attendee);
                                     attendeeListAdapter.notifyDataSetChanged();
                                 }
                                 if(document.getData().size()==1){
                                     String documentId = document.getId();
-                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
-                                    attendeeDataList.add(attendee);
+                                    //Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+                                    //attendeeDataList.add(attendee);
                                     attendeeListAdapter.notifyDataSetChanged();
                                 }
                                 else{
@@ -77,7 +77,7 @@ public class AttendeeList extends Fragment {
                                     String email = (String) document.getData().get("email");
                                     String profilePicturePath = (String) document.getData().get("profilePicturePath");
                                     Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                    Attendee attendee = new Attendee(documentId, name, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
                                     attendeeDataList.add(attendee);
                                     attendeeListAdapter.notifyDataSetChanged();
                                 }

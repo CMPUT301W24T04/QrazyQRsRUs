@@ -83,8 +83,8 @@ public class EventList extends Fragment {  // FIX LATER
                                 ArrayList<Map<String, Object>> checkIns = (ArrayList<Map<String, Object>>) document.getData().get("checkIns");
 
 
-                                Event event = new Event(eventName, organizerId, details, location, startDate, endDate); // new Event(eventName, location, startDate, details,);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                eventDataList.add(event);
+                                //Event event = new Event(eventName, organizerId, details, location, startDate, endDate); // new Event(eventName, location, startDate, details,);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                //eventDataList.add(event);
                                 eventListAdapter.notifyDataSetChanged();
                             }
                         } else {

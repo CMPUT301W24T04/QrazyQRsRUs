@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -74,13 +75,13 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         View view = inflater.inflate(R.layout.new_event_image_fragment, container, false);
         createToolbar(view);
         //temporarily display event name here
-        ((TextView) view.findViewById(R.id.new_event_image_text)).setText(((Event) getArguments().getSerializable("event")).getName());
+//        ((TextView) view.findViewById(R.id.new_event_image_text)).setText(((Event) getArguments().getSerializable("event")).getName());
         FloatingActionButton fab = view.findViewById(R.id.image_screen_next_screen_button);
         //pass bundle ahead to qr code
         fab.setOnClickListener(v -> {
-            Bundle args = getArguments();
-            Event event = saveImageToFirebase(this.uri, ((Event) args.getSerializable("event")));
-            args.putSerializable("event", event);
+            Bundle args = makeNewBundle(getArguments());
+            //Event event = saveImageToFirebase(this.uri, ((Event) args.getSerializable("event")));
+            //args.putSerializable("event", event);
             Navigation.findNavController(view).navigate(R.id.action_newEventImageFragment_to_newEventQrFragment, args);
         });
 
@@ -167,18 +168,24 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 
     }
 
-    private Event saveImageToFirebase(Uri uri, Event event){
-        String pathname = generateUniquePathName(event);
-        event.setPosterPath(pathname);
-        FirebaseDB.uploadImage(uri, pathname);
-        return event;
-    }
+//    private Event saveImageToFirebase(Uri uri, Event event){
+//        String pathname = generateUniquePathName(event);
+//        event.setPosterPath(pathname);
+//        FirebaseDB.uploadImage(uri, pathname);
+//        return event;
+//    }
 
-    private String generateUniquePathName(Event event){
+    private String generateUniquePathName(String name){
         //we generate a timestamp that contains the date and time the qr was generated. this allows us to prevent naming our qrcode as something already saved in the database
         //this idea for safe name generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String pathName = "poster/" + event.getName() + timeStamp;
+        String pathName = "poster/" + name + timeStamp;
         return pathName;
+    }
+    private Bundle makeNewBundle(Bundle bundle){
+        String pathName = generateUniquePathName((String) bundle.getSerializable("name"));
+        bundle.putSerializable("posterPath", pathName);
+        bundle.putParcelable("uri", this.uri);
+        return bundle;
     }
 }

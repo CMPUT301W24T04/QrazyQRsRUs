@@ -47,6 +47,14 @@ public class FirebaseDB {
         void onResult(Event matchingEvent);
     }
 
+    public interface GetStringCallBack{
+        void onResult(String string);
+    }
+
+    public interface GetBitmapCallBack{
+        void onResult(Bitmap bitmap);
+    }
+
     final static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
@@ -89,8 +97,8 @@ public class FirebaseDB {
      * @param userId The unique identifier of the user that has opened the app
      */
 
-    public static Attendee loginUser(String userId) {
-        ArrayList<Attendee> user = new ArrayList<Attendee>();
+    public static void loginUser(String userId) {
+        //ArrayList<Attendee> user = new ArrayList<Attendee>();
         usersCollection
                 .whereEqualTo("id", userId)
                 .get()
@@ -99,11 +107,11 @@ public class FirebaseDB {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             if (task.getResult() == null || task.getResult().isEmpty()) {
-                                user.add(new Attendee(userId));
-                                addUser(user.get(0));
+                                //user.add(new Attendee(userId));
+                                addUser(new Attendee(userId));
                             } else {
                                 for (DocumentSnapshot documentSnapshot: task.getResult()) {
-                                    user.add(documentSnapshot.toObject(Attendee.class));
+                                    //user.add(documentSnapshot.toObject(Attendee.class));
                                 }
                             }
                         } else {
@@ -111,7 +119,7 @@ public class FirebaseDB {
                         }
                     }
                 });
-        return user.get(0);
+        //return user.get(0);
     }
 
     /**
@@ -222,15 +230,16 @@ public class FirebaseDB {
      *
      * @param user This is the user we want to retrieve their profile picture
      */
-    public static Bitmap retrieveImage(Attendee user) {
-        ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
+    public static void retrieveImage(Attendee user, GetBitmapCallBack callBack) {
+        //ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
         try {
             StorageReference storageRef = storage.getReference(user.getProfilePicturePath() + ".jpg");
             File localFile = File.createTempFile(user.getProfilePicturePath().split("/")[1], "jpg");
             storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    //localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
                     Log.d(imagesTAG, "Successfully retrieved image");
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -242,7 +251,7 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
-        return localBitMap.get(0);
+        //return localBitMap.get(0);
     }
 
     /**
@@ -250,15 +259,16 @@ public class FirebaseDB {
      *
      * @param event This is the event we're trying to get its poster.
      */
-    public static Bitmap retrieveImage(Event event) {
-        ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
+    public static void retrieveImage(Event event, GetBitmapCallBack callBack) {
+        //ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
         try {
             StorageReference storageRef = storage.getReference(event.getPosterPath() + ".jpg");
             File localFile = File.createTempFile(event.getPosterPath().split("/")[1], "jpg");
             storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    //localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
                     Log.d(imagesTAG, "Successfully retrieved image");
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -270,7 +280,7 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
-        return localBitMap.get(0);
+        //return localBitMap.get(0);
     }
 
     /**
@@ -494,15 +504,16 @@ public class FirebaseDB {
         return attendeeList;
     }
 
-    public static String getUserName(String userDocumentId) {
-        ArrayList<String> user = new ArrayList<String>();
+    public static void getUserName(String userDocumentId, GetStringCallBack callBack) {
+        //ArrayList<String> user = new ArrayList<String>();
         usersCollection.document(userDocumentId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Log.d(usersTAG, "Success");
-                        Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                        user.add(attendee.getName());
+                        //Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                        callBack.onResult((String) documentSnapshot.get("id"));
+//                        user.add(attendee.getName());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -511,7 +522,7 @@ public class FirebaseDB {
                         Log.w(usersTAG, "Failed "+e);
                     }
                 });
-        return user.get(0);
+        //return user.get(0);
     }
 
     /**
@@ -522,8 +533,6 @@ public class FirebaseDB {
      * @param mode an integer: 0 if we are checking promotional qr codes, 1 if we are checking checkin qr codes
      * @param callBack a class that implements the UniqueCheckCallBack that will allow you to handle the boolean result if there is an already existing event with the qr code.
      */
-
-
     public static void checkUnique(String qrContent, int mode, UniqueCheckCallBack callBack) {
         String field;
         if (mode == 0) {

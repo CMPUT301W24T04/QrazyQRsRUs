@@ -38,8 +38,21 @@ public class MainActivity extends AppCompatActivity{
         // Apparently this is not good practice, but if it works, it works.
         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        qrHandler = new QRCodeScanHandler(this, deviceId);
+        qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
+            @Override
+            public void onResult(Event matchingEvent) {
+                ChangeFragment(EventDetailsFragment.newInstance(matchingEvent));
+            }
 
+            @Override
+            public void onNoResult(int errorNumber){
+
+            }
+
+        });
+
+
+        FirebaseDB.loginUser(deviceId);
 
         // At the start we want to be at the Home screen
         ChangeFragment(new HomeFragment());
@@ -58,10 +71,14 @@ public class MainActivity extends AppCompatActivity{
             if (id == R.id.home) {
                 ChangeFragment(new HomeFragment());
             } else if (id == R.id.scan) {
-
-
-//                AppCompatActivity mActivity = this.super
-                Event event = qrHandler.launch();
+                qrHandler.launch();
+//                if (event == null){
+//                    //TODO: handle errors, check ints in QRCodeScanHandler
+//                    Log.d("testing", "no event from qr code");
+//                } else{
+//                    Log.d("testing", "no event from qr code");
+//                    ChangeFragment(EventDetailsFragment.newInstance(event));
+//                }
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {

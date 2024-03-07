@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class QRCodeScanHandler{
 
     //the event that we obtain
-        Event event;
+    private Event event;
     //the error if an error occurs
     //1 = no event has this qr code
     //2 = no qr code successfully scanned
@@ -39,7 +39,12 @@ public class QRCodeScanHandler{
     private Boolean isPromo = false;
     private ActivityResultLauncher<ScanOptions> barcodeLauncher;
 
-    public QRCodeScanHandler(AppCompatActivity activity, String userID) {
+    public interface ScanCompleteCallback{
+        public void onResult(Event event);
+        public void onNoResult(int errorNumber);
+    }
+
+    public QRCodeScanHandler(AppCompatActivity activity, String userID, ScanCompleteCallback callback) {
         this.activity = activity;
         this.userID = userID;
         barcodeLauncher = activity.registerForActivityResult(new ScanContract(),
@@ -54,8 +59,9 @@ public class QRCodeScanHandler{
                         findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
                             public void onResult(Event matchingEvent) {
-                                event = matchingEvent;
-                                isPromo = true;
+                                callback.onResult(matchingEvent);
+//                                event = matchingEvent;
+//                                isPromo = true;
                             }
                         });
                         if (event == null){
@@ -64,7 +70,7 @@ public class QRCodeScanHandler{
 
                                 @Override
                                 public void onResult(Event matchingEvent) {
-                                    event = matchingEvent;
+                                    callback.onResult(matchingEvent);
                                 }
                             });
                             if (event == null){
@@ -90,9 +96,8 @@ public class QRCodeScanHandler{
                     }
                 });
     }
-    public Event launch(){
+    public void launch(){
         barcodeLauncher.launch(new ScanOptions());
-        return this.event;
     }
 
     public Event getEvent() {

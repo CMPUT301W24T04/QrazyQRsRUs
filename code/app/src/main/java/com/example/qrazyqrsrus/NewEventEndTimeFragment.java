@@ -51,9 +51,9 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
             //temporarily messily create a new event, put it in bundle to pass to next navigation destination
-            Bundle args =  getArguments();
-            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
-            args.putSerializable("event", modifiedEvent);
+            Bundle args =  makeNewBundle(getArguments());
+//            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
+//            args.putSerializable("event", modifiedEvent);
 
             Navigation.findNavController(view).navigate(R.id.action_newEventEndTimeFragment_to_newEventImageFragment, args);
         });
@@ -95,8 +95,29 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 //    private String formatDateAndTime(DatePicker datePicker, TimePicker timePicker){
 //
 //    }
-    private Event modifyEvent(Event event){
-        event.setEndDate(getLocalDateTime(getView().findViewById(R.id.event_date_picker), getView().findViewById(R.id.event_time_picker)));
-        return event;
+//    private Event modifyEvent(Event event){
+//        //event.setEndDate(getLocalDateTime(getView().findViewById(R.id.event_date_picker), getView().findViewById(R.id.event_time_picker)));
+//        return event;
+//    }
+
+//    private String getDateString(DatePicker datePicker){
+//        int year = datePicker.getYear();
+//        int month = datePicker.getMonth();
+//        int day = datePicker.getDayOfMonth();
+//
+//        String yearString = Integer.toString(year);
+//        String monthString = Integer.toString(month);
+//        String dayString = Integer.toString(day);
+//
+//        String date = dayString + "/" + monthString + "/" + yearString;
+//        return date;
+//    }
+
+    private Bundle makeNewBundle(Bundle bundle){
+        DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
+        TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
+        LocalDateTime endDate = getLocalDateTime(datePicker, timePicker);
+        bundle.putSerializable("endDate", endDate);
+        return bundle;
     }
 }
