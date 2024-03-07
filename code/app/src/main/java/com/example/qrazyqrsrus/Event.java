@@ -28,14 +28,14 @@ public class Event implements Serializable {
     public Event() {
     }
     // Constructor when Organizer creates the event
-    public Event(String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate) {
+    public Event(String name, String organizerId, String details, String location, String startDate, String endDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
-        this.startDate = startDate.format(formatter);
-        this.endDate = endDate.format(formatter);
+        this.startDate = startDate; //startDate.format(formatter);
+        this.endDate = endDate;  //endDate.format(formatter);
         this.geolocationOn = true;
         this.announcements = new ArrayList<String>();
         this.signUps = new ArrayList<String>();
@@ -44,7 +44,7 @@ public class Event implements Serializable {
 
     // Constructor when getting retrieving from database
     public Event(String documentId, String name, String organizerId, String details,
-                 String location, LocalDateTime startDate, LocalDateTime endDate,
+                 String location, String startDate, String endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
@@ -54,8 +54,8 @@ public class Event implements Serializable {
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
-        this.startDate = startDate.format(formatter);
-        this.endDate = endDate.format(formatter);
+        this.startDate = startDate;  //startDate.format(formatter);
+        this.endDate = endDate;  //endDate.format(formatter);
         this.geolocationOn = geolocationOn;
         this.posterPath = posterPath;
         this.qrCode = qrCode;
@@ -63,6 +63,13 @@ public class Event implements Serializable {
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
+    }
+
+    public Event(String eventName, String eventDetails, String eventLocation, String eventDate) {
+        this.name = eventName;
+        this.details = eventDetails;
+        this.location = eventLocation;
+        this.startDate = eventDate;
     }
 
     public String getDocumentId() { return documentId; }
