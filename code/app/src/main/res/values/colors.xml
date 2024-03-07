@@ -2,6 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="purple_500">#2196F3</color>
+    <color name="switchThumb">#FFFFFFFF</color>
+    <color name="switchTrack">#8BC34A</color>
     <color name="background">#2C503A</color>
     <color name="greyish">#567073</color>
     <color name="dark_blue">#414A61</color>
@@ -9,4 +12,5 @@
     <color name="bright_blue">#31B9CE</color>
     <color name="bone">#D9D9D9</color>
     <color name="pale_blue">#767B89</color>
+    <color name="error_red">#D30000</color>
 </resources>

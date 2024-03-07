@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/attendeeList">
+    <fragment
+        android:id="@+id/attendeeList"
+        android:name="com.example.qrazyqrsrus.AttendeeList"
+        android:label="AttendeeList" >
+        <action
+            android:id="@+id/action_attendeeList_to_mainMenu"
+            app:destination="@id/mainMenu" />
+        <action
+            android:id="@+id/action_attendeeList_to_attendeeInfoView"
+            app:destination="@id/attendeeInfoView" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventList"
+        android:name="com.example.qrazyqrsrus.EventList"
+        android:label="EventList" >
+        <action
+            android:id="@+id/action_eventList_to_mainMenu"
+            app:destination="@id/mainMenu" />
+        <action
+            android:id="@+id/action_eventList_to_eventInfoView"
+            app:destination="@id/eventInfoView" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainMenu"
+        android:name="com.example.qrazyqrsrus.MainMenu"
+        android:label="fragment_main_menu"
+        tools:layout="@layout/fragment_main_menu" >
+        <action
+            android:id="@+id/action_mainMenu_to_attendeeList"
+            app:destination="@id/attendeeList" />
+        <action
+            android:id="@+id/action_mainMenu_to_eventList"
+            app:destination="@id/eventList" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeInfoView"
+        android:name="com.example.qrazyqrsrus.AttendeeInfoView"
+        android:label="AttendeeInfoView" >
+        <action
+            android:id="@+id/action_attendeeInfoView_to_attendeeList"
+            app:destination="@id/attendeeList" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventInfoView"
+        android:name="com.example.qrazyqrsrus.EventInfoView"
+        android:label="EventInfoView" >
+        <action
+            android:id="@+id/action_eventInfoView_to_eventList"
+            app:destination="@id/eventList" />
+    </fragment>
+</navigation>
