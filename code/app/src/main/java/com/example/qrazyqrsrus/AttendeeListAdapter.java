@@ -10,8 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.qrazyqrsrus.Attendee;
-
 import java.util.ArrayList;
 /**
  * Saves the attendee class in a content view and adds that content to the list

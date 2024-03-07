@@ -10,8 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.qrazyqrsrus.Event;
-
 import java.util.ArrayList;
 
 /**
