@@ -60,13 +60,15 @@ public class AttendeeList extends Fragment {
                                 //
                                 if(document.getData().size()==0){
                                     String documentId = document.getId();
-                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+                                    String id = (String) document.getData().get("id");
+                                    Attendee attendee = new Attendee("No Name", documentId, id);
                                     attendeeDataList.add(attendee);
                                     attendeeListAdapter.notifyDataSetChanged();
                                 }
                                 if(document.getData().size()==1){
                                     String documentId = document.getId();
-                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+                                    String id = (String) document.getData().get("id");
+                                    Attendee attendee = new Attendee("No Name", documentId, id);
                                     attendeeDataList.add(attendee);
                                     attendeeListAdapter.notifyDataSetChanged();
                                 }
@@ -77,7 +79,7 @@ public class AttendeeList extends Fragment {
                                     String email = (String) document.getData().get("email");
                                     String profilePicturePath = (String) document.getData().get("profilePicturePath");
                                     Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                    Attendee attendee = new Attendee(documentId, name, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
                                     attendeeDataList.add(attendee);
                                     attendeeListAdapter.notifyDataSetChanged();
                                 }
@@ -154,73 +156,3 @@ public class AttendeeList extends Fragment {
 
     }
 }
-
-//        db.collection("Attendees")
-//                .whereEqualTo("user-uid",uid)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()){
-//                            Toast.makeText(getActivity(),"success accessing database",Toast.LENGTH_SHORT).show();
-//                            for (QueryDocumentSnapshot document : task.getResult()){
-//                                //Fetch from database as Map
-//                                user_name = (String) document.getData().get("user-name");
-//                                user_last_name =(String) document.getData().get("user-last-name");
-//                                user_phone_number =(String) document.getData().get("user-phone-number");
-//                                user_email =(String) document.getData().get("user-email");
-//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
-//                attendeeDataList.clear();
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-//                {
-//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-//                    String name = doc.getId();
-//                    String num_checkins = (String) doc.getData().get("Name");
-//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Add data from firestore
-//                }
-//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-//            }
-//        });
-
-//        // get attendee information and add it to a list of attendees for viewing
-//        collectionReference
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            Log.d("Attendees", "Retrieved all Attendees");
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                //
-//                                if(document.getData().size()==0){
-//                                    String documentId = document.getId();
-//                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
-//                                    attendeeDataList.add(attendee);
-//                                    attendeeListAdapter.notifyDataSetChanged();
-//                                }
-//                                if(document.getData().size()==1){
-//                                    String documentId = document.getId();
-//                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
-//                                    attendeeDataList.add(attendee);
-//                                    attendeeListAdapter.notifyDataSetChanged();
-//                                }
-//                                else{
-//                                    String documentId = document.getId();
-//                                    String id = (String) document.getData().get("id");
-//                                    String name = (String) document.getData().get("name");
-//                                    String email = (String) document.getData().get("email");
-//                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
-//                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-//                                    Attendee attendee = new Attendee(documentId, name, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
-//                                    attendeeDataList.add(attendee);
-//                                    attendeeListAdapter.notifyDataSetChanged();
-//                                }
-//
-//                            }
-//                        } else {
-//                            Log.d("Attendees", "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
