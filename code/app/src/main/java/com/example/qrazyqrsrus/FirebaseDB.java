@@ -504,16 +504,17 @@ public class FirebaseDB {
         return attendeeList;
     }
 
-    public static void getUserName(String userDocumentId, GetStringCallBack callBack) {
+    public static void getUserName(String userId, GetStringCallBack callBack) {
         //ArrayList<String> user = new ArrayList<String>();
-        usersCollection.document(userDocumentId).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        usersCollection.whereEqualTo("id", userId).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         Log.d(usersTAG, "Success");
                         //Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                        callBack.onResult((String) documentSnapshot.get("id"));
+                        callBack.onResult((String) queryDocumentSnapshots.getDocuments().get(0).get("id"));
 //                        user.add(attendee.getName());
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
