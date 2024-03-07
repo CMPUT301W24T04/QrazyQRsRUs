@@ -42,6 +42,8 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 
     private ImageView imageView;
     private Toolbar toolbar;
+
+    private Uri uri;
     public static NewEventImageFragment newInstance(String param1, String param2) {
         NewEventImageFragment fragment = new NewEventImageFragment();
         Bundle args = new Bundle();
@@ -75,7 +77,10 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         FloatingActionButton fab = view.findViewById(R.id.image_screen_next_screen_button);
         //pass bundle ahead to qr code
         fab.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_newEventImageFragment_to_newEventQrFragment, getArguments());
+            Bundle args = getArguments();
+            Event event = saveImageToFirebase(this.uri, ((Event) args.getSerializable("event")));
+            args.putSerializable("event", event);
+            Navigation.findNavController(view).navigate(R.id.action_newEventImageFragment_to_newEventQrFragment, args);
         });
 
         //we make a new activity with the uri result that will provide us with the uri of the uploaded image on the user's system locally
@@ -90,6 +95,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
                         //as long as the user selected an image, we invoke our function to update the imageView to display the uploaded poster, and save the event's poster
                         imageView = (ImageView) view.findViewById(R.id.new_event_display_event_poster);
                         updateImage(uri);
+                        this.uri = uri;
                     } else {
 //                        Log.d("PhotoPicker", "No media selected");
                     }
@@ -139,6 +145,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         //we get the bitmap from the uri that is returned by the imagePicker activity
         //we upload this bitmap to the database, and display it on-screen
         ImageDecoder.Source imageSource;
+
         try {
             //this requires API 28; if this is a problem, we will have to use a bitmap
             //if we use a Source instead of a bitmap, it allows us to use the same source to display the photo in multiple sizes/orientations
@@ -157,5 +164,20 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         decoder.setTargetSize(800, 400);
 
 
+    }
+
+    private Event saveImageToFirebase(Uri uri, Event event){
+        String pathname = generateUniquePathName(event);
+        event.setPosterPath(pathname);
+        FirebaseDB.uploadImage(uri, pathname);
+        return event;
+    }
+
+    private String generateUniquePathName(Event event){
+        //we generate a timestamp that contains the date and time the qr was generated. this allows us to prevent naming our qrcode as something already saved in the database
+        //this idea for safe name generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String pathName = "poster/" + event.getName() + timeStamp;
+        return pathName;
     }
 }

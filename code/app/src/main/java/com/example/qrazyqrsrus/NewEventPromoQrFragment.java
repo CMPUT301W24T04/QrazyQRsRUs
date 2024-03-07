@@ -3,6 +3,8 @@ package com.example.qrazyqrsrus;
 import static android.graphics.ImageDecoder.createSource;
 import static android.graphics.ImageDecoder.decodeBitmap;
 
+import static com.example.qrazyqrsrus.FirebaseDB.checkUnique;
+
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
@@ -19,12 +21,14 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,12 +43,15 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
 public class NewEventPromoQrFragment extends Fragment {
     //private ImageView imageView;
     private boolean successfulQRSelection;
+
+    private String promoQRContent;
     public static NewEventPromoQrFragment newInstance(String param1, String param2) {
         NewEventPromoQrFragment fragment = new NewEventPromoQrFragment();
         Bundle args = new Bundle();
@@ -91,7 +98,10 @@ public class NewEventPromoQrFragment extends Fragment {
         });
         FloatingActionButton fab = view.findViewById(R.id.promo_screen_next_screen);
         fab.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment, getArguments());
+            Bundle args = getArguments();
+            Event event = modifyEvent(this.promoQRContent, (Event) args.getSerializable("event"));
+            args.putSerializable("event", event);
+            Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment, args);
         });
         return view;
     }
@@ -104,20 +114,26 @@ public class NewEventPromoQrFragment extends Fragment {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             //content is a string that should tie the qr code to the event.
             //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-            String qrContent = ((Event) (getArguments().getSerializable("event"))).getEventName() + "_" + timeStamp + "_promo";
+            String qrContent = ((Event) (getArguments().getSerializable("event"))).getName() + "_" + timeStamp + "_promo";
             Bitmap bitmap = barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, 400, 400);
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
             imageViewQrCode.setImageBitmap(bitmap);
-            if (checkUnique(qrContent)){
-                saveImage(bitmap);
-                successfulQRSelection = true;
-            } else{
-                TextView errorBar = getView().findViewById(R.id.error_bar);
-                errorBar.setText("Error: " + R.string.qr_not_unique);
-                errorBar.setVisibility(View.VISIBLE);
-            }
+            FirebaseDB.checkUnique(qrContent, 0, new FirebaseDB.UniqueCheckCallBack() {
+                @Override
+                public void onResult(boolean isUnique) {
 
+                    if (isUnique) {
+                        saveImage(bitmap);
+                        promoQRContent = qrContent;
+                        //successfulQRSelection = true;
+                    } else {
+                        TextView errorBar = getView().findViewById(R.id.error_bar);
+                        errorBar.setText("Error: " + R.string.qr_not_unique);
+                        errorBar.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
         } catch(Exception e) {
             //it would be unexpected that qr generation fails, but for now we will display error bar and prompt user to try again
             TextView errorBar = getView().findViewById(R.id.error_bar);
@@ -136,14 +152,21 @@ public class NewEventPromoQrFragment extends Fragment {
             //getView() might be null here?
             ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
             imageViewQrCode.setImageBitmap(bitmap);
-            if (checkUnique(result.getText())){
-                saveImage(bitmap);
-                successfulQRSelection = true;
-            } else{
-                TextView errorBar = getView().findViewById(R.id.error_bar);
-                errorBar.setText("Error: " + R.string.qr_not_unique);
-                errorBar.setVisibility(View.VISIBLE);
-            }
+            FirebaseDB.checkUnique(result.getText(), 0,  new FirebaseDB.UniqueCheckCallBack() {
+                @Override
+                public void onResult(boolean isUnique) {
+
+                    if (isUnique) {
+                        saveImage(bitmap);
+                        promoQRContent = result.getText();
+                        //successfulQRSelection = true;
+                    } else {
+                        TextView errorBar = getView().findViewById(R.id.error_bar);
+                        errorBar.setText("Error: " + R.string.qr_not_unique);
+                        errorBar.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
         } catch(Exception e) {
             //it would be unexpected that qr generation when we provide it with the content.
             TextView errorBar = getView().findViewById(R.id.error_bar);
@@ -218,44 +241,19 @@ public class NewEventPromoQrFragment extends Fragment {
         }
     }
 
-    /**\
-     * Return a boolean that indicates whether or not the content of a QR code is already in use by
-     * an event created in the app.
-     * @param qrContent     a string that represents the content field of the QR code we are checking
-     * @return              a boolean value, true of the QR code is not already in use, false otherwise
-     */
-    private boolean checkUnique(String qrContent){
-        boolean isUnique = false;
-        //FirebaseFirestore db = FirebaseFirestore.getInstance();
-        //CollectionReference events = db.collection("Events");
-        //events
-        //      .whereEqualTo("promo_qr_code", qrContent)
-        //      .get()
-        //      .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-        //            @Override
-        //            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-        //                if (task.isSuccessful()) {
-        //                    int i = 0;
-        //                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
-        //                        i += 1;
-        //                    }
-        //                    if (i == 0) {
-        //                        // This means that no Event in the database has the same promo qr code as the qr code we have selected
-        //                        isUnique = true;
-        //                    }
-        //                }
-        //                else {
-        //                    Log.e("MainActivity", "Error checking existing Event QR codes");
-        //                }
-        //            }
-        //        })
-        return isUnique;
-    }
+
 
     private void showErrorBar(String errorMessage){
         TextView errorBar = getView().findViewById(R.id.error_bar);
         errorBar.setText("Error: " + errorMessage);
         errorBar.setVisibility(View.VISIBLE);
     }
+
+    private Event modifyEvent(String promoQR, Event event){
+        event.setQrCodePromo(promoQR);
+        return event;
+    }
+
+
 
 }

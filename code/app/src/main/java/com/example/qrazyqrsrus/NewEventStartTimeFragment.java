@@ -54,8 +54,11 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
             //temporarily messily create a new event, put it in bundle to pass to next navigation destination
+            Bundle args =  getArguments();
+            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
+            args.putSerializable("event", modifiedEvent);
 
-            Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, getArguments());
+            Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
         });
         createToolbar(view);
         return view;
@@ -90,5 +93,10 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
     //we must convert the date that was picked by the user into an LocalDateTime (java.time.LocalDateTime)
     private LocalDateTime getLocalDateTime(DatePicker datePicker, TimePicker timePicker){
         return LocalDateTime.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
+    }
+
+    private Event modifyEvent(Event event){
+        event.setStartDate(getLocalDateTime(getView().findViewById(R.id.event_date_picker), getView().findViewById(R.id.event_time_picker)));
+        return event;
     }
 }

@@ -31,7 +31,7 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import java.util.ArrayList;
 
 //temporarily implements NewEventTextFragment.AdddEventListener until we get firestore functionality
-public class MainActivity extends AppCompatActivity implements NewEventTextFragment.AddEventListener {
+public class MainActivity extends AppCompatActivity{
     private ActivityMainBinding binding;
 
     private FirebaseFirestore db;
@@ -83,11 +83,6 @@ public class MainActivity extends AppCompatActivity implements NewEventTextFragm
 
             return true;
         });
-    }
-
-    //temporarily have an addEvent method. should eventuall be changed to be an observer and update when model (firestore) is changed.
-    public void addEvent(Event event){
-        eventList.add(event);
     }
 
     /**
