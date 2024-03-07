@@ -54,6 +54,7 @@ public class EventDetailsFragment extends Fragment {
             return null;
         }
         Event event = (Event) getArguments().get("event");
+        Attendee attendee = (Attendee) getArguments().get("attendee");
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = view.findViewById(R.id.event_detail_name);
@@ -69,25 +70,8 @@ public class EventDetailsFragment extends Fragment {
             // need to get attendeeID and eventID first
             @Override
             public void onClick(View view) {
-                DocumentReference eventRef = db.collection("events").document(eventId);
-                eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                // Update the "signups" array
-                                eventRef.update("signups", FieldValue.arrayUnion(attendeeId))
-                                        .addOnSuccessListener(aVoid -> Log.d("EventDetailsFragment", "Attendee added to signups successfully"))
-                                        .addOnFailureListener(e -> Log.w("EventDetailsFragment", "Error updating document", e));
-                            } else {
-                                Log.d("EventDetailsFragment", "No such document");
-                            }
-                        } else {
-                            Log.d("EventDetailsFragment", "get failed with ", task.getException());
-                        }
-                    }
-                });
+                event.addSignUp(attendee.getId());
+                FirebaseDB.updateEvent(event);
             }
         });
         Button viewAttendeesButton = view.findViewById(R.id.attendee_list_button);
