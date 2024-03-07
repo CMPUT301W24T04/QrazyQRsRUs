@@ -91,8 +91,8 @@ public class EventList extends Fragment {  // FIX LATER
                                 String details = (String) document.getData().get("details");
                                 String location = (String) document.getData().get("location");
                                 //LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");    FIX LATER
-                                LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");
-                                LocalDateTime endDate = (LocalDateTime) document.getData().get("endDate");
+                                String startDate = (String) document.getData().get("startDate");
+                                String endDate = (String) document.getData().get("endDate");
                                 Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCodePath = (String) document.getData().get("qrCodePath");
@@ -125,10 +125,16 @@ public class EventList extends Fragment {  // FIX LATER
 //                TextView Name = attendeeListLayout.findViewById(R.id.event_name);
 //                Event current_event = eventListAdapter.getItem(i);
 //                String event_value = current_event.getName();
+
+//                Fragment event_info = new AttendeeInfoView();
+                //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
+                Bundle bundle = new Bundle();
+                Event current_event = eventListAdapter.getItem(i);
+                bundle.putSerializable("current_event", current_event);
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList_to_eventInfoView);
+                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList_to_eventInfoView, bundle);
             }
         });
 

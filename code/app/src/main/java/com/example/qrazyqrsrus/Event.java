@@ -13,8 +13,8 @@ public class Event implements Serializable {
     private String organizerId;
     private String location;
     private String details;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
     private Boolean geolocationOn;
     private String posterPath;
     private String qrCodePath;
@@ -33,7 +33,7 @@ public class Event implements Serializable {
     public Event() {
     }
     // Constructor when Organizer creates the event
-    public Event(String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate) {
+    public Event(String name, String organizerId, String details, String location, String startDate, String endDate) {
         this.documentId = "0";
         this.name = name;
         this.organizerId = organizerId;
@@ -66,7 +66,7 @@ public class Event implements Serializable {
      */
     // Constructor when getting retrieving from database
     public Event(String documentId, String name, String organizerId, String details,
-                 String location, LocalDateTime startDate, LocalDateTime endDate,
+                 String location, String startDate, String endDate,
                  Boolean geolocationOn, String posterPath, String qrCodePath,
                  String qrCodePromoPath, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
@@ -131,19 +131,19 @@ public class Event implements Serializable {
         this.location = location;
     }
 
-    public LocalDateTime getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 

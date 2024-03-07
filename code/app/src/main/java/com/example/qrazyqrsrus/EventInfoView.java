@@ -8,6 +8,7 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * Shows attendee information when list is clicked
@@ -29,6 +30,13 @@ public class EventInfoView extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View eventInfoLayout = inflater.inflate(R.layout.fragment_event_info_view, container, false);
+
+        //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
+        Bundle bundle = getArguments();
+        Event event = (Event) bundle.getSerializable("current_event");
+
+        TextView eventName = eventInfoLayout.findViewById(R.id.event_name);
+        eventName.setText(event.getName());
         eventInfoLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

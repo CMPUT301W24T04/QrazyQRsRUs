@@ -7,7 +7,7 @@
     android:id="@+id/attendee_info_view" >
 
     <TextView
-        android:id="@+id/Event_name"
+        android:id="@+id/event_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="164dp"

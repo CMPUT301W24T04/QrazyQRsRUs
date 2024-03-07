@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 //import com.google.firebase.firestore.QueryDocumentSnapshot;
 //import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -173,7 +175,7 @@ public class AttendeeList extends Fragment {
         attendeeListAdapter = new AttendeeListAdapter(getActivity(), attendeeDataList);
         attendeeList.setAdapter(attendeeListAdapter);
 
-        // Wen the list is clicked, reveal the attendee profile information
+        // When the list is clicked, reveal the attendee profile information
         attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -181,10 +183,23 @@ public class AttendeeList extends Fragment {
 //                TextView Name = attendeeListLayout.findViewById(R.id.attendee_name);
 //                Attendee current_attendee = attendeeListAdapter.getItem(i);
 //                String attendee_value = current_attendee.getName();
+
+//                Attendee current_attendee = attendeeListAdapter.getItem(i);
+//                Intent intent = new Intent(getActivity(), AttendeeInfoView.class); //getActivity().getApplicationContext()
+//                intent.putExtra("current attendee",(Serializable) current_attendee);
+
+//                Fragment attendee_info = new AttendeeInfoView();
+                //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
+                Bundle bundle = new Bundle();
+                Attendee current_attendee = attendeeListAdapter.getItem(i);
+                bundle.putSerializable("current_attendee", current_attendee);
+//                attendee_info.setArguments(bundle);
+
+//                startActivity(i);
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView,bundle);
             }
         });
 
