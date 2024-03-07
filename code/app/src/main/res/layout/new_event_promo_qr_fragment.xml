@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/new_event_qr_fragment"
+    android:id="@+id/new_event_promo_qr_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".NewEventQrFragment">
+    tools:context=".NewEventPromoQrFragment">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,11 +21,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/error_bar"
+        app:layout_constraintTop_toBottomOf="@id/error_bar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/new_event_qr_text"
-        android:text="Your event needs a QR Code that attendees use to check in to the event when they arrive"/>
+        android:text="Your event needs a QR Code that directs users in the app to your event details screen, where they can discover your event and sign up"/>
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,8 +42,7 @@
         app:layout_constraintTop_toBottomOf="@id/new_event_display_qr_code"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:text="Generate a new QR code"
-        >
+        android:text="Generate a new QR code">
     </Button>
     <Button
         android:layout_width="wrap_content"
@@ -56,7 +55,7 @@
         >
     </Button>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/qr_screen_finish_button"
+        android:id="@+id/promo_screen_next_screen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

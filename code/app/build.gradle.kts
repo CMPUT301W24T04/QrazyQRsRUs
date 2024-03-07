@@ -66,12 +66,6 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 
-    //push notifications
-    //https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner on February 28th, 2024
-    implementation("com.google.firebase:firebase-messaging")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-
     //photo picker
     implementation("androidx.activity:activity:1.8.2")
 }
