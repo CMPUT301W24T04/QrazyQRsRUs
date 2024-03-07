@@ -70,7 +70,7 @@ public class EventDetailsFragment extends Fragment {
             // need to get attendeeID and eventID first
             @Override
             public void onClick(View view) {
-                event.addSignUp(attendee.getId());
+                event.addSignUp(attendee.getDocumentId());
                 FirebaseDB.updateEvent(event);
             }
         });
