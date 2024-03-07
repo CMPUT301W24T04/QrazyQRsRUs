@@ -59,9 +59,9 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         // set values of textviews based on the object attributes
         Name.setText(event.getName()); //.getEventName());
         location.setText(event.getLocation());
-//        date.setText(event.getStartDate().toString());
+        date.setText(event.getStartDate()); // ADDED
         details.setText(event.getDetails());
-//        num_checkins = "0"; //.setText(attendee.getNum_checkins().toString());
+
 
         return view;
     }

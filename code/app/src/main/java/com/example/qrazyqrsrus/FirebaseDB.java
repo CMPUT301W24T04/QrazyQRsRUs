@@ -303,8 +303,8 @@ public class FirebaseDB {
                                 String organizerId = (String) document.getData().get("organizerId");
                                 String details = (String) document.getData().get("details");
                                 String location = (String) document.getData().get("location");
-                                LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");
-                                LocalDateTime endDate = (LocalDateTime) document.getData().get("endDate");
+                                String startDate = (String) document.getData().get("startDate");
+                                String endDate = (String) document.getData().get("endDate");
                                 Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCode = (String) document.getData().get("qrCode");
