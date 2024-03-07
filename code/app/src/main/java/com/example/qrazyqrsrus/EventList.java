@@ -54,29 +54,10 @@ public class EventList extends Fragment {  // FIX LATER
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
-     * Gets data from firestore and displays it on a listview
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return view
+     * Adds data from firebase to the list of events to be displayed
+     * @param collectionReference
      */
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // DEFINE VIEW
-        View eventListLayout = inflater.inflate(R.layout.fragment_event_list, container, false);
-        //**************************************************************************************************************
-
-        eventDataList = new ArrayList<>();
-        final CollectionReference collectionReference = db.collection("Events");
-        final String TAG = "Sample";
-
+    private void getData(CollectionReference collectionReference){
         collectionReference
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -111,6 +92,37 @@ public class EventList extends Fragment {  // FIX LATER
                         }
                     }
                 });
+    }
+
+    /**
+     * Gets data from firestore and displays it on a listview
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return view
+     */
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // DEFINE VIEW
+        View eventListLayout = inflater.inflate(R.layout.fragment_event_list, container, false);
+        //*************************************************** ***********************************************************
+        // datalist to hold event classes
+        eventDataList = new ArrayList<>();
+
+        //REMOVE LATER SINCE WE PASS IN THE SPECIFIC COLLECTION WE WANT TO GET DATA ONs
+        final CollectionReference collectionReference = db.collection("Events");
+        final String TAG = "Sample";
+
+        // get data from the collection reference we pass in function
+        getData(collectionReference);
+
 
         // update attendee list adapter
         eventList = eventListLayout.findViewById(R.id.event_list_view);
@@ -121,12 +133,7 @@ public class EventList extends Fragment {  // FIX LATER
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                ConstraintLayout layout = (ConstraintLayout) eventListLayout.findViewById(R.id.event_info_view);
-//                TextView Name = attendeeListLayout.findViewById(R.id.event_name);
-//                Event current_event = eventListAdapter.getItem(i);
-//                String event_value = current_event.getName();
-
-//                Fragment event_info = new AttendeeInfoView();
+                // pass event in a bundle
                 //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
                 Bundle bundle = new Bundle();
                 Event current_event = eventListAdapter.getItem(i);
@@ -138,9 +145,7 @@ public class EventList extends Fragment {  // FIX LATER
             }
         });
 
-        // FIRESTORE IMPLEMENTATION
-//        createList(eventDataList);
-
+        // back button
         eventListLayout.findViewById(R.id.event_button_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

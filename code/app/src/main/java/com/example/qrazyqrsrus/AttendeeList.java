@@ -61,74 +61,13 @@ public class AttendeeList extends Fragment {
     ListView attendeeList;
     ArrayList<Attendee> attendeeDataList;
     AttendeeListAdapter attendeeListAdapter;
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
-     * Creates an instance of attendee to be put into a bundle
-     * @param attendee
-     * @return fragment
+     * Gets attendees from a specific database based on its collection reference called
+     * @param collectionReference
      */
-    static AttendeeList newInstance(Attendee attendee){
-        Bundle args = new Bundle();
-        args.putSerializable("attendee", attendee);
-        AttendeeList fragment = new AttendeeList();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    /**
-     * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return Creates the view for the list of attendees
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // DEFINE VIEW
-        View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_list, container, false);
-        //**************************************************************************************************************
-        //INITIAL LIST FOR TESTING
-        attendeeDataList = new ArrayList<>();
-        final CollectionReference collectionReference = db.collection("Attendees");
-        final String TAG = "Sample";
-
-//        db.collection("Attendees")
-//                .whereEqualTo("user-uid",uid)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()){
-//                            Toast.makeText(getActivity(),"success accessing database",Toast.LENGTH_SHORT).show();
-//                            for (QueryDocumentSnapshot document : task.getResult()){
-//                                //Fetch from database as Map
-//                                user_name = (String) document.getData().get("user-name");
-//                                user_last_name =(String) document.getData().get("user-last-name");
-//                                user_phone_number =(String) document.getData().get("user-phone-number");
-//                                user_email =(String) document.getData().get("user-email");
-//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
-//                attendeeDataList.clear();
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-//                {
-//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
-//                    String name = doc.getId();
-//                    String num_checkins = (String) doc.getData().get("Name");
-//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Add data from firestore
-//                }
-//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-//            }
-//        });
-
+    private void getData(CollectionReference collectionReference){
         // get attendee information and add it to a list of attendees for viewing
         collectionReference
                 .get()
@@ -169,6 +108,35 @@ public class AttendeeList extends Fragment {
                         }
                     }
                 });
+    }
+
+    /**
+     * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Creates the view for the list of attendees
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // DEFINE VIEW
+        View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_list, container, false);
+        //**************************************************************************************************************
+        //INITIAL LIST FOR TESTING
+        attendeeDataList = new ArrayList<>();
+        final CollectionReference collectionReference = db.collection("Attendees");
+        final String TAG = "Sample";
+
+        // call getData from the firestore to populate the list
+        getData(collectionReference);
+
+
 
         // update attendee list and shows it on the listview
         attendeeList = attendeeListLayout.findViewById(R.id.attendee_list_view);
@@ -179,16 +147,7 @@ public class AttendeeList extends Fragment {
         attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                ConstraintLayout layout = (ConstraintLayout) attendeeListLayout.findViewById(R.id.attendee_info_view);
-//                TextView Name = attendeeListLayout.findViewById(R.id.attendee_name);
-//                Attendee current_attendee = attendeeListAdapter.getItem(i);
-//                String attendee_value = current_attendee.getName();
-
-//                Attendee current_attendee = attendeeListAdapter.getItem(i);
-//                Intent intent = new Intent(getActivity(), AttendeeInfoView.class); //getActivity().getApplicationContext()
-//                intent.putExtra("current attendee",(Serializable) current_attendee);
-
-//                Fragment attendee_info = new AttendeeInfoView();
+                // pass attendee in a bundle
                 //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
                 Bundle bundle = new Bundle();
                 Attendee current_attendee = attendeeListAdapter.getItem(i);
@@ -215,3 +174,73 @@ public class AttendeeList extends Fragment {
 
     }
 }
+
+//        db.collection("Attendees")
+//                .whereEqualTo("user-uid",uid)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()){
+//                            Toast.makeText(getActivity(),"success accessing database",Toast.LENGTH_SHORT).show();
+//                            for (QueryDocumentSnapshot document : task.getResult()){
+//                                //Fetch from database as Map
+//                                user_name = (String) document.getData().get("user-name");
+//                                user_last_name =(String) document.getData().get("user-last-name");
+//                                user_phone_number =(String) document.getData().get("user-phone-number");
+//                                user_email =(String) document.getData().get("user-email");
+//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
+//                attendeeDataList.clear();
+//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+//                {
+//                    Log.d(TAG, String.valueOf(doc.getData().get("Name")));
+//                    String name = doc.getId();
+//                    String num_checkins = (String) doc.getData().get("Name");
+//                    attendeeDataList.add(new Attendee(name, num_checkins)); // Add data from firestore
+//                }
+//                attendeeListAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+//            }
+//        });
+
+//        // get attendee information and add it to a list of attendees for viewing
+//        collectionReference
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            Log.d("Attendees", "Retrieved all Attendees");
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                //
+//                                if(document.getData().size()==0){
+//                                    String documentId = document.getId();
+//                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+//                                    attendeeDataList.add(attendee);
+//                                    attendeeListAdapter.notifyDataSetChanged();
+//                                }
+//                                if(document.getData().size()==1){
+//                                    String documentId = document.getId();
+//                                    Attendee attendee = new Attendee(documentId, "No Name", " ", false);
+//                                    attendeeDataList.add(attendee);
+//                                    attendeeListAdapter.notifyDataSetChanged();
+//                                }
+//                                else{
+//                                    String documentId = document.getId();
+//                                    String id = (String) document.getData().get("id");
+//                                    String name = (String) document.getData().get("name");
+//                                    String email = (String) document.getData().get("email");
+//                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
+//                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+//                                    Attendee attendee = new Attendee(documentId, name, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+//                                    attendeeDataList.add(attendee);
+//                                    attendeeListAdapter.notifyDataSetChanged();
+//                                }
+//
+//                            }
+//                        } else {
+//                            Log.d("Attendees", "Error getting documents: ", task.getException());
+//                        }
+//                    }
+//                });
