@@ -2,6 +2,7 @@ package com.example.qrazyqrsrus;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -13,8 +14,8 @@ public class Event implements Serializable {
     private String organizerId;
     private String location;
     private String details;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
     private Boolean geolocationOn;
     private String posterPath;
     private String qrCode;
@@ -28,12 +29,13 @@ public class Event implements Serializable {
     }
     // Constructor when Organizer creates the event
     public Event(String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate = startDate.format(formatter);
+        this.endDate = endDate.format(formatter);
         this.geolocationOn = true;
         this.announcements = new ArrayList<String>();
         this.signUps = new ArrayList<String>();
@@ -45,13 +47,14 @@ public class Event implements Serializable {
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.documentId = documentId;
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate = startDate.format(formatter);
+        this.endDate = endDate.format(formatter);
         this.geolocationOn = geolocationOn;
         this.posterPath = posterPath;
         this.qrCode = qrCode;
@@ -99,20 +102,12 @@ public class Event implements Serializable {
         this.location = location;
     }
 
-    public LocalDateTime getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDateTime getEndDate() {
+    public String getEndDate() {
         return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
     }
 
     public Boolean getGeolocationOn() {
