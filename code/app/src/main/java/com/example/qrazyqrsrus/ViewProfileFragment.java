@@ -49,6 +49,8 @@ public class ViewProfileFragment extends Fragment {
     private Switch switchGeolocation;
     private FirebaseFirestore db;
     private boolean isProfileLoaded = false;
+
+    String userId;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +75,22 @@ public class ViewProfileFragment extends Fragment {
         // Restore state here
 //        boolean switchState = preferences.getBoolean("GeolocationSwitchState", false);
 //        switchGeolocation.setChecked(switchState);
-        String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        Bundle args = getArguments();
+        String userWhoClicked;
+        Attendee attendeeClicked;
+        if (args != null){
+            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
+
+            }
+        }
+        restrictEdits();
+//        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
+//            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
+//                restrictEdits();
+//            }
+//        }
         //loadUserProfile(userId);
         FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
             @Override
@@ -222,9 +239,19 @@ public class ViewProfileFragment extends Fragment {
         this.attendee = attendee;
         etFullName.setText(attendee.getName());
         etEmailAddress.setText(attendee.getEmail());
-        switchGeolocation.setChecked(attendee.getGeolocationOn());
+        if (attendee.getGeolocationOn() != null){
+            switchGeolocation.setChecked(attendee.getGeolocationOn());
+        } else{
+            switchGeolocation.setChecked(false);
+        }
+
         if (attendee.getProfilePicturePath() == null){
-            Bitmap profileBitmap = createInitialsImage(getInitials(attendee.getName()));
+            Bitmap profileBitmap;
+            if (attendee.getName() == null){
+                profileBitmap = createInitialsImage(getInitials(userId));
+            } else{
+                profileBitmap = createInitialsImage(attendee.getName());
+            }
             imgProfilePicture.setImageBitmap(profileBitmap);
             //the idea to get a uri from a bitmap was taken from https://stackoverflow.com/questions/12555420/how-to-get-a-uri-object-from-bitmap Accessed on March 7th, 2024
             //posted by user Ajay (https://stackoverflow.com/users/840802/ajay) in the post https://stackoverflow.com/a/16167993
@@ -247,11 +274,30 @@ public class ViewProfileFragment extends Fragment {
         attendee.setName(etFullName.getText().toString());
         attendee.setGeolocationOn(switchGeolocation.isChecked());
         attendee.setEmail(etEmailAddress.getText().toString());
+        FirebaseDB.updateUser(attendee);
     }
 
     private String generatePathName(String attendeeName){
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String pathName = "profile/" + attendeeName + timeStamp;
         return pathName;
+    }
+
+    public static ViewProfileFragment newInstance(Attendee attendee, String userId){
+        Bundle args = new Bundle();
+        args.putSerializable("userId", userId);
+        args.putSerializable("attendee", attendee);
+
+        ViewProfileFragment fragment = new ViewProfileFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private void restrictEdits(){
+        etEmailAddress.setInputType(0);
+        etFullName.setInputType(0);
+        etAge.setInputType(0);
+        switchGeolocation.setInputType(0);
+        btnUpdateProfile.setVisibility(View.GONE);
     }
 }
