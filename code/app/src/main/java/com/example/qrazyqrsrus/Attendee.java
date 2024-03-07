@@ -2,6 +2,9 @@ package com.example.qrazyqrsrus;
 
 import java.io.Serializable;
 
+/**
+ * Attendee class represents attendees
+ */
 public class Attendee implements Serializable {
     private String id;
     private String documentId;
@@ -13,11 +16,25 @@ public class Attendee implements Serializable {
     public Attendee() {
 
     }
+
+    /**
+     * Constructor for attendee with only id
+     * @param id
+     */
     // Constructor for a new attendee
     public Attendee(String id) {
         this.id = id;
     }
 
+    /**
+     * Constructor for attendee with full information
+     * @param id
+     * @param documentId
+     * @param name
+     * @param email
+     * @param profilePicturePath
+     * @param geolocationOn
+     */
     // Constructor for attendee instance gotten from Firestore
     public Attendee(String id, String documentId, String name, String email, String profilePicturePath, Boolean geolocationOn) {
         this.id = id;
@@ -28,6 +45,22 @@ public class Attendee implements Serializable {
         this.geolocationOn = geolocationOn;
     }
 
+    /**
+     * Constructor for attendee with limited information when their info is not full inputted
+     * @param noName
+     * @param documentId
+     * @param id
+     */
+    public Attendee(String noName, String documentId, String id) {
+        this.name = noName;
+        this.documentId = documentId;
+        this.id = id;
+    }
+
+    /**
+     * Getters and setters for attendee class
+     * @return What the particular attendee attribute is to other classes, or changing it by a setter
+     */
     public String getId() {
         return id;
     }

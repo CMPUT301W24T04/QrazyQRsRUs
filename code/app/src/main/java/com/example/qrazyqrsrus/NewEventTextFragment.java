@@ -92,7 +92,8 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
     private Event createNewEvent(View view){
         String eventName = ((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString();
         String eventLocation = ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString();
-        Date eventDate = getDate(((DatePicker) view.findViewById(R.id.event_date_picker)));
+//        Date eventDate = getDate(((DatePicker) view.findViewById(R.id.event_date_picker)));
+        String eventDate = getDate((DatePicker) view.findViewById(R.id.event_date_picker)); // CHANGED TO STRING
         String eventDetails = ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString();
 
         //temporary add event, we should be storing the event into firestore
@@ -102,18 +103,25 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
     //we must convert the date that was picked by the user into an Date (java.util.Date)
     //this conversion from the android DatePicker to a java Data is from https://stackoverflow.com/questions/8409043/getdate-from-datepicker-android on February 21st, 2024
     //it was posted by user Andres Canavesi (https://stackoverflow.com/users/641238/andr%c3%a9s-canavesi) in the post (https://stackoverflow.com/a/14590523)
-    private Date getDate(DatePicker datePicker){
+    private String getDate(DatePicker datePicker){  // MODIFIED TO WORK AS STRING FOR TESTING
         //we get the user input (picked date)
         int day = datePicker.getDayOfMonth();
         int month = datePicker.getMonth();
         int year = datePicker.getYear();
 
         //we convert the picked date into a calendar entry
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day);
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(year, month, day);
+
+        String day_string = Integer.toString(day);
+        String month_string = Integer.toString(month);
+        String year_string = Integer.toString(year);
+
+        String date = day_string + "/" + month_string + "/" + year_string;
 
         //we use calendar.getTime() to get the formatted Date of the event
-        return calendar.getTime();
+        return date;
+//        return calendar.getTime();
     }
 
 }

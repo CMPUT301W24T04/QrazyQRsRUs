@@ -57,7 +57,7 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
         // get name and num_checkins from the content fragment
         TextView Name = view.findViewById(R.id.name_attendee);
-        TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
+        //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
 
         // change value of name and num_checkins from content value
         Name.setText(attendee.getName());

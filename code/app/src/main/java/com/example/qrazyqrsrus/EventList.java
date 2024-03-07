@@ -66,24 +66,30 @@ public class EventList extends Fragment {  // FIX LATER
                         if (task.isSuccessful()) {
                             Log.d("Events", "Retrieved all events");
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String id = document.getId();
+                                String documentId = document.getId();
                                 String eventName = (String) document.getData().get("name");
                                 String organizerId = (String) document.getData().get("organizerId");
                                 String details = (String) document.getData().get("details");
                                 String location = (String) document.getData().get("location");
                                 //LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");    FIX LATER
+
                                 String startDate = (String) document.getData().get("startDate");
                                 String endDate = (String) document.getData().get("endDate");
+
                                 Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCodePath = (String) document.getData().get("qrCodePath");
                                 String qrCodePromoPath = (String) document.getData().get("qrCodePromoPath");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
-                                ArrayList<Map<String, Object>> checkIns = (ArrayList<Map<String, Object>>) document.getData().get("checkIns");
+                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns"); //ArrayList<Map<String, Object>> checkIns = (ArrayList<Map<String, Object>>) document.getData().get("checkIns");
 
+                                Event event = new Event(documentId, eventName, organizerId, details,
+                                        location, startDate, endDate,
+                                        geolocationOn, posterPath, qrCodePath,
+                                        qrCodePromoPath, announcements, signUps, checkIns);
 
-                                Event event = new Event(eventName, organizerId, details, location, startDate, endDate); // new Event(eventName, location, startDate, details,);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                // event = new Event(eventName, organizerId, details, location, startDate, endDate); // new Event(eventName, location, startDate, details,);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
                                 eventDataList.add(event);
                                 eventListAdapter.notifyDataSetChanged();
                             }

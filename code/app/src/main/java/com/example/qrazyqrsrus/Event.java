@@ -1,6 +1,7 @@
 package com.example.qrazyqrsrus;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -63,6 +64,35 @@ public class Event implements Serializable {
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
+    }
+
+    public Event(String documentId, String name, String organizerId, String details,
+                 String location, String startDate, String endDate,
+                 Boolean geolocationOn, String posterPath, String qrCode,
+                 String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
+                 ArrayList<String> checkIns) {
+        this.documentId = documentId;
+        this.name = name;
+        this.organizerId = organizerId;
+        this.details = details;
+        this.location = location;
+        this.startDate = startDate; //.format(formatter);
+        this.endDate = endDate; //.format(formatter);
+        this.geolocationOn = geolocationOn;
+        this.posterPath = posterPath;
+        this.qrCode = qrCode;
+        this.qrCodePromo = qrCodePromo;
+        this.announcements = announcements;
+        this.signUps = signUps;
+        this.checkIns = checkIns;
+    }
+
+    public Event(String eventName, String eventDetails, String eventLocation, LocalDateTime eventDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        this.name = eventName;
+        this.details = eventDetails;
+        this.location = eventLocation;
+        this.startDate = eventDate.format(formatter);
     }
 
     public String getDocumentId() { return documentId; }
