@@ -98,15 +98,13 @@ public class FirebaseDB {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            int i = 0;
-                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                user.add(documentSnapshot.toObject(Attendee.class));
-                                i += 1;
-                            }
-                            if (i == 0) {
-                                // This means that Attendee needs a constructor where it only accepts userId and sets the rest to default
+                            if (task.getResult() == null || task.getResult().isEmpty()) {
                                 user.add(new Attendee(userId));
                                 addUser(user.get(0));
+                            } else {
+                                for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                    user.add(documentSnapshot.toObject(Attendee.class));
+                                }
                             }
                         } else {
                             Log.e("MainActivity", "Error trying to login");
@@ -494,6 +492,26 @@ public class FirebaseDB {
                     }
                 });
         return attendeeList;
+    }
+
+    public static String getUserName(String userDocumentId) {
+        ArrayList<String> user = new ArrayList<String>();
+        usersCollection.document(userDocumentId).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Log.d(usersTAG, "Success");
+                        Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                        user.add(attendee.getName());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(usersTAG, "Failed "+e);
+                    }
+                });
+        return user.get(0);
     }
 
     /**

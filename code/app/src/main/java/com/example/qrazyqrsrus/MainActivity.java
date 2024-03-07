@@ -1,8 +1,8 @@
 package com.example.qrazyqrsrus;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -13,29 +13,17 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.TextView;
 import android.util.Log;
 
 import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.journeyapps.barcodescanner.ScanContract;
-import com.journeyapps.barcodescanner.ScanOptions;
-
 
 import java.util.ArrayList;
 
-//temporarily implements NewEventTextFragment.AdddEventListener until we get firestore functionality
+
 public class MainActivity extends AppCompatActivity{
     private ActivityMainBinding binding;
 
-    private FirebaseFirestore db;
-    private NavHostFragment navHostFragment;
+    private NavController navController;
     private ArrayList<Event> eventList = new ArrayList<Event>();
 
     private String deviceId;
@@ -52,10 +40,7 @@ public class MainActivity extends AppCompatActivity{
 
         qrHandler = new QRCodeScanHandler(this, deviceId);
 
-        db = FirebaseFirestore.getInstance();
 
-        final CollectionReference usersCollection = db.collection("Users");
-        final CollectionReference eventsCollection = db.collection("Events");
         // At the start we want to be at the Home screen
         ChangeFragment(new HomeFragment());
 

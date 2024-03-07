@@ -6,6 +6,7 @@
     app:startDestination="@id/newEventFragment">
 
 
+
     <fragment
         android:id="@+id/newEventTextFragment"
         android:name="com.example.qrazyqrsrus.NewEventTextFragment"

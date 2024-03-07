@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     tools:context=".EventDetailsFragment">
+
 
     <ListView
         android:id="@+id/announcement_list_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_gravity="bottom"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <ImageView
         android:id="@+id/posterView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_gravity="top"
         android:src="@drawable/no_image_source"
-        android:background="@color/greyish"/>
+        android:background="@color/greyish"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
         android:id="@+id/event_detail_name"
@@ -26,7 +30,8 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Name: "
-        android:layout_marginTop="175dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_detail_start_date"/>
 
     <TextView
         android:id="@+id/event_detail_organizer"
@@ -34,7 +39,8 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Organized by: "
-        android:layout_marginTop="200dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_detail_name"/>
 
     <TextView
         android:id="@+id/event_detail_details"
@@ -42,30 +48,35 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Description: "
-        android:layout_marginTop="225dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_detail_location"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/event_detail_start_date"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="end">
+        android:textColor="@color/white"
+        android:text="Starts: "
+        app:layout_constraintEnd_toStartOf="@id/event_detail_end_date"
+        app:layout_constraintTop_toBottomOf="@id/posterView"
+        android:layout_marginEnd="8dp"/>
 
-        <TextView
-            android:id="@+id/event_detail_start_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="Starts: "
-            android:layout_marginTop="155dp"/>
+    <TextView
+        android:id="@+id/event_detail_end_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Ends:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/posterView" />
 
-        <TextView
-            android:id="@+id/event_detail_end_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="Ends:"
-            android:layout_marginTop="155dp"/>
+    <TextView
+        android:id="@+id/event_detail_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Location: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_detail_organizer" />
 
-    </LinearLayout>
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

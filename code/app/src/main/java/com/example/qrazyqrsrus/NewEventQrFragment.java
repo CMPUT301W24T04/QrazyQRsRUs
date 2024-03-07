@@ -93,6 +93,7 @@ public class NewEventQrFragment extends Fragment {
         return view;
     }
 
+
     private void generateNewQR(){
         try {
             //we generate a timestamp that contains the date and time the qr was generated. this allows us to prevent naming our qrcode as something already saved in the database

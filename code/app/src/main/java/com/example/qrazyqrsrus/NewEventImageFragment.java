@@ -66,6 +66,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

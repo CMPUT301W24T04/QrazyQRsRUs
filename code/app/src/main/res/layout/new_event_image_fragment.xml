@@ -38,6 +38,7 @@
         android:text="Choose Image">
 
     </Button>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/image_screen_next_screen_button"
         android:layout_width="wrap_content"
