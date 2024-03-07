@@ -55,6 +55,10 @@ public class FirebaseDB {
         void onResult(Bitmap bitmap);
     }
 
+    public interface GetAttendeeCallBack {
+        void onResult(Attendee attendee);
+    }
+
     final static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
@@ -97,8 +101,7 @@ public class FirebaseDB {
      * @param userId The unique identifier of the user that has opened the app
      */
 
-    public static void loginUser(String userId) {
-        //ArrayList<Attendee> user = new ArrayList<Attendee>();
+    public static void loginUser(String userId, GetAttendeeCallBack callBack) {
         usersCollection
                 .whereEqualTo("id", userId)
                 .get()
@@ -107,11 +110,13 @@ public class FirebaseDB {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             if (task.getResult() == null || task.getResult().isEmpty()) {
-                                //user.add(new Attendee(userId));
-                                addUser(new Attendee(userId));
+                                Attendee attendee = new Attendee(userId);
+                                callBack.onResult(attendee);
+                                addUser(attendee);
                             } else {
                                 for (DocumentSnapshot documentSnapshot: task.getResult()) {
-                                    //user.add(documentSnapshot.toObject(Attendee.class));
+                                    Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                                    callBack.onResult(attendee);
                                 }
                             }
                         } else {
@@ -119,7 +124,6 @@ public class FirebaseDB {
                         }
                     }
                 });
-        //return user.get(0);
     }
 
     /**
@@ -229,6 +233,7 @@ public class FirebaseDB {
      * Retrieves an image from the database
      *
      * @param user This is the user we want to retrieve their profile picture
+     * @param callBack This callBack will be used to get back bitmap
      */
     public static void retrieveImage(Attendee user, GetBitmapCallBack callBack) {
         //ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
@@ -239,7 +244,6 @@ public class FirebaseDB {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                    //localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
                     Log.d(imagesTAG, "Successfully retrieved image");
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -251,16 +255,15 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
-        //return localBitMap.get(0);
     }
 
     /**
      * Retrieves an image from the database
      *
      * @param event This is the event we're trying to get its poster.
+     * @param callBack This callBack will be used to get back bitmap
      */
     public static void retrieveImage(Event event, GetBitmapCallBack callBack) {
-        //ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
         try {
             StorageReference storageRef = storage.getReference(event.getPosterPath() + ".jpg");
             File localFile = File.createTempFile(event.getPosterPath().split("/")[1], "jpg");
@@ -268,7 +271,6 @@ public class FirebaseDB {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                    //localBitMap.add(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
                     Log.d(imagesTAG, "Successfully retrieved image");
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -280,7 +282,6 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
-        //return localBitMap.get(0);
     }
 
     /**
@@ -364,10 +365,9 @@ public class FirebaseDB {
      * Retrieves all the events an user has signed up to
      *
      * @param user the user who as signed up to events
-     * @return all events user has signed up to
+     * @param eventArrayList the list you want to add the events to
      */
-    public static ArrayList<Event> getAttendeeSignedUpEvents(Attendee user) {
-        ArrayList<Event> events = new ArrayList<>();
+    public static void getAttendeeSignedUpEvents(Attendee user, ArrayList<Event> eventArrayList) {
         eventsCollection
                 .whereArrayContains("signUps", user.getDocumentId())
                 .get()
@@ -376,7 +376,7 @@ public class FirebaseDB {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Event event = documentSnapshot.toObject(Event.class);
-                            events.add(event);
+                            eventArrayList.add(event);
                         }
                         Log.d(eventsTAG, "Events successfully retrieved");
                     }
@@ -387,18 +387,16 @@ public class FirebaseDB {
                         Log.w(eventsTAG, "Failed to retrieve events of user");
                     }
                 });
-        return events;
     }
 
     /**
      * Retrieves all the events an user has checked in to
      *
      * @param user the user who as checked in to events
-     * @return all events user has checked in to
+     * @param eventArrayList the list passed in to get the events
      */
-    public static ArrayList<Event> getAttendeeCheckedInEvents(Attendee user) {
+    public static void getAttendeeCheckedInEvents(Attendee user, ArrayList<Event> eventArrayList) {
         ArrayList<String> attendeeCheckIns = new ArrayList<>();
-        ArrayList<Event> attendeeEvents = new ArrayList<>();
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
                 .get()
@@ -417,7 +415,7 @@ public class FirebaseDB {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            attendeeEvents.add(documentSnapshot.toObject(Event.class));
+                            eventArrayList.add(documentSnapshot.toObject(Event.class));
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -427,17 +425,15 @@ public class FirebaseDB {
                         }
                     });
         }
-        return attendeeEvents;
     }
 
     /**
      * Retrieves all the attendees that have signed up an event
      *
      * @param event the event we're getting the attendees
-     * @return A list of the attendees who have signed up
+     * @param attendeeArrayList the list passed in to get the attendees
      */
-    public static ArrayList<Attendee> getEventSignedUp(Event event) {
-        ArrayList<Attendee> attendeeList = new ArrayList<>();
+    public static void getEventSignedUp(Event event, ArrayList<Attendee> attendeeArrayList) {
         for (String signUps : event.getSignUps()) {
             usersCollection
                     .document(signUps)
@@ -446,7 +442,7 @@ public class FirebaseDB {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                            attendeeList.add(attendee);
+                            attendeeArrayList.add(attendee);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -456,18 +452,15 @@ public class FirebaseDB {
                         }
                     });
         }
-
-        return attendeeList;
     }
 
     /**
      * Retrieves all the attendees that have checked in an event
      *
      * @param event the event we're getting the attendees
-     * @return A list of the attendees who have checked in
+     * @param attendeeArrayList the list passed in to get the events
      */
-    public static ArrayList<Attendee> getEventCheckedIn(Event event) {
-        ArrayList<Attendee> attendeeList = new ArrayList<>();
+    public static void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList) {
         checkInsCollection
                 .whereEqualTo("eventId", event.getDocumentId())
                 .get()
@@ -482,7 +475,7 @@ public class FirebaseDB {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                                            attendeeList.add(attendee);
+                                            attendeeArrayList.add(attendee);
                                         }
                                     })
                                     .addOnFailureListener(new OnFailureListener() {
@@ -501,19 +494,20 @@ public class FirebaseDB {
                         Log.w(usersTAG, "Failed " + e);
                     }
                 });
-        return attendeeList;
+
     }
 
+    /** This returns the name of the user with that document id
+     * @param userDocumentId This the document id of the user
+     * @param callBack This callBack will be used to get back the name of user
+     */
     public static void getUserName(String userDocumentId, GetStringCallBack callBack) {
-        //ArrayList<String> user = new ArrayList<String>();
         usersCollection.document(userDocumentId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Log.d(usersTAG, "Success");
-                        //Attendee attendee = documentSnapshot.toObject(Attendee.class);
                         callBack.onResult((String) documentSnapshot.get("id"));
-//                        user.add(attendee.getName());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -522,7 +516,6 @@ public class FirebaseDB {
                         Log.w(usersTAG, "Failed "+e);
                     }
                 });
-        //return user.get(0);
     }
 
     /**
@@ -584,33 +577,6 @@ public class FirebaseDB {
                         }
                     }
                 });
-//    public static Attendee loginUser(String userId) {
-//        ArrayList<Attendee> user = new ArrayList<Attendee>();
-//        usersCollection
-//                .whereEqualTo("id", userId)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            int i = 0;
-//                            for (DocumentSnapshot documentSnapshot: task.getResult()) {
-//                                user.add(documentSnapshot.toObject(Attendee.class));
-//                                i += 1;
-//                            }
-//                            if (i == 0) {
-//                                // This means that Attendee needs a constructor where it only accepts userId and sets the rest to default
-//                                user.add(new Attendee(userId));
-//                                addUser(user.get(0));
-//                            }
-//                        }
-//                        else {
-//                            Log.e("MainActivity", "Error trying to login");
-//                        }
-//                    }
-//                });
-//        return user.get(0);
-//    }
 
     }
 }
