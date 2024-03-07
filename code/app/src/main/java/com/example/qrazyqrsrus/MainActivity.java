@@ -47,7 +47,10 @@ public class MainActivity extends AppCompatActivity{
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        qrHandler = new QRCodeScanHandler(this);
+        // Apparently this is not good practice, but if it works, it works.
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        qrHandler = new QRCodeScanHandler(this, deviceId);
 
         db = FirebaseFirestore.getInstance();
 
@@ -56,8 +59,7 @@ public class MainActivity extends AppCompatActivity{
         // At the start we want to be at the Home screen
         ChangeFragment(new HomeFragment());
 
-        // Apparently this is not good practice, but if it works, it works.
-        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
 
         if (deviceId == null) {
             return;

@@ -35,10 +35,13 @@ public class QRCodeScanHandler{
     //4 = more than one event with this qr code as their checkin
     private int errorNumber;
     private AppCompatActivity activity;
+    private String userID;
+    private Boolean isPromo = false;
     private ActivityResultLauncher<ScanOptions> barcodeLauncher;
 
-    public QRCodeScanHandler(AppCompatActivity activity) {
+    public QRCodeScanHandler(AppCompatActivity activity, String userID) {
         this.activity = activity;
+        this.userID = userID;
         barcodeLauncher = activity.registerForActivityResult(new ScanContract(),
                 result -> {
                     //this ActivityResultCallback lambda function handles the results of the scanning activity
@@ -52,6 +55,7 @@ public class QRCodeScanHandler{
                             @Override
                             public void onResult(Event matchingEvent) {
                                 event = matchingEvent;
+                                isPromo = true;
                             }
                         });
                         if (event == null){
@@ -73,7 +77,7 @@ public class QRCodeScanHandler{
                                 //call firebase function to update database with event with attendee added to checkin list
                                 //updateEvent(event);
                                 //TODO: if attendee's have a list of events they are checked into, add this event to their check-in list
-                                event.addCheckIn(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+                                event.addCheckIn(userID);
                             }
                         } else{
                             //go to event details screen
@@ -90,7 +94,20 @@ public class QRCodeScanHandler{
         barcodeLauncher.launch(new ScanOptions());
         return this.event;
     }
-//    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = activity.registerForActivityResult(new ScanContract(),
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public int getErrorNumber() {
+        return errorNumber;
+    }
+
+    public Boolean getPromo() {
+        return isPromo;
+    }
+
+    //    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = activity.registerForActivityResult(new ScanContract(),
 //        result -> {
 //            //this ActivityResultCallback lambda function handles the results of the scanning activity
 //            //we check if there is a result
