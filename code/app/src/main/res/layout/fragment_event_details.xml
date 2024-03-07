@@ -7,6 +7,7 @@
     android:background="@color/background"
     tools:context=".EventDetailsFragment">
 
+
     <ListView
         android:id="@+id/announcement_list_view"
         android:layout_width="match_parent"

@@ -87,6 +87,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         return false;
     }
 
+
     //create new event from the user input. messy, needs error checking
     private Event createNewEvent(View view){
         String eventName = ((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString();
