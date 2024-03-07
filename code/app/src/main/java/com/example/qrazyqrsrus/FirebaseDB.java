@@ -519,28 +519,6 @@ public class FirebaseDB {
                 });
     }
 
-//i think we can just use loginUser instead of this
-//    /** This returns the name of the user document with the userId we specify
-//     * @param userId This the android Id of the user
-//     * @param callBack This callBack will be used to get back the name of user
-//     */
-//    public static void getUserFromUserIdName(String userId, GetAttendeeCallBack callBack) {
-//        usersCollection.whereEqualTo("id", userId).get()
-//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                        Log.d(usersTAG, "Success");
-//                        callBack.onResult((String) queryDocumentSnapshots.getDocuments().get(0).get("id"));
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(usersTAG, "Failed "+e);
-//                    }
-//                });
-//    }
-
     /**
      * \
      * Check whether or not the content of a QR code is already in use by an event created in the app.
