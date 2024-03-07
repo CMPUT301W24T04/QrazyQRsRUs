@@ -47,6 +47,7 @@ public class NewEventQrFragment extends Fragment {
         return view;
     }
 
+
     private void generateNewQR(){
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();

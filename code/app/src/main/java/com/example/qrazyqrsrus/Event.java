@@ -41,6 +41,7 @@ public class Event implements Serializable {
         this.signUps = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
     }
+
     // Constructor when getting retrieving from database
     public Event(String documentId, String name, String organizerId, String details,
                  String location, LocalDateTime startDate, LocalDateTime endDate,

@@ -1,9 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.CrazyQRTest" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.QrazyQRsRUs" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/bright_blue</item>
+        <item name="colorSecondary">@color/pale_blue</item>
+        <item name="backgroundColor">@color/dark_blue</item>
+        <item name="colorContainer">@color/dark_gray</item>
+        <item name="colorAccent">@color/pale_blue</item>
+        <item name="textFillColor">@color/bone</item>
     </style>
 
-    <style name="Theme.CrazyQRTest" parent="Base.Theme.CrazyQRTest" />
+    <style name="Theme.QrazyQRsRUs" parent="Base.Theme.QrazyQRsRUs" />
 </resources>
