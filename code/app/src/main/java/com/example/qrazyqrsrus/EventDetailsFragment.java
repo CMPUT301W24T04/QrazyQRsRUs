@@ -93,7 +93,11 @@ public class EventDetailsFragment extends Fragment {
         Button signUpEvent = view.findViewById(R.id.sign_up_button);
         Button viewAttendeesButton = view.findViewById(R.id.attendee_list_button);
 
-        if (Objects.equals(event.getOrganizerId(), attendee.getDocumentId()) || Event.hasCheckedInOrSignedUp(attendee.getDocumentId(), event)) {
+        if (Event.hasCheckedInOrSignedUp(attendee.getDocumentId(), event)) {
+            signUpEvent.setVisibility(View.GONE);
+            viewAttendeesButton.setVisibility(View.GONE);
+        }
+        if (Objects.equals(event.getOrganizerId(), attendee.getDocumentId())){
             signUpEvent.setVisibility(View.GONE);
         } else {
             viewAttendeesButton.setVisibility(View.GONE);
