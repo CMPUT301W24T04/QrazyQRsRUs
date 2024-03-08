@@ -48,13 +48,18 @@ public class MainActivity extends AppCompatActivity{
 
         qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
             @Override
-            public void onResult(Event matchingEvent) {
-                ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0]));
+            public void onPromoResult(Event matchingEvent) {
+                ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
+            }
+
+            @Override
+            public void onCheckInResult(Event event) {
+                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
             }
 
             @Override
             public void onNoResult(int errorNumber){
-
+                new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "Error Dialog");
             }
 
         });

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,8 @@ import java.util.ArrayList;
  */
 public class EventDetailsFragment extends Fragment {
 
+    private Attendee attendee;
+    private Event event;
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -53,8 +56,29 @@ public class EventDetailsFragment extends Fragment {
             System.out.println("No Arguments provided");
             return null;
         }
-        Event event = (Event) getArguments().get("event");
-        Attendee attendee = (Attendee) getArguments().get("attendee");
+        this.event = (Event) getArguments().get("event");
+        this.attendee = (Attendee) getArguments().get("attendee");
+
+        if (this.attendee == null){
+            String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+                @Override
+                public void onResult(Attendee attendee) {
+                    setAttendee(attendee);
+                }
+            });
+        }
+        Boolean isCheckIn = (Boolean) getArguments().get("isCheckIn");
+        if (isCheckIn == null) {
+
+        }else{
+            if (isCheckIn){
+                if (event.getSignUps().contains(attendee.getDocumentId())){
+                    event.deleteSignUp(attendee.getDocumentId());
+                    event.addCheckIn(attendee.getDocumentId());
+                }
+            }
+        }
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = view.findViewById(R.id.event_detail_name);
@@ -115,10 +139,11 @@ public class EventDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
-    public static EventDetailsFragment newInstance(Event i, Attendee attendee){
+    public static EventDetailsFragment newInstance(Event i, Attendee attendee, Boolean isCheckIn){
         Bundle args = new Bundle();
         args.putSerializable("event", i);
         args.putSerializable("attendee", attendee);
+        args.putSerializable("isCheckIn", isCheckIn);
 
         EventDetailsFragment fragment = new EventDetailsFragment();
         fragment.setArguments(args);
@@ -127,6 +152,10 @@ public class EventDetailsFragment extends Fragment {
 
     private void updateOrganizerString(String string, View view){
         ((TextView) view.findViewById(R.id.event_detail_organizer)).setText("Organizer: " + string);
+    }
+
+    private void setAttendee(Attendee attendee){
+        this.attendee = attendee;
     }
 
 }
