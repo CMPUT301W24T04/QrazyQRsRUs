@@ -153,7 +153,7 @@ public class EventList extends Fragment {  // FIX LATER
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList3_to_eventDetailsFragment3, bundle);
+                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_eventDetailsFragment, bundle);
             }
         });
 
