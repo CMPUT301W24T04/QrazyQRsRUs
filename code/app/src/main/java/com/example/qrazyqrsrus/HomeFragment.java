@@ -74,6 +74,7 @@ public class HomeFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Bundle args = new Bundle();
                 args.putSerializable("event", signedUpEvents.get(i));
+                args.putSerializable("attendee", attendee);
                 Navigation.findNavController(view).navigate(R.id.action_mainMenu_to_eventDetailsFragment, args);
             }
         });
