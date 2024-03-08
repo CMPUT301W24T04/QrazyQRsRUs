@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity{
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
-                ChangeFragment(new ViewProfileFragment());
+                //create a new instance of the ViewProfileFragment fragment, with the attendee that was obtained by logging in the user
+                ChangeFragment(ViewProfileFragment.newInstance(user[0]));
             }
 
             return true;

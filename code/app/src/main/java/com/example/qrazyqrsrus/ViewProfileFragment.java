@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ViewProfileFragment extends Fragment {
     private Attendee attendee;
@@ -78,14 +79,17 @@ public class ViewProfileFragment extends Fragment {
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         Bundle args = getArguments();
-        String userWhoClicked;
         Attendee attendeeClicked;
+        Log.d("profile_error", userId);
+        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
         if (args != null){
-            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
-
+            if(!Objects.equals(userId, ((Attendee) args.getSerializable("attendee")).getId())){
+                restrictEdits();
             }
+        } else{
+            new ErrorDialog(R.string.no_args).show(getActivity().getSupportFragmentManager(), "Error Dialog");
         }
-        restrictEdits();
+
 //        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
 //            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
 //                restrictEdits();
@@ -283,9 +287,8 @@ public class ViewProfileFragment extends Fragment {
         return pathName;
     }
 
-    public static ViewProfileFragment newInstance(Attendee attendee, String userId){
+    public static ViewProfileFragment newInstance(Attendee attendee){
         Bundle args = new Bundle();
-        args.putSerializable("userId", userId);
         args.putSerializable("attendee", attendee);
 
         ViewProfileFragment fragment = new ViewProfileFragment();
