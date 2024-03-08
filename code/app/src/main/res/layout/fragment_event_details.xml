@@ -96,5 +96,18 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/announcement_list_view"
         app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/event_detail_details"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="View Attendees"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/icons8_back_button"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:layout_editor_absoluteX="3dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onResult(Attendee attendee) {
                 user[0] = attendee;
+                ChangeFragment(new HomeEventsFragment());
             }
         });
 
@@ -64,13 +65,6 @@ public class MainActivity extends AppCompatActivity{
 
         });
 
-
-
-        // At the start we want to be at the Home screen
-        ChangeFragment(new HomeFragment());
-
-
-
         if (deviceId == null) {
             return;
         }
@@ -81,16 +75,9 @@ public class MainActivity extends AppCompatActivity{
 
 
             if (id == R.id.home) {
-                ChangeFragment(new HomeFragment());
+                ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
                 qrHandler.launch();
-//                if (event == null){
-//                    //TODO: handle errors, check ints in QRCodeScanHandler
-//                    Log.d("testing", "no event from qr code");
-//                } else{
-//                    Log.d("testing", "no event from qr code");
-//                    ChangeFragment(EventDetailsFragment.newInstance(event));
-//                }
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {

@@ -112,8 +112,8 @@ public class FirebaseDB {
                         if (task.isSuccessful()) {
                             if (task.getResult() == null || task.getResult().isEmpty()) {
                                 Attendee attendee = new Attendee(userId);
-                                callBack.onResult(attendee);
                                 addUser(attendee);
+                                callBack.onResult(attendee);
                             } else {
                                 for (DocumentSnapshot documentSnapshot: task.getResult()) {
                                     Attendee attendee = documentSnapshot.toObject(Attendee.class);
@@ -140,7 +140,9 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(eventsTAG, "event document snapshot written with ID:" + documentReference.getId());
+
                         event.setDocumentId(documentReference.getId());
+                        updateEvent(event);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -188,7 +190,7 @@ public class FirebaseDB {
                 .update("announcements", event.getAnnouncements(),
                         "checkIns", event.getCheckIns(), "signUps",
                         event.getSignUps(), "posterPath", event.getPosterPath(),
-                        "qrCode", event.getQrCode())
+                        "qrCode", event.getQrCode(), "documentId", event.getDocumentId())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -314,8 +316,17 @@ public class FirebaseDB {
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                if (announcements == null){
+                                    announcements = new ArrayList<String>();
+                                }
                                 ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                                if (signUps == null){
+                                    signUps = new ArrayList<String>();
+                                }
                                 ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                                if (checkIns == null){
+                                    checkIns = new ArrayList<String>();
+                                }
 
                                 Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
                                 eventList.add(event);
@@ -379,6 +390,16 @@ public class FirebaseDB {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Event event = documentSnapshot.toObject(Event.class);
+                            if (event.getAnnouncements() == null){
+                                event.setAnnouncements(new ArrayList<String>());
+                            }
+                            if (event.getSignUps() == null){
+                                event.setSignUps(new ArrayList<String>());
+                            }
+                            if (event.getCheckIns() == null){
+                                event.setCheckIns(new ArrayList<String>());
+                            }
+                            event.setDocumentId(documentSnapshot.getId());
                             eventArrayList.add(event);
                         }
                         adapter.notifyDataSetChanged();
@@ -419,7 +440,18 @@ public class FirebaseDB {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            eventArrayList.add(documentSnapshot.toObject(Event.class));
+                            Event event = documentSnapshot.toObject(Event.class);
+
+                            if (event.getAnnouncements() == null){
+                                event.setAnnouncements(new ArrayList<String>());
+                            }
+                            if (event.getSignUps() == null){
+                                event.setSignUps(new ArrayList<String>());
+                            }
+                            if (event.getCheckIns() == null){
+                                event.setCheckIns(new ArrayList<String>());
+                            }
+                            eventArrayList.add(event);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -447,6 +479,7 @@ public class FirebaseDB {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                            attendee.setDocumentId(documentSnapshot.getId());
                             attendeeArrayList.add(attendee);
                         }
                     })
@@ -480,6 +513,7 @@ public class FirebaseDB {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                                            attendee.setDocumentId(documentSnapshot.getId());
                                             attendeeArrayList.add(attendee);
                                         }
                                     })
@@ -577,11 +611,61 @@ public class FirebaseDB {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                callBack.onResult(documentSnapshot.toObject(Event.class));
+                                Event event = documentSnapshot.toObject((Event.class));
+                                if (event.getAnnouncements() == null){
+                                    event.setAnnouncements(new ArrayList<String>());
+                                }
+                                if (event.getSignUps() == null){
+                                    event.setSignUps(new ArrayList<String>());
+                                }
+                                if (event.getCheckIns() == null){
+                                    event.setCheckIns(new ArrayList<String>());
+                                }
+                                event.setDocumentId(documentSnapshot.getId());
+
+                                callBack.onResult(event);
                             }
                         }
                     }
                 });
 
+    }
+    /**
+     * Retrieves all the events an user has signed up to
+     *
+     * @param user the user who as signed up to events
+     * @param eventArrayList the list you want to add the events to
+     */
+    public static void getEventsMadeByUser(Attendee user, ArrayList<Event> eventArrayList, EventListAdapter adapter) {
+        eventsCollection
+                .whereEqualTo("organizerId", user.getDocumentId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Event event = documentSnapshot.toObject(Event.class);
+                            if (event.getAnnouncements() == null){
+                                event.setAnnouncements(new ArrayList<String>());
+                            }
+                            if (event.getSignUps() == null){
+                                event.setSignUps(new ArrayList<String>());
+                            }
+                            if (event.getCheckIns() == null){
+                                event.setCheckIns(new ArrayList<String>());
+                            }
+                            event.setDocumentId(documentSnapshot.getId());
+                            eventArrayList.add(event);
+                        }
+                        adapter.notifyDataSetChanged();
+                        Log.d(eventsTAG, "Events successfully retrieved");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(eventsTAG, "Failed to retrieve events of user");
+                    }
+                });
     }
 }
