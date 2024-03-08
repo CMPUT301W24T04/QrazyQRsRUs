@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_eventList_to_eventInfoView"
             app:destination="@id/eventInfoView" />
+        <action
+            android:id="@+id/action_eventList_to_eventDetailsFragment2"
+            app:destination="@id/eventDetailsFragment2" />
     </fragment>
     <fragment
         android:id="@+id/mainMenu"
@@ -58,6 +61,7 @@
             app:destination="@id/eventList" />
     </fragment>
     <fragment
+
         android:id="@+id/eventDetailsFragment"
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
@@ -66,4 +70,11 @@
             android:id="@+id/action_eventDetailsFragment_to_mainMenu"
             app:destination="@id/mainMenu" />
     </fragment>
+    <fragment
+        android:id="@+id/eventDetailsFragment2"
+        android:name="com.example.qrazyqrsrus.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details" />
+    </fragment>
+
 </navigation>

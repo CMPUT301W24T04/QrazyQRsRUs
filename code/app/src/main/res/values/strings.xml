@@ -15,4 +15,5 @@
     <string name="test_error_message">Error: This error is an error!</string>
     <string name="welcome_to_qrazyqrsrus">Welcome to QrazyQRsRUs!</string>
     <string name="events">Events:</string>
+    <string name="no_args">Error: No arguments provided!</string>
 </resources>
