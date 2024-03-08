@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onResult(Attendee attendee) {
                 user[0] = attendee;
+                ChangeFragment(HomeFragment.newInstance(user[0]));
             }
         });
 
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         // At the start we want to be at the Home screen
-        ChangeFragment(new HomeFragment());
+
 
 
 
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity{
 
 
             if (id == R.id.home) {
-                ChangeFragment(new HomeFragment());
+                ChangeFragment(HomeFragment.newInstance(user[0]));
             } else if (id == R.id.scan) {
                 qrHandler.launch();
 //                if (event == null){

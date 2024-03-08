@@ -75,6 +75,4 @@
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
         tools:layout="@layout/fragment_event_details" />
-    </fragment>
-
 </navigation>
