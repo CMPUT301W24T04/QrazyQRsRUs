@@ -39,12 +39,22 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * allows the user to choose the image of the event
+ */
 public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuItemClickListener, ImageDecoder.OnHeaderDecodedListener {
 
     private ImageView imageView;
     private Toolbar toolbar;
 
     private Uri uri;
+
+    /**
+     * save the image as an instance
+     * @param param1
+     * @param param2
+     * @return fragment
+     */
     public static NewEventImageFragment newInstance(String param1, String param2) {
         NewEventImageFragment fragment = new NewEventImageFragment();
         Bundle args = new Bundle();
@@ -52,6 +62,11 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         return fragment;
     }
 
+    /**
+     * creates the view
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +82,18 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 
     }
 
-
+    /**
+     * when view is creates, show the image selection screen
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

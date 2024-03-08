@@ -14,19 +14,37 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+/**
+ * Displays error when QR code is wront
+ */
 public class ErrorDialog extends DialogFragment {
     @StringRes int resID;
 
+    /**
+     * displays the error on a dialog
+     * @param resID
+     */
     public ErrorDialog(@StringRes int resID){
         super();
         this.resID = resID;
     }
 
+    /**
+     * attaches the dialog to the view
+     * @param context
+     */
     @Override
     public void onAttach(@NonNull Context context){
         super.onAttach(context);
     }
 
+    /**
+     * when vies is created, generate the dialog
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Dialog
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {

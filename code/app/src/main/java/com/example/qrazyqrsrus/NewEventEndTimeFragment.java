@@ -18,10 +18,19 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
 
+/**
+ * Allows user to select the end time
+ */
 public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
     private androidx.appcompat.widget.Toolbar toolbar;
 
+    /**
+     * Saves the end dats in a bundle
+     * @param param1
+     * @param param2
+     * @return fragment
+     */
     public static NewEventEndTimeFragment newInstance(String param1, String param2) {
         NewEventEndTimeFragment fragment = new NewEventEndTimeFragment();
         Bundle args = new Bundle();
@@ -35,6 +44,11 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         super.onAttach(context);
     }
 
+    /**
+     * create view
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +57,18 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         }
     }
 
+    /**
+     * When view created save bundle
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,6 +86,11 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         createToolbar(view);
         return view;
     }
+
+    /**
+     * Toolbar functionality
+     * @param view
+     */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
@@ -70,6 +101,11 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         toolbar.setOnMenuItemClickListener((androidx.appcompat.widget.Toolbar.OnMenuItemClickListener) this);
     }
 
+    /**
+     * switch views when menu is clicked
+     * @param item {@link MenuItem} that was clicked
+     * @return
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
@@ -86,7 +122,12 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
     //create new event from the user input. messy, needs error checking
 
-
+    /**
+     * Save the local time
+     * @param datePicker
+     * @param timePicker
+     * @return LocalDateTime
+     */
     //we must convert the date that was picked by the user into an LocalDateTime (java.time.LocalDateTime)
     private LocalDateTime getLocalDateTime(DatePicker datePicker, TimePicker timePicker){
         return LocalDateTime.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
@@ -113,6 +154,11 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 //        return date;
 //    }
 
+    /**
+     * hold date as bundle
+     * @param bundle
+     * @return Bundle
+     */
     private Bundle makeNewBundle(Bundle bundle){
         DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
         TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
