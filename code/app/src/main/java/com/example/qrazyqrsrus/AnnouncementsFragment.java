@@ -20,18 +20,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Fragment to display the Announcements section which users
+ * can access through events. Enables them to view announcements
+ * sent by the organizers.
  * @author Ikjyot - icansingh
  * @see AnnouncementEditFragment
  * @version 1
  */
 public class AnnouncementsFragment extends Fragment {
 
-    private ListView announcementsListView;
-
-    private FirebaseFirestore db;
+    private ListView announcementListView;
+    private ArrayList<String> announcements;
+    private ArrayAdapter<String> adapter;
 
     public AnnouncementsFragment() {
         // Constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -39,48 +47,22 @@ public class AnnouncementsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.layout_announcements, container, false);
 
-        announcementsListView = rootView.findViewById(R.id.list_announcements);
+        if (getArguments() == null){
+            System.out.println("No Arguments provided");
+            return null;
+        }
 
-        db = FirebaseFirestore.getInstance();
+        Event event = (Event) getArguments().get("event");
+        assert event != null;
 
-        loadAnnouncements();
+        announcementListView = rootView.findViewById(R.id.list_announcements);
+
+        announcements = event.getAnnouncements();
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, announcements);
+        announcementListView.setAdapter(adapter);
 
         return rootView;
     }
-
-    /**
-     * Loads the announcements from the database.
-     * @throws ....
-     */
-    private void loadAnnouncements() {
-        db.collection("Events") //This is the collection
-                .document("Calgary") // Provide the event document ID here
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("FirestoreListener", "Listen failed.", e);
-                            return;
-                        }
-
-                        if (documentSnapshot != null && documentSnapshot.exists()) {
-                            // Access announcements array within the event document
-                            List<String> announcements = (List<String>) documentSnapshot.get("Announcements");
-
-                            if (announcements != null && !announcements.isEmpty()) {
-                                // Display announcements in a ListView
-                                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, announcements);
-                                announcementsListView.setAdapter(adapter);
-                            } else {
-                                // Handle case when announcements array is empty
-                            }
-                        } else {
-                            // Handle case when document doesn't exist
-                        }
-                    }
-                });
-    }
-
 
 }
 

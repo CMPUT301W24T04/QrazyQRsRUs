@@ -116,6 +116,7 @@ public class FirebaseDB {
                             } else {
                                 for (DocumentSnapshot documentSnapshot: task.getResult()) {
                                     Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                                    attendee.setDocumentId(documentSnapshot.getId());
                                     callBack.onResult(attendee);
                                 }
                             }
@@ -255,6 +256,7 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
+        //return localBitMap.get(0);
     }
 
     /**

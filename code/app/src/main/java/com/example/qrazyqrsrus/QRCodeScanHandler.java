@@ -40,7 +40,8 @@ public class QRCodeScanHandler{
     private ActivityResultLauncher<ScanOptions> barcodeLauncher;
 
     public interface ScanCompleteCallback{
-        public void onResult(Event event);
+        public void onPromoResult(Event event);
+        public void onCheckInResult(Event event);
         public void onNoResult(int errorNumber);
     }
 
@@ -54,14 +55,12 @@ public class QRCodeScanHandler{
                     if(result.getContents() == null) {
                         //((TextView) findViewById(R.id.bar_code_output)).setText("Error! No barcode scanned.");
                     } else {
-                        //TODO: handle result, i.e., check if this qr code was a check in, or promotion qr code, and go to the corresponding screen
-//                        Event event;
                         findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
                             public void onResult(Event matchingEvent) {
-                                callback.onResult(matchingEvent);
-//                                event = matchingEvent;
-//                                isPromo = true;
+                                callback.onPromoResult(matchingEvent);
+                                event = matchingEvent;
+                                isPromo = true;
                             }
                         });
                         if (event == null){
@@ -70,27 +69,14 @@ public class QRCodeScanHandler{
 
                                 @Override
                                 public void onResult(Event matchingEvent) {
-                                    callback.onResult(matchingEvent);
+                                    callback.onCheckInResult(matchingEvent);
+                                    event = matchingEvent;
                                 }
                             });
                             if (event == null){
                                 //throw error, qr code does not belong to any event
                                 //TODO: add error bar for scanning qr code that no event has
-                            } else{
-                                //if qr code was a checkin qr code, add the user to the event's checkin list
-                                //event.addToCheckinList(userID);
-                                //getAttende(UserID).
-                                //call firebase function to update database with event with attendee added to checkin list
-                                //updateEvent(event);
-                                //TODO: if attendee's have a list of events they are checked into, add this event to their check-in list
-                                event.addCheckIn(userID);
                             }
-                        } else{
-                            //go to event details screen
-                            //put event in a bundle to populate event details screen with
-
-                            //OR: put qrContent in a bundle
-                            //in event details screen, find the Event Document with promo_qr_code field matching qrContent
                         }
                         //((TextView) findViewById(R.id.bar_code_output)).setText(result.getContents());
                     }
