@@ -15,6 +15,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
+/**
+ * gets list of attendees
+ */
 public class MyEventsListFragment extends Fragment {
 
     private Attendee attendee;

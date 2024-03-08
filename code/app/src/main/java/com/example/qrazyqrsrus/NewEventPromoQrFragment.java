@@ -46,7 +46,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-
+/**
+ * genertates the promo QR code for the event
+ */
 public class NewEventPromoQrFragment extends Fragment {
     //private ImageView imageView;
     private boolean successfulQRSelection;

@@ -25,6 +25,9 @@ public class Event implements Serializable {
     private ArrayList<String> signUps= new ArrayList<String>();
     private ArrayList<String> checkIns= new ArrayList<String>();
 
+    /**
+     * Represents the event
+     */
     // Default constructor
     public Event() {
     }
@@ -87,6 +90,13 @@ public class Event implements Serializable {
         this.checkIns = checkIns;
     }
 
+    /**
+     * event constructor
+     * @param eventName
+     * @param eventDetails
+     * @param eventLocation
+     * @param eventDate
+     */
     public Event(String eventName, String eventDetails, String eventLocation, LocalDateTime eventDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.name = eventName;
@@ -95,125 +105,221 @@ public class Event implements Serializable {
         this.startDate = eventDate.format(formatter);
     }
 
+    /** get
+     *
+     * @return String
+     */
     public String getDocumentId() { return documentId; }
-
+    /** get
+     *
+     * @return String
+     */
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getName() {
         return name;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public void setName(String eventName) {
         this.name = eventName;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getOrganizerId() {
         return organizerId;
     }
-
+    /** set
+     *
+     * @return String
+     */
     public void setOrganizerId(String organizerId) {
         this.organizerId = organizerId;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getDetails() {
         return details;
     }
-
+    /** set
+     *
+     * @return String
+     */
     public void setDetails(String details) {
         this.details = details;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getLocation() {
         return location;
     }
-
+    /** set
+     *
+     * @return String
+     */
     public void setLocation(String location) {
         this.location = location;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getStartDate() {
         return startDate;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getEndDate() {
         return endDate;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public Boolean getGeolocationOn() {
         return geolocationOn;
     }
-
+    /** set
+     *
+     * @return String
+     */
     public void setGeolocationOn(Boolean geolocationOn) {
         this.geolocationOn = geolocationOn;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getPosterPath() {
         return posterPath;
     }
-
+    /** set
+     *
+     * @return String
+     */
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getQrCode() {
         return qrCode;
     }
-
+    /** set
+     *
+     * @return String
+     */
     public void setQrCode(String qrCode) {
         this.qrCode = qrCode;
     }
-
+    /** get
+     *
+     * @return String
+     */
     public String getQrCodePromo() {
         return qrCodePromo;
     }
-
+    /** set
+     *
+     * @return
+     */
     public void setQrCodePromo(String qrCodePromo) {
         this.qrCodePromo = qrCodePromo;
     }
-
+    /** get
+     *
+     * @return ArrayList<String>
+     */
     public ArrayList<String> getAnnouncements() {
         return announcements;
     }
-
+    /** set
+     *
+     * @return ArrayList<String>
+     */
     public void setAnnouncements(ArrayList<String> announcements) {
         this.announcements = announcements;
     }
-
+    /** adds announcement
+     *
+     * @return String
+     */
     public void addAnnouncement(String announcement) {
         this.announcements.add(announcement);
     }
-
+    /** get
+     *
+     * @return ArrayList<String>
+     */
     public ArrayList<String> getSignUps() {
         return signUps;
     }
-
+    /** set
+     *
+     * @return ArrayList<String>
+     */
     public void setSignUps(ArrayList<String> signUps) {
         this.signUps = signUps;
     }
-
+    /** adds user
+     *
+     * @return
+     */
     public void addSignUp(String signUp) {
         this.signUps.add(signUp);
     }
-
+    /** removes user
+     *
+     * @return
+     */
     public void deleteSignUp(String userId) {
         this.signUps.remove(userId);
     }
-
+    /** get
+     *
+     * @return ArrayList<String>
+     */
     public ArrayList<String> getCheckIns() {
         return checkIns;
     }
-
+    /** get
+     *
+     * @return ArrayList<String>
+     */
     public void setCheckIns(ArrayList<String> checkIns) {
         this.checkIns = checkIns;
     }
-
+    /** adds checkin
+     *
+     * @return
+     */
     public void addCheckIn(String checkIn) {
         this.checkIns.add(checkIn);
     }
 
-
+    /**
+     * checkes if user is checked in or signed up
+     * @param userDocumentId
+     * @param event
+     * @return Boolean
+     */
     public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
         if (event.getSignUps().contains(userDocumentId)) {
             return true;
