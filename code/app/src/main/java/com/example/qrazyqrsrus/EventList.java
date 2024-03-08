@@ -158,12 +158,12 @@ public class EventList extends Fragment {  // FIX LATER
         });
 
         // back button
-        eventListLayout.findViewById(R.id.event_button_back).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList_to_mainMenu);
-            }
-        });
+//        eventListLayout.findViewById(R.id.event_button_back).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList_to_mainMenu);
+//            }
+//        });
         return eventListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
 
 

@@ -76,6 +76,7 @@ public class EventDetailsFragment extends Fragment {
                 if (event.getSignUps().contains(attendee.getDocumentId())){
                     event.deleteSignUp(attendee.getDocumentId());
                     event.addCheckIn(attendee.getDocumentId());
+                    FirebaseDB.updateEvent(event);
                 }
             }
         }
