@@ -1,3 +1,5 @@
+//this fragment is the third fragment in the event creation sequence. it allows users to select an end time for their event.
+
 package com.example.qrazyqrsrus;
 
 import android.content.Context;

@@ -1,3 +1,4 @@
+//this fragment is the first fragment of the new event generation sequence. it allows users to name their event, set the location, details, and optionally limit attendees.
 package com.example.qrazyqrsrus;
 
 import android.content.Context;

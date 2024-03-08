@@ -1,3 +1,5 @@
+//this fragment is the fourth fragment in the event creation sequence. it allows users to upload an image.
+
 package com.example.qrazyqrsrus;
 
 import static android.graphics.ImageDecoder.createSource;

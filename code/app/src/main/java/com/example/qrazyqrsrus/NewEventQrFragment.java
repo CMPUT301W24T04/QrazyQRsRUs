@@ -1,3 +1,4 @@
+//this fragment is the sixth fragment in the event creation sequence. it allows users to generate or upload a checkin qr code for their event.
 package com.example.qrazyqrsrus;
 
 
