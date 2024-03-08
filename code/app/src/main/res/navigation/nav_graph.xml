@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/attendeeList">
+    app:startDestination="@id/mainMenu">
     <fragment
         android:id="@+id/attendeeList"
         android:name="com.example.qrazyqrsrus.AttendeeList"
@@ -31,9 +31,9 @@
     </fragment>
     <fragment
         android:id="@+id/mainMenu"
-        android:name="com.example.qrazyqrsrus.MainMenu"
+        android:name="com.example.qrazyqrsrus.HomeFragment"
         android:label="fragment_main_menu"
-        tools:layout="@layout/fragment_main_menu" >
+        tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_mainMenu_to_attendeeList"
             app:destination="@id/attendeeList" />

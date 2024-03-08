@@ -381,7 +381,7 @@ public class FirebaseDB {
      * @param user the user who as signed up to events
      * @param eventArrayList the list you want to add the events to
      */
-    public static void getAttendeeSignedUpEvents(Attendee user, ArrayList<Event> eventArrayList) {
+    public static void getAttendeeSignedUpEvents(Attendee user, ArrayList<Event> eventArrayList, HomeSignedUpListAdapter adapter) {
         eventsCollection
                 .whereArrayContains("signUps", user.getDocumentId())
                 .get()
@@ -402,6 +402,7 @@ public class FirebaseDB {
                             event.setDocumentId(documentSnapshot.getId());
                             eventArrayList.add(event);
                         }
+                        adapter.notifyDataSetChanged();
                         Log.d(eventsTAG, "Events successfully retrieved");
                     }
                 })
@@ -419,7 +420,7 @@ public class FirebaseDB {
      * @param user the user who as checked in to events
      * @param eventArrayList the list passed in to get the events
      */
-    public static void getAttendeeCheckedInEvents(Attendee user, ArrayList<Event> eventArrayList) {
+    public static void getAttendeeCheckedInEvents(Attendee user, ArrayList<Event> eventArrayList, HomeCheckedInListAdapter adapter) {
         ArrayList<String> attendeeCheckIns = new ArrayList<>();
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
@@ -460,6 +461,7 @@ public class FirebaseDB {
                         }
                     });
         }
+        adapter.notifyDataSetChanged();
     }
 
     /**
