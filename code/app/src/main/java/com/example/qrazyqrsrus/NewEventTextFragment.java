@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -43,13 +44,25 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.new_event_text_fragment, container, false);
+
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            //pass the user input as a bundle to the next fragment
             Bundle bundle = makeNewBundle();
             Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
         });
+
+        SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
+        EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
+
+        limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            maxAttendeesEditText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            if (!isChecked) {
+                maxAttendeesEditText.setText(""); // Clear the text when toggle is off
+            }
+        });
+
         createToolbar(view);
+
         return view;
     }
     private void createToolbar(View view){
