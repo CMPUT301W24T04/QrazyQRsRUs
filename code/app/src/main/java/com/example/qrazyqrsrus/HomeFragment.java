@@ -51,12 +51,13 @@ public class HomeFragment extends Fragment {
         Attendee attendee = (Attendee) getArguments().get("attendee");
         ArrayList<Event> checkedInEvents = new ArrayList<>();
         ArrayList<Event> signedUpEvents = new ArrayList<>();
-
-        FirebaseDB.getAttendeeCheckedInEvents(attendee, checkedInEvents);
-        FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents);
-
         HomeCheckedInListAdapter homeCheckedInListAdapter = new HomeCheckedInListAdapter(getContext(), checkedInEvents);
         HomeSignedUpListAdapter homeSignedUpListAdapter = new HomeSignedUpListAdapter(getContext(), signedUpEvents);
+
+        FirebaseDB.getAttendeeCheckedInEvents(attendee, checkedInEvents, homeCheckedInListAdapter);
+        FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+
+
         checkedIn.setAdapter(homeCheckedInListAdapter);
         signedUp.setAdapter(homeSignedUpListAdapter);
 
