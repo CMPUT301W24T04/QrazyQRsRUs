@@ -66,7 +66,7 @@ public class ViewProfileFragment extends Fragment {
         //backButton.setOnClickListener(v -> finish());
 
         etFullName = view.findViewById(R.id.etFullName);
-        etAge = view.findViewById(R.id.etAge);
+//        etAge = view.findViewById(R.id.etAge);
         etEmailAddress = view.findViewById(R.id.etEmailAddress);
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);

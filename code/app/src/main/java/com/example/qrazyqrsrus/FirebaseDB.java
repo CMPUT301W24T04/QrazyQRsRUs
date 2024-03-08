@@ -139,6 +139,7 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(eventsTAG, "event document snapshot written with ID:" + documentReference.getId());
+
                         event.setDocumentId(documentReference.getId());
                     }
                 })
@@ -378,6 +379,7 @@ public class FirebaseDB {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Event event = documentSnapshot.toObject(Event.class);
+                            event.setDocumentId(documentSnapshot.getId());
                             eventArrayList.add(event);
                         }
                         Log.d(eventsTAG, "Events successfully retrieved");
@@ -574,7 +576,9 @@ public class FirebaseDB {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                callBack.onResult(documentSnapshot.toObject(Event.class));
+                                Event event = documentSnapshot.toObject((Event.class));
+                                event.setDocumentId(documentSnapshot.getId());
+                                callBack.onResult(event);
                             }
                         }
                     }

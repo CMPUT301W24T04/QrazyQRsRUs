@@ -47,7 +47,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
         storageRef = storage.getReference();
 
         etFullName = findViewById(R.id.etFullName);
-        etAge = findViewById(R.id.etAge);
+//        etAge = findViewById(R.id.etAge);
         etEmailAddress = findViewById(R.id.etEmailAddress);
         btnUpdateProfile = findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = findViewById(R.id.imgProfilePicture);
