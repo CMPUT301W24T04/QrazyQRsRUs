@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_mainMenu_to_eventList"
             app:destination="@id/eventList" />
+        <action
+            android:id="@+id/action_mainMenu_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/attendeeInfoView"
@@ -58,8 +61,20 @@
             app:destination="@id/eventList" />
     </fragment>
     <fragment
+
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.example.qrazyqrsrus.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details" >
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_mainMenu"
+            app:destination="@id/mainMenu" />
+    </fragment>
+    <fragment
         android:id="@+id/eventDetailsFragment2"
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
         tools:layout="@layout/fragment_event_details" />
+    </fragment>
+
 </navigation>
