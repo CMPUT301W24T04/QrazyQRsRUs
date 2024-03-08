@@ -32,6 +32,7 @@ import com.google.firebase.firestore.FieldValue;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -94,6 +95,7 @@ public class EventDetailsFragment extends Fragment {
         ImageView posterView = rootView.findViewById(R.id.posterView);
         ListView announcementListView = rootView.findViewById(R.id.announcement_list_view);
         Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
+        Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
 
 
@@ -118,7 +120,7 @@ public class EventDetailsFragment extends Fragment {
                 FirebaseDB.updateEvent(event);
             }
         });
-        Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
+
         String nameString = "Name: "+event.getName();
         //String organizerString = "Organized by: ";
         FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
