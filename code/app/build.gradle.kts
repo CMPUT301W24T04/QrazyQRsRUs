@@ -68,5 +68,10 @@ dependencies {
 
     //photo picker
     implementation("androidx.activity:activity:1.8.2")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+
+    testImplementation("org.mockito:mockito-core:5.11.0")
 }
 
