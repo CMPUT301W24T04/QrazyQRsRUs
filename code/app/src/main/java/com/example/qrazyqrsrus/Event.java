@@ -213,9 +213,6 @@ public class Event implements Serializable {
         this.checkIns.add(checkIn);
     }
 
-    public void deleteCheckIn(String userId) {
-        this.checkIns.remove(userId);
-    }
 
     public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
         if (event.getSignUps().contains(userDocumentId)) {

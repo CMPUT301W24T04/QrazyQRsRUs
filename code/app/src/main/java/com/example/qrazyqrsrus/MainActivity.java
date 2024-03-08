@@ -55,6 +55,16 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void onCheckInResult(Event event) {
+                FirebaseDB.checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckCallBack() {
+                    @Override
+                    public void onResult(boolean isUnique) {
+                        if (!isUnique) {
+                            CheckIn checkIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId());
+                            FirebaseDB.addCheckIn(checkIn);
+                            event.addCheckIn(checkIn.getDocumentId());
+                        }
+                    }
+                });
                 ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
             }
 

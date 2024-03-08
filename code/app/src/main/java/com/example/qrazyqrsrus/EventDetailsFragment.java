@@ -72,18 +72,18 @@ public class EventDetailsFragment extends Fragment {
                 }
             });
         }
-        Boolean isCheckIn = (Boolean) getArguments().get("isCheckIn");
-        if (isCheckIn == null) {
-
-        }else{
-            if (isCheckIn){
-                if (event.getSignUps().contains(attendee.getDocumentId())){
-                    event.deleteSignUp(attendee.getDocumentId());
-                    event.addCheckIn(attendee.getDocumentId());
-                    FirebaseDB.updateEvent(event);
-                }
-            }
-        }
+        //Boolean isCheckIn = (Boolean) getArguments().get("isCheckIn");
+//        if (isCheckIn == null) {
+//
+//        }else{
+//            if (isCheckIn){
+//                if (event.getSignUps().contains(attendee.getDocumentId())){
+//                    //event.deleteSignUp(attendee.getDocumentId());
+//                    //event.addCheckIn(attendee.getDocumentId());
+//
+//                }
+//            }
+//        }
         View rootView = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = rootView.findViewById(R.id.event_detail_name);

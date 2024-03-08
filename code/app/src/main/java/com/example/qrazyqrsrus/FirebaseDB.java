@@ -429,7 +429,7 @@ public class FirebaseDB {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                            attendeeCheckIns.add((String) documentSnapshot.get("eventId"));
+                            attendeeCheckIns.add((String) documentSnapshot.get("eventDocId"));
                         }
                     }
                 });
@@ -500,7 +500,7 @@ public class FirebaseDB {
      */
     public static void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList) {
         checkInsCollection
-                .whereEqualTo("eventId", event.getDocumentId())
+                .whereEqualTo("eventDocId", event.getDocumentId())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -665,6 +665,52 @@ public class FirebaseDB {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(eventsTAG, "Failed to retrieve events of user");
+                    }
+                });
+    }
+
+    public static void addCheckIn(CheckIn checkIn) {
+        checkInsCollection
+                .add(checkIn)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        checkIn.setDocumentId(documentReference.getId());
+                        updateCheckIn(checkIn);
+                    }
+                });
+    }
+
+    public static void updateCheckIn(CheckIn checkIn) {
+        checkInsCollection
+                .document(checkIn.getDocumentId())
+                .update("attendeeDocId", checkIn.getAttendeeDocId(),
+                        "documentId", checkIn.getDocumentId(),
+                        "eventDocId", checkIn.getEventDocId(), "location", checkIn.getLocation(),
+                        "numberOfCheckIns", checkIn.getNumberOfCheckIns())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(usersTAG, "CheckIn document updated successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(usersTAG, "Error while updating check in document", e);
+                    }
+                });
+    }
+
+    public static void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckCallBack callBack) {
+        checkInsCollection
+                .whereEqualTo("attendeeDocId", attendeeDocId)
+                .whereEqualTo("eventDocId", eventDocId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        callBack.onResult(queryDocumentSnapshots.isEmpty());
                     }
                 });
     }
