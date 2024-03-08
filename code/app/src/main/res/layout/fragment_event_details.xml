@@ -57,8 +57,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="250dp"
         android:text="Sign Up"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/attendee_list_button"
+        app:layout_constraintBottom_toTopOf="@id/announcement_list_view"
         android:textColor="@color/white" />
 
 
@@ -91,9 +91,10 @@
         app:layout_constraintTop_toBottomOf="@id/event_detail_organizer" />
     <Button
         android:id="@+id/attendee_list_button"
+        android:text="Attendees"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/event_detail_location"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@id/announcement_list_view"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

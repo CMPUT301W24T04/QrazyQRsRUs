@@ -84,6 +84,7 @@ public class FirebaseDB {
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(usersTAG, "User document snapshot written with ID:" + documentReference.getId());
                         user.setDocumentId(documentReference.getId());
+                        updateUser(user);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -161,7 +162,7 @@ public class FirebaseDB {
                 .update("name", user.getName(),
                         "email", user.getEmail(),
                         "geolocationOn", user.getGeolocationOn(),
-                        "profilePicturePath", user.getProfilePicturePath())
+                        "profilePicturePath", user.getProfilePicturePath(), "documentId", user.getDocumentId())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {

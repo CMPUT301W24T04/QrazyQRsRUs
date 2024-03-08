@@ -216,4 +216,21 @@ public class Event implements Serializable {
     public void deleteCheckIn(String userId) {
         this.checkIns.remove(userId);
     }
+
+    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
+        if (event.getSignUps().contains(userDocumentId)) {
+            return true;
+        }
+        ArrayList<Attendee> tempList = new ArrayList<>();
+        ArrayList<String> tempList2 = new ArrayList<>();
+        FirebaseDB.getEventCheckedIn(event, tempList);
+        for (Attendee attendee : tempList) {
+            tempList2.add(attendee.getDocumentId());
+        }
+        if (tempList2.contains(userDocumentId)) {
+            return true;
+        }
+        return false;
+
+    }
 }

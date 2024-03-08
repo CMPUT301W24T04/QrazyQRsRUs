@@ -29,6 +29,7 @@ import com.google.firebase.firestore.FieldValue;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -90,6 +91,13 @@ public class EventDetailsFragment extends Fragment {
         ImageView posterView = view.findViewById(R.id.posterView);
         ListView announcementListView = view.findViewById(R.id.announcement_list_view);
         Button signUpEvent = view.findViewById(R.id.sign_up_button);
+        Button viewAttendeesButton = view.findViewById(R.id.attendee_list_button);
+
+        if (Objects.equals(event.getOrganizerId(), attendee.getDocumentId()) || Event.hasCheckedInOrSignedUp(attendee.getDocumentId(), event)) {
+            signUpEvent.setVisibility(View.GONE);
+        } else {
+            viewAttendeesButton.setVisibility(View.GONE);
+        }
         signUpEvent.setOnClickListener(new View.OnClickListener() {
             // need to get attendeeID and eventID first
             @Override
@@ -98,7 +106,6 @@ public class EventDetailsFragment extends Fragment {
                 FirebaseDB.updateEvent(event);
             }
         });
-        Button viewAttendeesButton = view.findViewById(R.id.attendee_list_button);
         String nameString = "Name: "+event.getName();
         //String organizerString = "Organized by: ";
         FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
