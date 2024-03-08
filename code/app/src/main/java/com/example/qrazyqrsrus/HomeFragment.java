@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -43,54 +44,7 @@ public class HomeFragment extends Fragment {
     ArrayList<Event> checkedInEvents = new ArrayList<>();
     ArrayList<Event> signedUpEvents = new ArrayList<>();
 
-//    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-//    private void getData(CollectionReference collectionReference, String userDocumentId){
-//        collectionReference
-//                .whereArrayContains("signUps", userDocumentId)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            Log.d("Events", "Retrieved all events");
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                String documentId = document.getId();
-//                                String eventName = (String) document.getData().get("name");
-//                                String organizerId = (String) document.getData().get("organizerId");
-//                                String details = (String) document.getData().get("details");
-//                                String location = (String) document.getData().get("location");
-//                                //LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");    FIX LATER
-//
-//                                String startDate = (String) document.getData().get("startDate");
-//                                String endDate = (String) document.getData().get("endDate");
-//
-//                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-//                                String posterPath = (String) document.getData().get("posterPath");
-//                                String qrCodePath = (String) document.getData().get("qrCodePath");
-//                                String qrCodePromoPath = (String) document.getData().get("qrCodePromoPath");
-//                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-//                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
-//                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns"); //ArrayList<Map<String, Object>> checkIns = (ArrayList<Map<String, Object>>) document.getData().get("checkIns");
-//
-//                                Event event = new Event(documentId, eventName, organizerId, details,
-//                                        location, startDate, endDate,
-//                                        geolocationOn, posterPath, qrCodePath,
-//                                        qrCodePromoPath, announcements, signUps, checkIns);
-//
-//                                // event = new Event(eventName, organizerId, details, location, startDate, endDate); // new Event(eventName, location, startDate, details,);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
-//                                if(document.getData().get("signUps") != null){
-//                                    signedUpEvents.add(event);
-//                                    signedUpListAdapter.notifyDataSetChanged();
-//                                }
-//
-//                            }
-//                        } else {
-//                            Log.d("Events", "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-//    }
+    FloatingActionButton browseEvents;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -110,12 +64,14 @@ public class HomeFragment extends Fragment {
 
         ListView checkedIn = rootView.findViewById(R.id.checked_in_events_listview);
         ListView signedUp = rootView.findViewById(R.id.signed_up_events_listview);
+        browseEvents = rootView.findViewById(R.id.browse_events_button);
 
         ArrayList<Event> checkedInEvents = new ArrayList<>();
         ArrayList<Event> signedUpEvents = new ArrayList<>();
         HomeCheckedInListAdapter homeCheckedInListAdapter = new HomeCheckedInListAdapter(getContext(), checkedInEvents);
         HomeSignedUpListAdapter homeSignedUpListAdapter = new HomeSignedUpListAdapter(getContext(), signedUpEvents);
 
+        //if the attendee is not passed, we must get the attendee to display only the events they are in.
         if (getArguments() == null){
 
             FirebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
@@ -155,6 +111,11 @@ public class HomeFragment extends Fragment {
                 Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
             }
         });
+
+        browseEvents.setOnClickListener(v -> {
+            Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventList3);
+        });
+
 
 
         return rootView;

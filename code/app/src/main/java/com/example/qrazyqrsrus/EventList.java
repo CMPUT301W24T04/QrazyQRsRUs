@@ -136,10 +136,10 @@ public class EventList extends Fragment {  // FIX LATER
         eventListAdapter = new com.example.qrazyqrsrus.EventListAdapter(getActivity(), eventDataList);
         eventList.setAdapter(eventListAdapter);
 
-        FloatingActionButton fab = eventListLayout.findViewById(R.id.new_event_button);
-        fab.setOnClickListener(v -> {
-            Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_newEventTextFragment);
-        });
+//        FloatingActionButton fab = eventListLayout.findViewById(R.id.new_event_button);
+//        fab.setOnClickListener(v -> {
+//            Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_newEventTextFragment);
+//        });
 
         // When list is clicked, go to event view with event information
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -153,7 +153,7 @@ public class EventList extends Fragment {  // FIX LATER
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_eventDetailsFragment, bundle);
+                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList3_to_eventDetailsFragment3, bundle);
             }
         });
 

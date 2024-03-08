@@ -13,10 +13,22 @@
         <action
             android:id="@+id/action_homeFragment_to_eventDetailsFragment3"
             app:destination="@id/eventDetailsFragment3" />
+        <action
+            android:id="@+id/action_homeFragment_to_eventList3"
+            app:destination="@id/eventList3" />
     </fragment>
     <fragment
         android:id="@+id/eventDetailsFragment3"
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
         tools:layout="@layout/fragment_event_details" />
+    <fragment
+        android:id="@+id/eventList3"
+        android:name="com.example.qrazyqrsrus.EventList"
+        android:label="fragment_event_list"
+        tools:layout="@layout/fragment_event_list" >
+        <action
+            android:id="@+id/action_eventList3_to_eventDetailsFragment3"
+            app:destination="@id/eventDetailsFragment3" />
+    </fragment>
 </navigation>

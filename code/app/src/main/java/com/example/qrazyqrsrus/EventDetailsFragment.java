@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.provider.Settings;
 import android.util.Log;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -80,17 +83,33 @@ public class EventDetailsFragment extends Fragment {
                 }
             }
         }
-        View view = inflater.inflate(R.layout.fragment_event_details, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_event_details, container, false);
 
-        TextView nameView = view.findViewById(R.id.event_detail_name);
-        //TextView organizerView = view.findViewById(R.id.event_detail_organizer);
-        TextView locationView = view.findViewById(R.id.event_detail_location);
-        TextView descriptionView = view.findViewById(R.id.event_detail_details);
-        TextView startDateView = view.findViewById(R.id.event_detail_start_date);
-        TextView endDateView = view.findViewById(R.id.event_detail_end_date);
-        ImageView posterView = view.findViewById(R.id.posterView);
-        ListView announcementListView = view.findViewById(R.id.announcement_list_view);
-        Button signUpEvent = view.findViewById(R.id.sign_up_button);
+        TextView nameView = rootView.findViewById(R.id.event_detail_name);
+        //TextView organizerView = rootView.findViewById(R.id.event_detail_organizer);
+        TextView locationView = rootView.findViewById(R.id.event_detail_location);
+        TextView descriptionView = rootView.findViewById(R.id.event_detail_details);
+        TextView startDateView = rootView.findViewById(R.id.event_detail_start_date);
+        TextView endDateView = rootView.findViewById(R.id.event_detail_end_date);
+        ImageView posterView = rootView.findViewById(R.id.posterView);
+        ListView announcementListView = rootView.findViewById(R.id.announcement_list_view);
+        Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
+        FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
+
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            // need to get attendeeID and eventID first
+            @Override
+            public void onClick(View view) {
+                //currently it is possible that the view could have no NavController if we got to the screen from the qr scanner
+                //TODO: hide back button instead of do nothing
+                try{
+                    Navigation.findNavController(rootView).popBackStack();
+                } catch (Exception e){
+
+                }
+            }
+        });
         signUpEvent.setOnClickListener(new View.OnClickListener() {
             // need to get attendeeID and eventID first
             @Override
@@ -99,13 +118,13 @@ public class EventDetailsFragment extends Fragment {
                 FirebaseDB.updateEvent(event);
             }
         });
-        Button viewAttendeesButton = view.findViewById(R.id.attendee_list_button);
+        Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
         String nameString = "Name: "+event.getName();
         //String organizerString = "Organized by: ";
         FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
-                updateOrganizerString(string, view);
+                updateOrganizerString(string, rootView);
             }
         });
         String locationString = "Location: "+event.getLocation();
@@ -138,7 +157,7 @@ public class EventDetailsFragment extends Fragment {
         announcementListView.setAdapter(announcementsAdapter);
 
         // Inflate the layout for this fragment
-        return view;
+        return rootView;
     }
     public static EventDetailsFragment newInstance(Event i, Attendee attendee, Boolean isCheckIn){
         Bundle args = new Bundle();
