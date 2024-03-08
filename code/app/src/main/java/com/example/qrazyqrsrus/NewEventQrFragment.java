@@ -106,7 +106,7 @@ public class NewEventQrFragment extends Fragment {
             event.setQrCodePromo(qrCodePromo);
             event.setQrCode(qrCode);
             FirebaseDB.addEvent(event);
-            Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_newEventFragment, args);
+            Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
         });
         return view;
     }

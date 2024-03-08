@@ -46,8 +46,8 @@
             android:name="new_event"
             app:argType="com.example.qrazyqrsrus.Event" />
         <action
-            android:id="@+id/action_newEventQrFragment_to_newEventFragment"
-            app:destination="@id/myEventsListFragment" />
+            android:id="@+id/action_newEventQrFragment_to_eventList2"
+            app:destination="@id/eventList2" />
     </fragment>
     <fragment
         android:id="@+id/newEventPromoQrFragment"
