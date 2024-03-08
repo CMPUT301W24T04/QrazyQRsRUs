@@ -91,14 +91,12 @@
         app:layout_constraintTop_toBottomOf="@id/event_detail_organizer" />
     <Button
         android:id="@+id/attendee_list_button"
-        android:text="Attendees"
+        android:text="View Attendees"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/announcement_list_view"
-        app:layout_constraintEnd_toEndOf="parent"/>
-        app:layout_constraintTop_toBottomOf="@id/event_detail_details"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="View Attendees"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/back_button"
