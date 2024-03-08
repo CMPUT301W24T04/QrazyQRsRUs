@@ -21,9 +21,9 @@ public class Event implements Serializable {
     private String posterPath;
     private String qrCode;
     private String qrCodePromo;
-    private ArrayList<String> announcements;
-    private ArrayList<String> signUps;
-    private ArrayList<String> checkIns;
+    private ArrayList<String> announcements = new ArrayList<String>();
+    private ArrayList<String> signUps= new ArrayList<String>();
+    private ArrayList<String> checkIns= new ArrayList<String>();
 
     // Default constructor
     public Event() {

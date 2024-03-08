@@ -91,10 +91,10 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
      * @return  a Bundle containing all of the user input, and the userID of the organizer
      */
     private Bundle makeNewBundle(){
-        Bundle bundle = new Bundle();
+        Bundle bundle = getArguments();
         View view = getView();
         bundle.putSerializable("name", ((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString());
-        bundle.putSerializable("organizerId", Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        bundle.putSerializable("organizerId", ( (Attendee) bundle.getSerializable("attendee")).getDocumentId());
         bundle.putSerializable("location", ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         bundle.putSerializable("details", ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
         return bundle;

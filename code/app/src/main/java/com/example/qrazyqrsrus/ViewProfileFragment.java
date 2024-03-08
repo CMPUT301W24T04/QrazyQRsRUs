@@ -62,11 +62,11 @@ public class ViewProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.update_profile, container, false);
-        ImageView backButton = view.findViewById(R.id.backButton);
+//        ImageView backButton = view.findViewById(R.id.backButton);
         //backButton.setOnClickListener(v -> finish());
 
         etFullName = view.findViewById(R.id.etFullName);
-        etAge = view.findViewById(R.id.etAge);
+//        etAge = view.findViewById(R.id.etAge);
         etEmailAddress = view.findViewById(R.id.etEmailAddress);
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);

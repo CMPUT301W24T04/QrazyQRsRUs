@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/new_event_nav_graph"
-    app:startDestination="@id/eventList2">
+    app:startDestination="@id/myEventsListFragment">
 
 
 
@@ -17,7 +17,7 @@
             app:destination="@id/newEventStartTimeFragment" />
         <action
             android:id="@+id/action_newEventTextFragment_to_newEventFragment"
-            app:destination="@id/eventList2" />
+            app:destination="@id/myEventsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventImageFragment"
@@ -32,7 +32,7 @@
             app:destination="@id/newEventEndTimeFragment" />
         <action
             android:id="@+id/action_newEventImageFragment_to_newEventFragment"
-            app:destination="@id/eventList2" />
+            app:destination="@id/myEventsListFragment" />
         <argument
             android:name="new_event"
             app:argType="com.example.qrazyqrsrus.Event" />
@@ -47,7 +47,7 @@
             app:argType="com.example.qrazyqrsrus.Event" />
         <action
             android:id="@+id/action_newEventQrFragment_to_newEventFragment"
-            app:destination="@id/eventList2" />
+            app:destination="@id/myEventsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventPromoQrFragment"
@@ -68,7 +68,7 @@
             app:destination="@id/newEventTextFragment" />
         <action
             android:id="@+id/action_newEventStartTimeFragment_to_newEventFragment"
-            app:destination="@id/eventList2" />
+            app:destination="@id/myEventsListFragment" />
         <action
             android:id="@+id/action_newEventStartTimeFragment_to_newEventEndTimeFragment"
             app:destination="@id/newEventEndTimeFragment" />
@@ -83,7 +83,7 @@
             app:destination="@id/newEventStartTimeFragment" />
         <action
             android:id="@+id/action_newEventEndTimeFragment_to_newEventFragment"
-            app:destination="@id/eventList2" />
+            app:destination="@id/myEventsListFragment" />
         <action
             android:id="@+id/action_newEventEndTimeFragment_to_newEventImageFragment"
             app:destination="@id/newEventImageFragment" />
@@ -105,4 +105,15 @@
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
         tools:layout="@layout/fragment_event_details" />
+    <fragment
+        android:id="@+id/myEventsListFragment"
+        android:name="com.example.qrazyqrsrus.MyEventsListFragment"
+        android:label="MyEventsListFragment" >
+        <action
+            android:id="@+id/action_myEventsListFragment_to_newEventTextFragment"
+            app:destination="@id/newEventTextFragment" />
+        <action
+            android:id="@+id/action_myEventsListFragment_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
 </navigation>
