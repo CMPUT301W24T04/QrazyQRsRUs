@@ -630,4 +630,42 @@ public class FirebaseDB {
                 });
 
     }
+    /**
+     * Retrieves all the events an user has signed up to
+     *
+     * @param user the user who as signed up to events
+     * @param eventArrayList the list you want to add the events to
+     */
+    public static void getEventsMadeByUser(Attendee user, ArrayList<Event> eventArrayList, EventListAdapter adapter) {
+        eventsCollection
+                .whereEqualTo("organizerId", user.getDocumentId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Event event = documentSnapshot.toObject(Event.class);
+                            if (event.getAnnouncements() == null){
+                                event.setAnnouncements(new ArrayList<String>());
+                            }
+                            if (event.getSignUps() == null){
+                                event.setSignUps(new ArrayList<String>());
+                            }
+                            if (event.getCheckIns() == null){
+                                event.setCheckIns(new ArrayList<String>());
+                            }
+                            event.setDocumentId(documentSnapshot.getId());
+                            eventArrayList.add(event);
+                        }
+                        adapter.notifyDataSetChanged();
+                        Log.d(eventsTAG, "Events successfully retrieved");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(eventsTAG, "Failed to retrieve events of user");
+                    }
+                });
+    }
 }
