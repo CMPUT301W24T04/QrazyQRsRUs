@@ -318,8 +318,8 @@ public class FirebaseDB {
 
                                 Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
                                 eventList.add(event);
-                                eventArrayAdapter.notifyDataSetChanged();
                             }
+                            eventArrayAdapter.notifyDataSetChanged();
                         } else {
                             Log.d(eventsTAG, "Error getting documents: ", task.getException());
                         }
