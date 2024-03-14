@@ -6,6 +6,7 @@ import static com.example.qrazyqrsrus.FirebaseDB.findEventWithQR;
 
 import android.app.Activity;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 public class QRCodeScanHandler{
 
     //the event that we obtain
-    private Event event;
+    private Event[] event = new Event[1];
     //the error if an error occurs
     //1 = no event has this qr code
     //2 = no qr code successfully scanned
@@ -38,7 +39,6 @@ public class QRCodeScanHandler{
     private int errorNumber;
     private AppCompatActivity activity;
     private String userID;
-    private Boolean isPromo = false;
     private ActivityResultLauncher<ScanOptions> barcodeLauncher;
 
     //other classes (main activity) can invoke QR scan handler with a lambda function that implements this interface
@@ -82,26 +82,41 @@ public class QRCodeScanHandler{
                         findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
                             public void onResult(Event matchingEvent) {
+                                Log.d("findEventWithQR", "this callback invoked");
                                 callback.onPromoResult(matchingEvent);
-                                event = matchingEvent;
-                                isPromo = true;
+                                //TODO: the problem is that event[0] takes a while to update (has to query and whatnot), and subsequent lines of code continue to execute.
+                                //TODO: this means we could hit an error when a qr code does exist
+                                //TODO: or in my specific case, it means event is not getting reset to null
+                                //TODO: THE QR SCAN WORKS PERFECTLY FINE EVERY **OTHER** TIME
+                                event[0] = matchingEvent;
                             }
                         });
-                        if (event == null){
+                        if (event[0] == null){
+                            Log.d("findEventWithQR", "we get to here");
                             //if qr code was not a promo QR code, check if it was a checkin qr code
                             findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
 
                                 @Override
                                 public void onResult(Event matchingEvent) {
+                                    Log.d("findEventWithQR", "callback invoked");
                                     callback.onCheckInResult(matchingEvent);
-                                    event = matchingEvent;
+                                    event[0] = matchingEvent;
                                 }
                             });
-                            if (event == null){
+                            if (event[0] == null){
+                                Log.d("reset", "we get to badness");
                                 //throw error, qr code does not belong to any event
                                 //TODO: invoke callback.onNoResult(1)
+                            } else{
+                                Log.d("reset", "we reset");
+                                //reset event after finding a checkIn QR
+                                event[0] = null;
                             }
-                        };
+                        } else{
+                            Log.d("reset", "we reset here");
+                            //reset event after finding a promo QR
+                            event[0] = null;
+                        }
                     }
                 });
     }
@@ -113,15 +128,16 @@ public class QRCodeScanHandler{
         barcodeLauncher.launch(new ScanOptions());
     }
 
-    public Event getEvent() {
-        return event;
-    }
+//    public Event getEvent() {
+//        return event;
+//    }
 
     public int getErrorNumber() {
         return errorNumber;
     }
 
-    public Boolean getPromo() {
-        return isPromo;
+    public void reset(){
+        this.event[0] = null;
     }
+
 }

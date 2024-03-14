@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -25,14 +26,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
-
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Objects;
 /**
  * This is a utility class that does all the Firebase related actions.
@@ -41,6 +37,10 @@ public class FirebaseDB {
 
     public interface UniqueCheckCallBack {
         void onResult(boolean isUnique);
+    }
+
+    public interface UniqueCheckInCallBack {
+        void onResult(boolean isUnique, CheckIn checkIn);
     }
 
     public interface MatchingQRCallBack {
@@ -706,7 +706,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckCallBack callBack) {
+    public static void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckInCallBack callBack) {
         checkInsCollection
                 .whereEqualTo("attendeeDocId", attendeeDocId)
                 .whereEqualTo("eventDocId", eventDocId)
@@ -714,8 +714,45 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        callBack.onResult(queryDocumentSnapshots.isEmpty());
+                        Log.d("checkInAlreadyExists", String.valueOf(queryDocumentSnapshots.isEmpty()));
+                        CheckIn checkInToReturn = null;
+                        if (!(queryDocumentSnapshots.isEmpty())){
+                            if (queryDocumentSnapshots.getDocuments().size() == 1){
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()){
+                                    checkInToReturn = documentSnapshot.toObject(CheckIn.class);
+                                }
+                            } else{
+                                //TODO: handle this bad error, where there are duplicate checkins in firebase
+                            }
+                        }
+                        //can return null if no checkin alredy exists, or if we get a bad checkin (duplicates exist)
+                        callBack.onResult(queryDocumentSnapshots.isEmpty(), checkInToReturn);
                     }
                 });
+    }
+
+    //i suggest this function be used primarily for new checkIns, because we need to also add it to the event
+
+    /**
+     * This functions creates a new checkIn for the user that is joining the event, and adds the documentID of the checkIn to the event's field in firebase
+     * @param checkIn the object representing the checkIn. this holds the document ID of the event, and attendee that is checking in
+     * @param eventDocId the document ID of the event
+     */
+    public static void addCheckInToEvent(CheckIn checkIn, String eventDocId) {
+        checkInsCollection
+                .add(checkIn)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        checkIn.setDocumentId(documentReference.getId());
+                        //update checkIn to get the document ID set in the field for future accesses
+                        updateCheckIn(checkIn);
+                        //update the event's field to contain the ID of the new checkIn document
+                        eventsCollection
+                                .document(eventDocId)
+                                .update("checkIns", FieldValue.arrayUnion(checkIn.getDocumentId()));
+                    }
+                });
+
     }
 }
