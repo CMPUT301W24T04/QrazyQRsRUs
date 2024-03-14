@@ -83,12 +83,13 @@ public class QRCodeScanHandler{
                             @Override
                             public void onResult(Event matchingEvent) {
                                 Log.d("findEventWithQR", "this callback invoked");
+                                event[0] = matchingEvent;
                                 callback.onPromoResult(matchingEvent);
                                 //TODO: the problem is that event[0] takes a while to update (has to query and whatnot), and subsequent lines of code continue to execute.
                                 //TODO: this means we could hit an error when a qr code does exist
                                 //TODO: or in my specific case, it means event is not getting reset to null
                                 //TODO: THE QR SCAN WORKS PERFECTLY FINE EVERY **OTHER** TIME
-                                event[0] = matchingEvent;
+
                             }
                         });
                         if (event[0] == null){
@@ -99,8 +100,9 @@ public class QRCodeScanHandler{
                                 @Override
                                 public void onResult(Event matchingEvent) {
                                     Log.d("findEventWithQR", "callback invoked");
-                                    callback.onCheckInResult(matchingEvent);
                                     event[0] = matchingEvent;
+                                    callback.onCheckInResult(matchingEvent);
+
                                 }
                             });
                             if (event[0] == null){
