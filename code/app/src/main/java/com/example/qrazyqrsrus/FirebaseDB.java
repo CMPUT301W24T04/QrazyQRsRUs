@@ -59,7 +59,7 @@ public class FirebaseDB {
         void onResult(Attendee attendee);
     }
 
-    final static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
     final static CollectionReference eventsCollection = db.collection("Events");
@@ -68,6 +68,10 @@ public class FirebaseDB {
     final static String usersTAG = "Users";
     final static String eventsTAG = "Events";
     final static String imagesTAG = "Images";
+
+    public FirebaseDB(FirebaseFirestore firestoreInstance){
+        db = firestoreInstance;
+    }
 
     // Change String to Attendee class when someone implements it.
 

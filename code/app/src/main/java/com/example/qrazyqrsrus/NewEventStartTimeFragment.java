@@ -1,3 +1,4 @@
+//this fragment is the second fragment in the event creation sequence. it allows users to select a start time for their event.
 package com.example.qrazyqrsrus;
 
 import android.content.Context;
