@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onNoResult(int errorNumber){
-            new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "Error Dialog");
+            new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
+
             qrHandler.reset();
 
         }

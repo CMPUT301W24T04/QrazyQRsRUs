@@ -43,6 +43,9 @@ public class FirebaseDB {
         void onResult(boolean isUnique, CheckIn checkIn);
     }
 
+    //- we change the callback interface for looking for a matching qr code to have an OnNoResult function that handles the case that no matching qr code exists for either promo or checkin
+    //then in qr scanhandler we call findEventWithQR in OnNoResult for the promo qr search
+    //then in qr scanhandler we throw error in onNoResult after both qr searches
     public interface MatchingQRCallBack {
         void onResult(Event matchingEvent);
     }
@@ -291,6 +294,28 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
+    }
+
+    /**
+     * Deletes an image from the database
+     *
+     * @param pathName the pathname where we can find the file in the database storage
+     */
+    public static void deleteImage(String pathName){
+        StorageReference storageRef = storage.getReference();
+        StorageReference storageReference = storageRef.child(pathName + ".jpg");
+
+        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //TODO: handle bad attempts to delete
+            }
+        });
     }
 
     /**

@@ -99,7 +99,9 @@ public class ViewProfileFragment extends Fragment {
             }
         });
 
-        btnUpdateProfile.setOnClickListener(v -> updateUserProfile(this.attendee));
+        btnUpdateProfile.setOnClickListener(v -> {
+            updateUserProfile(this.attendee);
+        });
 
         return view;
     }
@@ -167,6 +169,18 @@ public class ViewProfileFragment extends Fragment {
     }
 
     private void updateUserProfile(Attendee attendee){
+        Bitmap profileBitmap = createInitialsImage(getInitials(etFullName.getText().toString()));
+        imgProfilePicture.setImageBitmap(profileBitmap);
+        //we make a local file on the user's device with the new image
+        String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), profileBitmap, "generatedProfilePicture", "the profile picture we generated");
+        Uri uri = Uri.parse(localFilePath);
+        //we generate a unique pathname
+        String pathName = generatePathName(etFullName.getText().toString());
+        //we upload the new profile picture
+        //delete the old image this user had
+        FirebaseDB.deleteImage(attendee.getProfilePicturePath());
+        FirebaseDB.uploadImage(uri, pathName);
+        attendee.setProfilePicturePath(pathName);
         attendee.setName(etFullName.getText().toString());
         attendee.setGeolocationOn(switchGeolocation.isChecked());
         attendee.setEmail(etEmailAddress.getText().toString());

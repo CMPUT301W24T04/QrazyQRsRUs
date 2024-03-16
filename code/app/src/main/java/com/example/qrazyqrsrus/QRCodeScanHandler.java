@@ -76,8 +76,7 @@ public class QRCodeScanHandler{
                     //this ActivityResultCallback lambda function handles the results of the scanning activity
                     //we check if there is a result
                     if(result.getContents() == null) {
-                        //TODO: invoke callback.onNoResult(2)
-                        //((TextView) findViewById(R.id.bar_code_output)).setText("Error! No barcode scanned.");
+                        callback.onNoResult(2);
                     } else {
                         findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
@@ -108,7 +107,7 @@ public class QRCodeScanHandler{
                             if (event[0] == null){
                                 Log.d("reset", "we get to badness");
                                 //throw error, qr code does not belong to any event
-                                //TODO: invoke callback.onNoResult(1)
+                                callback.onNoResult(1);
                             } else{
                                 Log.d("reset", "we reset");
                                 //reset event after finding a checkIn QR
