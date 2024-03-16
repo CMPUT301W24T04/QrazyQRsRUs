@@ -70,18 +70,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"/>
 
-    <Button
-        android:id="@+id/confirm_max_attendees_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Confirm"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/max_attendees_edit_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
-
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/next_screen_button"
         android:layout_width="wrap_content"

@@ -54,21 +54,14 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 
         SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
-        Button confirmMaxAttendeesButton = view.findViewById(R.id.confirm_max_attendees_button);
 
         limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 maxAttendeesEditText.setVisibility(View.VISIBLE);
-                confirmMaxAttendeesButton.setVisibility(View.VISIBLE);
             } else {
                 maxAttendeesEditText.setVisibility(View.GONE);
-                confirmMaxAttendeesButton.setVisibility(View.GONE);
                 maxAttendeesEditText.setText("");
             }
-        });
-
-        confirmMaxAttendeesButton.setOnClickListener(v -> {
-            // after part 3
         });
 
         createToolbar(view);
