@@ -23,12 +23,18 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.checkerframework.checker.units.qual.A;
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 /**
  * This is a utility class that does all the Firebase related actions.
@@ -787,5 +793,164 @@ public class FirebaseDB {
                     }
                 });
 
+    }
+
+
+    /**
+     * Retrieves the paths of all posters
+     *
+     * @param postersPaths The list to be populated with poster paths
+     */
+    public static void getPostersPaths(ArrayList<String> postersPaths) {
+        storage.getReference().child("poster")
+                .listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference poster : listResult.getItems()) {
+                            postersPaths.add(poster.getPath());
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(imagesTAG, "Error trying to get posters' paths" + e);
+                    }
+                });
+    }
+
+    /**
+     * Retrieves the paths of all profile pictures
+     *
+     * @param profilesPaths The list to be populated with profile picture paths
+     */
+    public static void getProfilePicturesPaths(ArrayList<String> profilesPaths) {
+        storage.getReference().child("poster")
+                .listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference profile : listResult.getItems()) {
+                            profilesPaths.add(profile.getPath());
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(imagesTAG, "Error trying to get profile pictures' paths" + e);
+                    }
+                });
+    }
+
+    /**
+     * Retrieves an image from the database (administrator version)
+     *
+     * @param imagePath This is the path of the image we're trying to get (has the file extension)
+     * @param callBack This callBack will be used to get back bitmap
+     */
+    public static void adminRetrieveImage(String imagePath, GetBitmapCallBack callBack) {
+        try {
+            StorageReference storageRef = storage.getReference(imagePath);
+            String path = imagePath.substring(0, imagePath.lastIndexOf("."));
+            File localFile = File.createTempFile(path.split("/")[1], "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    Log.d(imagesTAG, "Successfully retrieved image");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
+                }
+            });
+        } catch (IOException exception) {
+            Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
+        }
+
+    }
+
+    /**
+     * Deletes the document that represents the event and all check ins related to the event
+     *
+     * @param event the event to be deleted
+     */
+    public static void deleteEvent(Event event) {
+        eventsCollection
+                .document(event.getDocumentId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(eventsTAG, "Successfully deleted the event");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(eventsTAG, "Failed to deleted event" + e);
+                    }
+                });
+
+        checkInsCollection
+                .whereEqualTo("eventDocId", event.getDocumentId())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                                checkInsCollection.document(documentSnapshot.getId()).delete();
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(eventsTAG, "Error trying to delete check Ins: " + e);
+                    }
+                });
+    }
+
+    /**
+     * Deletes an image in the storage (administrator version)
+     *
+     * @param imagePath This is the path of the image we're trying to get (has the file extension)
+     */
+    public static void deleteImageAdmin(String imagePath) {
+        storage.getReference()
+                .child(imagePath)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(imagesTAG, "Deleted image (admin) successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(imagesTAG, "Failed to delete image: " + e);
+                    }
+                });
+    }
+
+    /**
+     * Removes the profile of a user
+     *
+     * @param attendee The user whose profile we want to remove
+     */
+    public static void deleteProfile(Attendee attendee) {
+        attendee.setEmail(null);
+        attendee.setName("Guest24");
+        // Waiting for the deleteImage to uncomment this
+        // deleteImage(attendee.getProfilePicturePath())
+        attendee.setProfilePicturePath(null);
+
+        updateUser(attendee);
     }
 }
