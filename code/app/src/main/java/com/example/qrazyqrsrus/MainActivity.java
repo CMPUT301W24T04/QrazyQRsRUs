@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onPromoResult(Event matchingEvent) {
             ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
-            qrHandler.reset();
+//            qrHandler.reset();
 
         }
 
@@ -53,14 +53,13 @@ public class MainActivity extends AppCompatActivity{
                         //FirebaseDB.updateEvent(event);
                     } else{
                         //in this case the event should already have the checkIn in it's checkIn list
-
                         checkIn.incrementCheckIns();
                         FirebaseDB.updateCheckIn(checkIn);
                     }
                 }
             });
             ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
-            qrHandler.reset();
+//            qrHandler.reset();
 
         }
 
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity{
         public void onNoResult(int errorNumber){
             new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
 
-            qrHandler.reset();
+//            qrHandler.reset();
 
         }
 

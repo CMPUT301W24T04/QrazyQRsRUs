@@ -116,6 +116,7 @@ public class NewEventQrFragment extends Fragment {
             LocalDateTime endDate = (LocalDateTime) args.getSerializable("endDate");
             String posterPath = (String) args.getSerializable("posterPath");
             Uri uri = (Uri) args.getParcelable("uri");
+            FirebaseDB.uploadImage(uri, posterPath);
             String qrCodePromo = (String) args.getSerializable("qrCodePromo");
             String qrCode = (String) args.getSerializable("qrCode");
             FirebaseDB.uploadImage(uri, posterPath);

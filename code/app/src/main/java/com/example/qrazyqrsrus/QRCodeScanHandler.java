@@ -2,7 +2,7 @@
 //currently, no class properly implements onNoResult if there is an error while QR code scanning
 package com.example.qrazyqrsrus;
 
-import static com.example.qrazyqrsrus.FirebaseDB.findEventWithQR;
+//import static com.example.qrazyqrsrus.FirebaseDB.findEventWithQR;
 
 import android.app.Activity;
 import android.provider.Settings;
@@ -30,13 +30,13 @@ import java.util.ArrayList;
 public class QRCodeScanHandler{
 
     //the event that we obtain
-    private Event[] event = new Event[1];
+//    private Event[] event = new Event[1];
     //the error if an error occurs
     //1 = no event has this qr code
     //2 = no qr code successfully scanned
     //3 = more than one event with this qr code as their promo
     //4 = more than one event with this qr code as their checkin
-    private int errorNumber;
+//    private int errorNumber;
     private AppCompatActivity activity;
     private String userID;
     private ActivityResultLauncher<ScanOptions> barcodeLauncher;
@@ -78,11 +78,12 @@ public class QRCodeScanHandler{
                     if(result.getContents() == null) {
                         callback.onNoResult(2);
                     } else {
-                        findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
+                        FirebaseDB.findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
                             public void onResult(Event matchingEvent) {
+                                //if a promo QR code is successfully found
                                 Log.d("findEventWithQR", "this callback invoked");
-                                event[0] = matchingEvent;
+                                //event[0] = matchingEvent;
                                 callback.onPromoResult(matchingEvent);
                                 //TODO: the problem is that event[0] takes a while to update (has to query and whatnot), and subsequent lines of code continue to execute.
                                 //TODO: this means we could hit an error when a qr code does exist
@@ -90,34 +91,55 @@ public class QRCodeScanHandler{
                                 //TODO: THE QR SCAN WORKS PERFECTLY FINE EVERY **OTHER** TIME
 
                             }
-                        });
-                        if (event[0] == null){
-                            Log.d("findEventWithQR", "we get to here");
-                            //if qr code was not a promo QR code, check if it was a checkin qr code
-                            findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
 
-                                @Override
-                                public void onResult(Event matchingEvent) {
-                                    Log.d("findEventWithQR", "callback invoked");
-                                    event[0] = matchingEvent;
-                                    callback.onCheckInResult(matchingEvent);
+                            @Override
+                            public void onNoResult() {
+                                //if there we do not find an event in the DB with a matching promo qr content, we look for a matching check-in qr code
+                                FirebaseDB.findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
 
-                                }
-                            });
-                            if (event[0] == null){
-                                Log.d("reset", "we get to badness");
-                                //throw error, qr code does not belong to any event
-                                callback.onNoResult(1);
-                            } else{
-                                Log.d("reset", "we reset");
-                                //reset event after finding a checkIn QR
-                                event[0] = null;
+                                    @Override
+                                    public void onResult(Event matchingEvent) {
+                                        Log.d("findEventWithQR", "callback invoked");
+                                        //event[0] = matchingEvent;
+                                        callback.onCheckInResult(matchingEvent);
+
+                                    }
+
+                                    @Override
+                                    public void onNoResult() {
+                                        //we tell the callback that we found no matching qr code
+                                        callback.onNoResult(1);
+                                    }
+                                });
                             }
-                        } else{
-                            Log.d("reset", "we reset here");
-                            //reset event after finding a promo QR
-                            event[0] = null;
-                        }
+                        });
+//                        if (event[0] == null){
+//                            Log.d("findEventWithQR", "we get to here");
+//                            //if qr code was not a promo QR code, check if it was a checkin qr code
+////                            findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
+////
+////                                @Override
+////                                public void onResult(Event matchingEvent) {
+////                                    Log.d("findEventWithQR", "callback invoked");
+////                                    event[0] = matchingEvent;
+////                                    callback.onCheckInResult(matchingEvent);
+////
+////                                }
+////                            });
+//                            if (event[0] == null){
+//                                Log.d("reset", "we get to badness");
+//                                //throw error, qr code does not belong to any event
+//                                callback.onNoResult(1);
+//                            } else{
+//                                Log.d("reset", "we reset");
+//                                //reset event after finding a checkIn QR
+//                                event[0] = null;
+//                            }
+//                        } else{
+//                            Log.d("reset", "we reset here");
+//                            //reset event after finding a promo QR
+//                            event[0] = null;
+//                        }
                     }
                 });
     }
@@ -133,12 +155,12 @@ public class QRCodeScanHandler{
 //        return event;
 //    }
 
-    public int getErrorNumber() {
-        return errorNumber;
-    }
+//    public int getErrorNumber() {
+//        return errorNumber;
+//    }
 
-    public void reset(){
-        this.event[0] = null;
-    }
+//    public void reset(){
+//        this.event[0] = null;
+//    }
 
 }

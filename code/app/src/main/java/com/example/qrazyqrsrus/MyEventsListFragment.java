@@ -58,7 +58,7 @@ public class MyEventsListFragment extends Fragment {
                 }
             });
         } else{
-            Attendee attendee = (Attendee) getArguments().getSerializable("user");
+            Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
             setAttendee(attendee);
             FirebaseDB.getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
 //            FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);

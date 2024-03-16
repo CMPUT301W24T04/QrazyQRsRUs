@@ -48,6 +48,8 @@ public class FirebaseDB {
     //then in qr scanhandler we throw error in onNoResult after both qr searches
     public interface MatchingQRCallBack {
         void onResult(Event matchingEvent);
+
+        void onNoResult();
     }
 
     public interface GetStringCallBack{
@@ -639,21 +641,27 @@ public class FirebaseDB {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                Event event = documentSnapshot.toObject((Event.class));
-                                if (event.getAnnouncements() == null){
-                                    event.setAnnouncements(new ArrayList<String>());
-                                }
-                                if (event.getSignUps() == null){
-                                    event.setSignUps(new ArrayList<String>());
-                                }
-                                if (event.getCheckIns() == null){
-                                    event.setCheckIns(new ArrayList<String>());
-                                }
-                                event.setDocumentId(documentSnapshot.getId());
+                            if (task.getResult() == null || task.getResult().isEmpty()) {
+                                //if no event with a matching qr code was found, tell the callback
+                                callBack.onNoResult();
+                            } else{
+                                for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                                    Event event = documentSnapshot.toObject((Event.class));
+                                    if (event.getAnnouncements() == null){
+                                        event.setAnnouncements(new ArrayList<String>());
+                                    }
+                                    if (event.getSignUps() == null){
+                                        event.setSignUps(new ArrayList<String>());
+                                    }
+                                    if (event.getCheckIns() == null){
+                                        event.setCheckIns(new ArrayList<String>());
+                                    }
+                                    event.setDocumentId(documentSnapshot.getId());
 
-                                callBack.onResult(event);
+                                    callBack.onResult(event);
+                                }
                             }
+
                         }
                     }
                 });
