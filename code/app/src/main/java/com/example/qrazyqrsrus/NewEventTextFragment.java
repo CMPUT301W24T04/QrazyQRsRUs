@@ -119,6 +119,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         bundle.putSerializable("organizerId", ( (Attendee) bundle.getSerializable("attendee")).getDocumentId());
         bundle.putSerializable("location", ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         bundle.putSerializable("details", ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        bundle.putSerializable("max_attendees", ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString());
         return bundle;
     }
 
