@@ -104,7 +104,11 @@
         android:id="@+id/eventDetailsFragment"
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
-        tools:layout="@layout/fragment_event_details" />
+        tools:layout="@layout/fragment_event_details" >
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+    </fragment>
     <fragment
         android:id="@+id/myEventsListFragment"
         android:name="com.example.qrazyqrsrus.MyEventsListFragment"
@@ -116,4 +120,8 @@
             android:id="@+id/action_myEventsListFragment_to_eventDetailsFragment"
             app:destination="@id/eventDetailsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/attendeeList2"
+        android:name="com.example.qrazyqrsrus.AttendeeList"
+        android:label="AttendeeList" />
 </navigation>

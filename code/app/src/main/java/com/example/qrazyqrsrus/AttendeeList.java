@@ -112,7 +112,7 @@ public class AttendeeList extends Fragment {
         //**************************************************************************************************************
         //INITIAL LIST FOR TESTING
         attendeeDataList = new ArrayList<>();
-        final CollectionReference collectionReference = db.collection("Attendees");
+        final CollectionReference collectionReference = db.collection("Users");
         final String TAG = "Sample";
 
         // call getData from the firestore to populate the list

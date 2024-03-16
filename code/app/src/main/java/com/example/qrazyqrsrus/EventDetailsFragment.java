@@ -112,6 +112,14 @@ public class EventDetailsFragment extends Fragment {
         Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
 
+        //Change view to attendee list when click on view attendees button
+        viewAttendeesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2);
+            }
+        });
+
 
         backButton.setOnClickListener(new View.OnClickListener() {
             // need to get attendeeID and eventID first
