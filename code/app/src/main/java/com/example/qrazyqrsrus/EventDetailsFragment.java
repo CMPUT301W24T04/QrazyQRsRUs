@@ -86,18 +86,6 @@ public class EventDetailsFragment extends Fragment {
                 }
             });
         }
-        //Boolean isCheckIn = (Boolean) getArguments().get("isCheckIn");
-//        if (isCheckIn == null) {
-//
-//        }else{
-//            if (isCheckIn){
-//                if (event.getSignUps().contains(attendee.getDocumentId())){
-//                    //event.deleteSignUp(attendee.getDocumentId());
-//                    //event.addCheckIn(attendee.getDocumentId());
-//
-//                }
-//            }
-//        }
         View rootView = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = rootView.findViewById(R.id.event_detail_name);
@@ -161,6 +149,8 @@ public class EventDetailsFragment extends Fragment {
         //we set all the images on screen.
         setImages(this.event, posterView, promoQRView, checkInQRView);
 
+        setButtonVisibility(this.attendee, signUpEvent);
+
         ArrayList<String> announcementsList = event.getAnnouncements();
         if (announcementsList == null){
             announcementsList = new ArrayList<String>();
@@ -190,6 +180,24 @@ public class EventDetailsFragment extends Fragment {
         this.attendee = attendee;
     }
 
+    /**
+     * This function hides the signup button if the user is the organizer of the event, or has already signed up for the event
+     * @param attendee The attendee that is viewing the event details
+     * @param signUpButton The button to hide
+     */
+    private void setButtonVisibility(Attendee attendee, Button signUpButton){
+        if (event.getSignUps().contains(attendee.getDocumentId()) || event.getOrganizerId() == attendee.getDocumentId()){
+            signUpButton.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * This function sets the images on the event details screen, fetching the poster from firebase, and generating QR codes from the event's QR contents
+     * @param event The event that is being viewed
+     * @param posterView The ImageView that should display the event poster
+     * @param promoQRView The ImageView that should display the event's promo QR code
+     * @param checkInQRView The ImageView that should display the event's check-in QR code
+     */
     private void setImages(Event event, ImageView posterView, ImageView promoQRView, ImageView checkInQRView){
         if (event.getPosterPath() != null) {
             FirebaseDB.retrieveImage(event, new FirebaseDB.GetBitmapCallBack() {
