@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -75,9 +76,11 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
 
         limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            maxAttendeesEditText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            if (!isChecked) {
-                maxAttendeesEditText.setText(""); // Clear the text when toggle is off
+            if (isChecked) {
+                maxAttendeesEditText.setVisibility(View.VISIBLE);
+            } else {
+                maxAttendeesEditText.setVisibility(View.GONE);
+                maxAttendeesEditText.setText("");
             }
         });
 
