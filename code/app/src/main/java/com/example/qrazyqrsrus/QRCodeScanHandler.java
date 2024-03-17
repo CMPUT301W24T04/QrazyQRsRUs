@@ -5,6 +5,10 @@ package com.example.qrazyqrsrus;
 //import static com.example.qrazyqrsrus.FirebaseDB.findEventWithQR;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
@@ -21,7 +25,12 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
@@ -128,5 +137,49 @@ public class QRCodeScanHandler{
         this.user = user;
         barcodeLauncher.launch(new ScanOptions());
     }
+
+    /**
+     * This function gets the contents of an uploaded QR code
+     * @param cr The content resolver that we will use to get the bitmap of the provided uri on the user's phone.
+     * @param uri The Uri of the image the user selected to upload
+     * @return The content of the uploaded QR code, null if there was a error.
+     */
+    public static String scanImage(ContentResolver cr, Uri uri){
+        Bitmap bitmap;
+        String contents = null;
+        try{
+            bitmap = MediaStore.Images.Media.getBitmap(cr, uri);
+        } catch(Exception e){
+            Log.d("scanImage", "failed to get image from phone");
+            return null;
+        }
+        //we will convert the bitmap of the uploaded image to an RGB luminance source
+        //this sequence was made with the help of ZXing documentation, and https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing Accessed on Mar. 5th, 2024
+        //the post was amde by the user Hugo Allexis Cardona (https://stackoverflow.com/users/1797127/hugo-allexis-cardona) on the post https://stackoverflow.com/a/55427749
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[] pixels = new int[width * height];
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+        RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+        //we create a new Binarizer that ZXing will use to convert the data from the LuminanceSource into 1D data
+        HybridBinarizer binarizer = new HybridBinarizer(source);
+        //we create a new BinaryBitmap, the type that a reader in ZXing can actually decode
+        BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
+        //finally, we create a MultiFormatReader, that attempts to find any kind of barcode from an image
+        MultiFormatReader reader = new MultiFormatReader();
+        try {
+
+            Result result = reader.decode(binaryBitmap);
+            contents = result.getText();
+
+        } catch (NotFoundException e) {
+            //if a user selects an image that is not qr code, it may fail to be decoded. in that case we prompt the user to select something else, or generate a qr code
+            Log.d("scanImage", "failed to identify uploaded image as qr code");
+            return null;
+        }
+        return contents;
+    }
+
+
 
 }
