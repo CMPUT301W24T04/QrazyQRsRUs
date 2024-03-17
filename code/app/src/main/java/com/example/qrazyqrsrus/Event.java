@@ -53,13 +53,14 @@ public class Event implements Serializable {
                  String location, LocalDateTime startDate, LocalDateTime endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
-                 ArrayList<String> checkIns) {
+                 ArrayList<String> checkIns, Integer maxAttendees) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.documentId = documentId;
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
+        this.maxAttendees = maxAttendees;
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
         this.geolocationOn = geolocationOn;
