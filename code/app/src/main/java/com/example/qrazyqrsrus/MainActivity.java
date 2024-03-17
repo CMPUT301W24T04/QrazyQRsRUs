@@ -1,6 +1,7 @@
 package com.example.qrazyqrsrus;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.fragment.app.Fragment;
@@ -35,7 +36,6 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onPromoResult(Event matchingEvent) {
             ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
-//            qrHandler.reset();
 
         }
 
@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity{
                         //if there is no existing checkIn with the attendee's document ID and the event's document ID we make a new one
                         CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId());
                         FirebaseDB.addCheckInToEvent(newCheckIn, event.getDocumentId());
-                        //event.addCheckIn(newCheckIn.getDocumentId());
-                        //we need to call updateEvent, we were forgetting that lol
-                        //FirebaseDB.updateEvent(event);
                     } else{
                         //in this case the event should already have the checkIn in it's checkIn list
                         checkIn.incrementCheckIns();
@@ -59,15 +56,19 @@ public class MainActivity extends AppCompatActivity{
                 }
             });
             ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
-//            qrHandler.reset();
 
         }
 
         @Override
-        public void onNoResult(int errorNumber){
-            new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
+        public void onNoResult(@Nullable Event event, int errorNumber){
+            if (event != null){
+                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false));
+                new ErrorDialog(R.string.not_signed_up_error).show(getSupportFragmentManager(), "QR Error Dialog");
+            } else{
+                new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
+            }
 
-//            qrHandler.reset();
+
 
         }
 
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity{
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch();
+                qrHandler.launch(user[0]);
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {

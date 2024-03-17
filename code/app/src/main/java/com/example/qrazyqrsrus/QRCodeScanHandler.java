@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,17 +30,16 @@ import java.util.ArrayList;
 
 public class QRCodeScanHandler{
 
-    //the event that we obtain
-//    private Event[] event = new Event[1];
     //the error if an error occurs
     //1 = no event has this qr code
     //2 = no qr code successfully scanned
     //3 = more than one event with this qr code as their promo
     //4 = more than one event with this qr code as their checkin
 //    private int errorNumber;
-    private AppCompatActivity activity;
-    private String userID;
+
     private ActivityResultLauncher<ScanOptions> barcodeLauncher;
+
+    private Attendee user;
 
     //other classes (main activity) can invoke QR scan handler with a lambda function that implements this interface
     public interface ScanCompleteCallback{
@@ -56,9 +56,10 @@ public class QRCodeScanHandler{
         public void onCheckInResult(Event event);
         /**
          * A function for the callback to handle the result of a unsuccessful QR code scan
-         * @param errorNumber the error encountered while trying to scan a QR code. (1: no event has this qr code, 2: no qr code successfully scanned, 3: more than one event has this QR code as their promotional qr code, 4: more than one event has this QR code as their check-in qr code
+         * @param errorNumber the error encountered while trying to scan a QR code. (1: no event has this qr code, 2: no qr code successfully scanned, 3: more than one event has this QR code as their promotional qr code, 4: more than one event has this QR code as their check-in qr code, 5: user scanned check-in QR code but they are not signed up
+         * @param event the event of the scanned qr code that is throwing an error. this parameter can be null depending on what kind of error there is
          */
-        public void onNoResult(int errorNumber);
+        public void onNoResult(@Nullable Event event, int errorNumber);
     }
 
     /**
@@ -69,15 +70,14 @@ public class QRCodeScanHandler{
      * @param callback the function that will handle the results of the scan
      */
     public QRCodeScanHandler(AppCompatActivity activity, String userID, ScanCompleteCallback callback) {
-        this.activity = activity;
-        this.userID = userID;
         barcodeLauncher = activity.registerForActivityResult(new ScanContract(),
                 result -> {
                     //this ActivityResultCallback lambda function handles the results of the scanning activity
                     //we check if there is a result
                     if(result.getContents() == null) {
-                        callback.onNoResult(2);
+                        callback.onNoResult(null, 2);
                     } else {
+                        //first we look to see if the qr code we just scanned is an event's promo qr code
                         FirebaseDB.findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
                             public void onResult(Event matchingEvent) {
@@ -85,61 +85,34 @@ public class QRCodeScanHandler{
                                 Log.d("findEventWithQR", "this callback invoked");
                                 //event[0] = matchingEvent;
                                 callback.onPromoResult(matchingEvent);
-                                //TODO: the problem is that event[0] takes a while to update (has to query and whatnot), and subsequent lines of code continue to execute.
-                                //TODO: this means we could hit an error when a qr code does exist
-                                //TODO: or in my specific case, it means event is not getting reset to null
-                                //TODO: THE QR SCAN WORKS PERFECTLY FINE EVERY **OTHER** TIME
-
                             }
 
+                            //if there we do not find an event in the DB with a matching promo qr content, we look for a matching check-in qr code
                             @Override
                             public void onNoResult() {
-                                //if there we do not find an event in the DB with a matching promo qr content, we look for a matching check-in qr code
                                 FirebaseDB.findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
-
                                     @Override
                                     public void onResult(Event matchingEvent) {
                                         Log.d("findEventWithQR", "callback invoked");
-                                        //event[0] = matchingEvent;
-                                        callback.onCheckInResult(matchingEvent);
+                                        //we check if the user scanning the check-in qr code has signed up to the event
+                                        if (matchingEvent.getSignUps().contains(user.getDocumentId())){
+                                            //if so, they can check in normally
+                                            callback.onCheckInResult(matchingEvent);
+                                        } else{
+                                            //otherwise, they should be brought to the event details screen, but shown a dialog saying they cannot check-in without signing up first
+                                            callback.onNoResult(matchingEvent, 5);
+                                        }
 
                                     }
-
+                                    //if the qr code just scanned is not any event's promo or check-in qr code, we tell the callback
                                     @Override
                                     public void onNoResult() {
                                         //we tell the callback that we found no matching qr code
-                                        callback.onNoResult(1);
+                                        callback.onNoResult(null, 1);
                                     }
                                 });
                             }
                         });
-//                        if (event[0] == null){
-//                            Log.d("findEventWithQR", "we get to here");
-//                            //if qr code was not a promo QR code, check if it was a checkin qr code
-////                            findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
-////
-////                                @Override
-////                                public void onResult(Event matchingEvent) {
-////                                    Log.d("findEventWithQR", "callback invoked");
-////                                    event[0] = matchingEvent;
-////                                    callback.onCheckInResult(matchingEvent);
-////
-////                                }
-////                            });
-//                            if (event[0] == null){
-//                                Log.d("reset", "we get to badness");
-//                                //throw error, qr code does not belong to any event
-//                                callback.onNoResult(1);
-//                            } else{
-//                                Log.d("reset", "we reset");
-//                                //reset event after finding a checkIn QR
-//                                event[0] = null;
-//                            }
-//                        } else{
-//                            Log.d("reset", "we reset here");
-//                            //reset event after finding a promo QR
-//                            event[0] = null;
-//                        }
                     }
                 });
     }
@@ -147,20 +120,13 @@ public class QRCodeScanHandler{
     /**
      * Launches the Activity defined in the constructor
      */
-    public void launch(){
+    public void launch(Attendee user){
+        if (user == null){
+            //TODO: use singleton
+            Log.d("QRCodeScanHandler Launch", "user was null");
+        }
+        this.user = user;
         barcodeLauncher.launch(new ScanOptions());
     }
-
-//    public Event getEvent() {
-//        return event;
-//    }
-
-//    public int getErrorNumber() {
-//        return errorNumber;
-//    }
-
-//    public void reset(){
-//        this.event[0] = null;
-//    }
 
 }

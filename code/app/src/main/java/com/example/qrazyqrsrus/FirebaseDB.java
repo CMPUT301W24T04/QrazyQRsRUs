@@ -155,7 +155,6 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(eventsTAG, "event document snapshot written with ID:" + documentReference.getId());
-
                         event.setDocumentId(documentReference.getId());
                         updateEvent(event);
                     }
