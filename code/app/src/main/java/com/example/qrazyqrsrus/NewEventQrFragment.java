@@ -114,6 +114,7 @@ public class NewEventQrFragment extends Fragment {
             String organizerId = (String) args.getSerializable("organizerId");
             String location = (String) args.getSerializable("location");
             String details = (String) args.getSerializable("details");
+            Integer max_attendees = (Integer) args.getSerializable("max_attendees");
             LocalDateTime startDate = (LocalDateTime) args.getSerializable("startDate");
             LocalDateTime endDate = (LocalDateTime) args.getSerializable("endDate");
             String posterPath = (String) args.getSerializable("posterPath");
@@ -123,7 +124,7 @@ public class NewEventQrFragment extends Fragment {
             String qrCode = (String) args.getSerializable("qrCode");
             FirebaseDB.uploadImage(uri, posterPath);
 
-            Event event = new Event(name, organizerId, location, details, startDate, endDate);
+            Event event = new Event(name, organizerId, location, details, startDate, endDate, max_attendees);
             event.setPosterPath(posterPath);
             event.setQrCodePromo(qrCodePromo);
             event.setQrCode(qrCode);

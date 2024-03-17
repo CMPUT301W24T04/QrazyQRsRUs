@@ -15,6 +15,7 @@ public class Event implements Serializable {
     private String organizerId;
     private String location;
     private String details;
+    private Integer maxAttendees;
     private String startDate;
     private String endDate;
     private Boolean geolocationOn;
@@ -32,12 +33,13 @@ public class Event implements Serializable {
     public Event() {
     }
     // Constructor when Organizer creates the event
-    public Event(String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate) {
+    public Event(String name, String organizerId, String details, String location, LocalDateTime startDate, LocalDateTime endDate, Integer maxAttendees) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
+        this.maxAttendees = maxAttendees;
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
         this.geolocationOn = true;
@@ -51,13 +53,14 @@ public class Event implements Serializable {
                  String location, LocalDateTime startDate, LocalDateTime endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
-                 ArrayList<String> checkIns) {
+                 ArrayList<String> checkIns, Integer maxAttendees) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.documentId = documentId;
         this.name = name;
         this.organizerId = organizerId;
         this.details = details;
         this.location = location;
+        this.maxAttendees = maxAttendees;
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
         this.geolocationOn = geolocationOn;
