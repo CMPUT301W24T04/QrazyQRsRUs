@@ -119,6 +119,19 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         bundle.putSerializable("organizerId", ( (Attendee) bundle.getSerializable("attendee")).getDocumentId());
         bundle.putSerializable("location", ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         bundle.putSerializable("details", ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
+
+        Integer maxAttendees = null;
+        if (!maxAttendeesString.isEmpty()) {
+            try {
+                maxAttendees = Integer.valueOf(maxAttendeesString);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("cannot convert string to int");
+            }
+        }
+
+        bundle.putSerializable("max_attendees", maxAttendees);
+
         return bundle;
     }
 
