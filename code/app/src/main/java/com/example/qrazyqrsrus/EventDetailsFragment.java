@@ -111,6 +111,8 @@ public class EventDetailsFragment extends Fragment {
         Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
         Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
+        ImageView promoQRView = rootView.findViewById(R.id.promo_qr_view);
+        ImageView checkInQRView = rootView.findViewById(R.id.check_in_qr_view);
 
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -156,14 +158,8 @@ public class EventDetailsFragment extends Fragment {
         startDateView.setText(startDateString);
         endDateView.setText(endDateString);
 
-        if (event.getPosterPath() != null) {
-            FirebaseDB.retrieveImage(event, new FirebaseDB.GetBitmapCallBack() {
-                @Override
-                public void onResult(Bitmap bitmap) {
-                    posterView.setImageBitmap(bitmap);
-                }
-            });
-        }
+        //we set all the images on screen.
+        setImages(this.event, posterView, promoQRView, checkInQRView);
 
         ArrayList<String> announcementsList = event.getAnnouncements();
         if (announcementsList == null){
@@ -192,6 +188,20 @@ public class EventDetailsFragment extends Fragment {
 
     private void setAttendee(Attendee attendee){
         this.attendee = attendee;
+    }
+
+    private void setImages(Event event, ImageView posterView, ImageView promoQRView, ImageView checkInQRView){
+        if (event.getPosterPath() != null) {
+            FirebaseDB.retrieveImage(event, new FirebaseDB.GetBitmapCallBack() {
+                @Override
+                public void onResult(Bitmap bitmap) {
+                    posterView.setImageBitmap(bitmap);
+                }
+            });
+        }
+
+        promoQRView.setImageBitmap(QRCodeGenerator.generateBitmap(event.getQrCodePromo(), getActivity()));
+        checkInQRView.setImageBitmap(QRCodeGenerator.generateBitmap(event.getQrCode(), getActivity()));
     }
 
 }
