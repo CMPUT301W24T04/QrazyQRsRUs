@@ -84,8 +84,9 @@ public class MainActivity extends AppCompatActivity{
 
         // Apparently this is not good practice, but if it works, it works.
         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        //CurrentUser.getInstance().initializeUser(deviceId);
 
-
+        //Attendee[] user = new Attendee[1];
         FirebaseDB.loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
             @Override
             public void onResult(Attendee attendee) {
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         if (deviceId == null) {
+            Log.d("deviceId", "super badness");
             return;
         }
 
@@ -130,8 +132,9 @@ public class MainActivity extends AppCompatActivity{
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.commit();
         //was getting java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState when using .commit()
-        fragmentTransaction.commitAllowingStateLoss();
+        //fragmentTransaction.commitAllowingStateLoss();
     }
 
 

@@ -21,7 +21,14 @@
         android:id="@+id/eventDetailsFragment3"
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
-        tools:layout="@layout/fragment_event_details" />
+        tools:layout="@layout/fragment_event_details" >
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementEditFragment"
+            app:destination="@id/announcementEditFragment" />
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementsFragment"
+            app:destination="@id/announcementsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/eventList3"
         android:name="com.example.qrazyqrsrus.EventList"
@@ -31,4 +38,12 @@
             android:id="@+id/action_eventList3_to_eventDetailsFragment3"
             app:destination="@id/eventDetailsFragment3" />
     </fragment>
+    <fragment
+        android:id="@+id/announcementsFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementsFragment"
+        android:label="AnnouncementsFragment" />
+    <fragment
+        android:id="@+id/announcementEditFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementEditFragment"
+        android:label="AnnouncementEditFragment" />
 </navigation>

@@ -56,53 +56,6 @@ public class EventList extends Fragment {  // FIX LATER
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
-     * Adds data from firebase to the list of events to be displayed
-     * @param collectionReference
-     */
-    private void getData(CollectionReference collectionReference){
-        collectionReference
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("Events", "Retrieved all events");
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                String eventName = (String) document.getData().get("name");
-                                String organizerId = (String) document.getData().get("organizerId");
-                                String details = (String) document.getData().get("details");
-                                String location = (String) document.getData().get("location");
-                                //LocalDateTime startDate = (LocalDateTime) document.getData().get("startDate");    FIX LATER
-
-                                String startDate = (String) document.getData().get("startDate");
-                                String endDate = (String) document.getData().get("endDate");
-
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                String posterPath = (String) document.getData().get("posterPath");
-                                String qrCodePath = (String) document.getData().get("qrCodePath");
-                                String qrCodePromoPath = (String) document.getData().get("qrCodePromoPath");
-                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
-                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns"); //ArrayList<Map<String, Object>> checkIns = (ArrayList<Map<String, Object>>) document.getData().get("checkIns");
-
-                                Event event = new Event(documentId, eventName, organizerId, details,
-                                        location, startDate, endDate,
-                                        geolocationOn, posterPath, qrCodePath,
-                                        qrCodePromoPath, announcements, signUps, checkIns);
-
-                                // event = new Event(eventName, organizerId, details, location, startDate, endDate); // new Event(eventName, location, startDate, details,);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                eventDataList.add(event);
-                                eventListAdapter.notifyDataSetChanged();
-                            }
-                        } else {
-                            Log.d("Events", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
-
-    /**
      * Gets data from firestore and displays it on a listview
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
@@ -130,14 +83,13 @@ public class EventList extends Fragment {  // FIX LATER
         final CollectionReference collectionReference = db.collection("Events");
         final String TAG = "Sample";
 
-        // get data from the collection reference we pass in function
-        getData(collectionReference);
-
-
         // update attendee list adapter
         eventList = eventListLayout.findViewById(R.id.event_list_view);
         eventListAdapter = new com.example.qrazyqrsrus.EventListAdapter(getActivity(), eventDataList);
         eventList.setAdapter(eventListAdapter);
+
+        // we get all events from the database, and have it populate the datalist and listadapter
+        FirebaseDB.getAllEvents(eventDataList, eventListAdapter);
 
         //set the header to say "browse all events"
         TextView header = eventListLayout.findViewById(R.id.event_list_title);
