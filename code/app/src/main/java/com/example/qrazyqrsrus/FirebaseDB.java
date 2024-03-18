@@ -952,4 +952,14 @@ public class FirebaseDB {
 
         updateUser(attendee);
     }
+
+    /**
+     * Gets users as a sub-collection from events
+     * @param event
+     */
+    public static void getEventUser(Event event){
+        eventsCollection
+                .whereEqualTo("qrCode", event.getQrCode()); //Finds document with the QR code of event clicked on
+
+    }
 }

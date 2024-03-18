@@ -116,13 +116,15 @@ public class AttendeeList extends Fragment {
         final String TAG = "Sample";
 
         // call getData from the firestore to populate the list
-        getData(collectionReference);
-
+//        getData(collectionReference);
 
 
         // update attendee list and shows it on the listview
         attendeeList = attendeeListLayout.findViewById(R.id.attendee_list_view);
         attendeeListAdapter = new AttendeeListAdapter(getActivity(), attendeeDataList);
+
+        // populate the attendees list
+        FirebaseDB.getAllUsers(attendeeDataList, attendeeListAdapter);
         attendeeList.setAdapter(attendeeListAdapter);
 
         // When the list is clicked, reveal the attendee profile information
@@ -148,7 +150,7 @@ public class AttendeeList extends Fragment {
         attendeeListLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_mainMenu);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_eventDetailsFragment);
             }
         });
         return attendeeListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
