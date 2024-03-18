@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -44,8 +45,17 @@ public class FirebaseDB {
         void onResult(boolean isUnique);
     }
 
+    public interface UniqueCheckInCallBack {
+        void onResult(boolean isUnique, CheckIn checkIn);
+    }
+
+    //- we change the callback interface for looking for a matching qr code to have an OnNoResult function that handles the case that no matching qr code exists for either promo or checkin
+    //then in qr scanhandler we call findEventWithQR in OnNoResult for the promo qr search
+    //then in qr scanhandler we throw error in onNoResult after both qr searches
     public interface MatchingQRCallBack {
         void onResult(Event matchingEvent);
+
+        void onNoResult();
     }
 
     public interface GetStringCallBack{
@@ -60,7 +70,7 @@ public class FirebaseDB {
         void onResult(Attendee attendee);
     }
 
-    final static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
     final static CollectionReference eventsCollection = db.collection("Events");
@@ -69,6 +79,10 @@ public class FirebaseDB {
     final static String usersTAG = "Users";
     final static String eventsTAG = "Events";
     final static String imagesTAG = "Images";
+
+    public FirebaseDB(FirebaseFirestore firestoreInstance){
+        db = firestoreInstance;
+    }
 
     // Change String to Attendee class when someone implements it.
 
@@ -141,7 +155,6 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(eventsTAG, "event document snapshot written with ID:" + documentReference.getId());
-
                         event.setDocumentId(documentReference.getId());
                         updateEvent(event);
                     }
@@ -288,6 +301,28 @@ public class FirebaseDB {
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
+    }
+
+    /**
+     * Deletes an image from the database
+     *
+     * @param pathName the pathname where we can find the file in the database storage
+     */
+    public static void deleteImage(String pathName){
+        StorageReference storageRef = storage.getReference();
+        StorageReference storageReference = storageRef.child(pathName + ".jpg");
+
+        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //TODO: handle bad attempts to delete
+            }
+        });
     }
 
     /**
@@ -611,21 +646,27 @@ public class FirebaseDB {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                Event event = documentSnapshot.toObject((Event.class));
-                                if (event.getAnnouncements() == null){
-                                    event.setAnnouncements(new ArrayList<String>());
-                                }
-                                if (event.getSignUps() == null){
-                                    event.setSignUps(new ArrayList<String>());
-                                }
-                                if (event.getCheckIns() == null){
-                                    event.setCheckIns(new ArrayList<String>());
-                                }
-                                event.setDocumentId(documentSnapshot.getId());
+                            if (task.getResult() == null || task.getResult().isEmpty()) {
+                                //if no event with a matching qr code was found, tell the callback
+                                callBack.onNoResult();
+                            } else{
+                                for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                                    Event event = documentSnapshot.toObject((Event.class));
+                                    if (event.getAnnouncements() == null){
+                                        event.setAnnouncements(new ArrayList<String>());
+                                    }
+                                    if (event.getSignUps() == null){
+                                        event.setSignUps(new ArrayList<String>());
+                                    }
+                                    if (event.getCheckIns() == null){
+                                        event.setCheckIns(new ArrayList<String>());
+                                    }
+                                    event.setDocumentId(documentSnapshot.getId());
 
-                                callBack.onResult(event);
+                                    callBack.onResult(event);
+                                }
                             }
+
                         }
                     }
                 });
@@ -703,7 +744,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckCallBack callBack) {
+    public static void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckInCallBack callBack) {
         checkInsCollection
                 .whereEqualTo("attendeeDocId", attendeeDocId)
                 .whereEqualTo("eventDocId", eventDocId)
@@ -711,9 +752,46 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        callBack.onResult(queryDocumentSnapshots.isEmpty());
+                        Log.d("checkInAlreadyExists", String.valueOf(queryDocumentSnapshots.isEmpty()));
+                        CheckIn checkInToReturn = null;
+                        if (!(queryDocumentSnapshots.isEmpty())){
+                            if (queryDocumentSnapshots.getDocuments().size() == 1){
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()){
+                                    checkInToReturn = documentSnapshot.toObject(CheckIn.class);
+                                }
+                            } else{
+                                //TODO: handle this bad error, where there are duplicate checkins in firebase
+                            }
+                        }
+                        //can return null if no checkin alredy exists, or if we get a bad checkin (duplicates exist)
+                        callBack.onResult(queryDocumentSnapshots.isEmpty(), checkInToReturn);
                     }
                 });
+    }
+
+    //i suggest this function be used primarily for new checkIns, because we need to also add it to the event
+
+    /**
+     * This functions creates a new checkIn for the user that is joining the event, and adds the documentID of the checkIn to the event's field in firebase
+     * @param checkIn the object representing the checkIn. this holds the document ID of the event, and attendee that is checking in
+     * @param eventDocId the document ID of the event
+     */
+    public static void addCheckInToEvent(CheckIn checkIn, String eventDocId) {
+        checkInsCollection
+                .add(checkIn)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        checkIn.setDocumentId(documentReference.getId());
+                        //update checkIn to get the document ID set in the field for future accesses
+                        updateCheckIn(checkIn);
+                        //update the event's field to contain the ID of the new checkIn document
+                        eventsCollection
+                                .document(eventDocId)
+                                .update("checkIns", FieldValue.arrayUnion(checkIn.getDocumentId()));
+                    }
+                });
+
     }
 
 
@@ -842,7 +920,7 @@ public class FirebaseDB {
      *
      * @param imagePath This is the path of the image we're trying to get (has the file extension)
      */
-    public static void deleteImage(String imagePath) {
+    public static void deleteImageAdmin(String imagePath) {
         storage.getReference()
                 .child(imagePath)
                 .delete()

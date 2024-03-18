@@ -47,7 +47,7 @@
             app:argType="com.example.qrazyqrsrus.Event" />
         <action
             android:id="@+id/action_newEventQrFragment_to_eventList2"
-            app:destination="@id/eventList2" />
+            app:destination="@id/myEventsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventPromoQrFragment"
@@ -87,18 +87,6 @@
         <action
             android:id="@+id/action_newEventEndTimeFragment_to_newEventImageFragment"
             app:destination="@id/newEventImageFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/eventList2"
-        android:name="com.example.qrazyqrsrus.EventList"
-        android:label="fragment_event_list"
-        tools:layout="@layout/fragment_event_list" >
-        <action
-            android:id="@+id/action_eventList2_to_newEventTextFragment"
-            app:destination="@id/newEventTextFragment" />
-        <action
-            android:id="@+id/action_eventList2_to_eventDetailsFragment"
-            app:destination="@id/eventDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/eventDetailsFragment"
