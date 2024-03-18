@@ -1,3 +1,4 @@
+//this fragment is the fifth fragment in the event creation sequence. it allows users to generate or upload a promotional qr code for their event
 package com.example.qrazyqrsrus;
 
 import static android.graphics.ImageDecoder.createSource;
@@ -46,7 +47,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-
+/**
+ * genertates the promo QR code for the event
+ */
 public class NewEventPromoQrFragment extends Fragment {
     //private ImageView imageView;
     private boolean successfulQRSelection;

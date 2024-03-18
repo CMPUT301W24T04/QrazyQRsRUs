@@ -53,4 +53,24 @@ public class CheckIn {
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
+
+    public void setAttendeeDocId(String attendeeDocId) {
+        this.attendeeDocId = attendeeDocId;
+    }
+
+    public void setEventDocId(String eventDocId) {
+        this.eventDocId = eventDocId;
+    }
+
+    public void setLocation(Map<String, Object> location) {
+        this.location = location;
+    }
+
+    public void setNumberOfCheckIns(Integer numberOfCheckIns) {
+        this.numberOfCheckIns = numberOfCheckIns;
+    }
+
+    public void incrementCheckIns(){
+        this.numberOfCheckIns += 1;
+    }
 }

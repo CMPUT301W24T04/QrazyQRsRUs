@@ -1,3 +1,4 @@
+//this fragment is the first fragment of the new event generation sequence. it allows users to name their event, set the location, details, and optionally limit attendees.
 package com.example.qrazyqrsrus;
 
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -21,7 +23,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.Calendar;
 import java.util.Date;
 
-
+/**
+ * shows the new event text
+ */
 public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItemClickListener{
     private Toolbar toolbar;
 
@@ -31,6 +35,11 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 //        listener = (AddEventListener) context;
     }
 
+    /**
+     * creates view
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +48,18 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         }
     }
 
+    /**
+     * When view is created, show the event details as text
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,9 +76,11 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
 
         limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            maxAttendeesEditText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            if (!isChecked) {
-                maxAttendeesEditText.setText(""); // Clear the text when toggle is off
+            if (isChecked) {
+                maxAttendeesEditText.setVisibility(View.VISIBLE);
+            } else {
+                maxAttendeesEditText.setVisibility(View.GONE);
+                maxAttendeesEditText.setText("");
             }
         });
 
@@ -97,6 +120,19 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         bundle.putSerializable("organizerId", ( (Attendee) bundle.getSerializable("attendee")).getDocumentId());
         bundle.putSerializable("location", ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         bundle.putSerializable("details", ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
+
+        Integer maxAttendees = null;
+        if (!maxAttendeesString.isEmpty()) {
+            try {
+                maxAttendees = Integer.valueOf(maxAttendeesString);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("cannot convert string to int");
+            }
+        }
+
+        bundle.putSerializable("max_attendees", maxAttendees);
+
         return bundle;
     }
 

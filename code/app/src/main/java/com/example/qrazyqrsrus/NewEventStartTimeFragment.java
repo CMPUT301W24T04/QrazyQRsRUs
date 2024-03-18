@@ -1,3 +1,4 @@
+//this fragment is the second fragment in the event creation sequence. it allows users to select a start time for their event.
 package com.example.qrazyqrsrus;
 
 import android.content.Context;
@@ -21,6 +22,9 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Allows user to choose the start time of the event
+ */
 public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
     private androidx.appcompat.widget.Toolbar toolbar;
@@ -32,12 +36,21 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 //        return fragment;
 //    }
 
+    /**
+     * attaches dialog to screen
+     * @param context
+     */
     //temporarily set listener to be mainActivity. should eventually be adding events to firestore.
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
     }
 
+    /**
+     * create view
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +59,18 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         }
     }
 
+    /**
+     * when view is created, show calendar to select the event
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,6 +88,11 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         createToolbar(view);
         return view;
     }
+
+    /**
+     * Has the toolbar functionality to change views
+     * @param view
+     */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024

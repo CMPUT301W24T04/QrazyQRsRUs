@@ -41,6 +41,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.3.6")
+
     //Navigation
     //from https://developer.android.com/guide/navigation#kts on Feb. 19, 2024
     val nav_version = "2.7.7"
@@ -68,5 +70,13 @@ dependencies {
 
     //photo picker
     implementation("androidx.activity:activity:1.8.2")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    testImplementation("org.mockito:mockito-core:5.11.0")
 }
 
