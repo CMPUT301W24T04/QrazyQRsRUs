@@ -1,3 +1,4 @@
+//this fragment is the first fragment of the new event generation sequence. it allows users to name their event, set the location, details, and optionally limit attendees.
 package com.example.qrazyqrsrus;
 
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -74,9 +76,11 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
 
         limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            maxAttendeesEditText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            if (!isChecked) {
-                maxAttendeesEditText.setText(""); // Clear the text when toggle is off
+            if (isChecked) {
+                maxAttendeesEditText.setVisibility(View.VISIBLE);
+            } else {
+                maxAttendeesEditText.setVisibility(View.GONE);
+                maxAttendeesEditText.setText("");
             }
         });
 
@@ -116,6 +120,19 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         bundle.putSerializable("organizerId", ( (Attendee) bundle.getSerializable("attendee")).getDocumentId());
         bundle.putSerializable("location", ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         bundle.putSerializable("details", ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
+
+        Integer maxAttendees = null;
+        if (!maxAttendeesString.isEmpty()) {
+            try {
+                maxAttendees = Integer.valueOf(maxAttendeesString);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("cannot convert string to int");
+            }
+        }
+
+        bundle.putSerializable("max_attendees", maxAttendees);
+
         return bundle;
     }
 

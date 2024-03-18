@@ -70,34 +70,6 @@ public class EventDetailsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if (getArguments() == null){
-            System.out.println("No Arguments provided");
-            return null;
-        }
-        this.event = (Event) getArguments().get("event");
-        this.attendee = (Attendee) getArguments().get("attendee");
-
-        if (this.attendee == null){
-            String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
-                @Override
-                public void onResult(Attendee attendee) {
-                    setAttendee(attendee);
-                }
-            });
-        }
-        //Boolean isCheckIn = (Boolean) getArguments().get("isCheckIn");
-//        if (isCheckIn == null) {
-//
-//        }else{
-//            if (isCheckIn){
-//                if (event.getSignUps().contains(attendee.getDocumentId())){
-//                    //event.deleteSignUp(attendee.getDocumentId());
-//                    //event.addCheckIn(attendee.getDocumentId());
-//
-//                }
-//            }
-//        }
         View rootView = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = rootView.findViewById(R.id.event_detail_name);
@@ -110,7 +82,38 @@ public class EventDetailsFragment extends Fragment {
         ListView announcementListView = rootView.findViewById(R.id.announcement_list_view);
         Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
         Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
+        Button viewAnnouncementsButton = rootView.findViewById(R.id.view_announcements_button);
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
+        ImageView promoQRView = rootView.findViewById(R.id.promo_qr_view);
+        ImageView checkInQRView = rootView.findViewById(R.id.check_in_qr_view);
+
+        //try to get event and attendee from bundle
+        //if attendee is not there, thats fine, if event not there, very bad.
+        if (getArguments() == null){
+            System.out.println("No Arguments provided");
+            return null;
+        } else{
+            this.event = (Event) getArguments().get("event");
+            this.attendee = (Attendee) getArguments().get("attendee");
+
+        }
+
+        //we check if attendee is set, logging in the user if not
+        //then we update the images that are displayed, and the visibility of the signup button once we have the attendee
+        if (this.attendee == null){
+            String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+                @Override
+                public void onResult(Attendee attendee) {
+                    setAttendee(attendee);
+                    setImages(posterView, promoQRView, checkInQRView);
+                    setButtonVisibility(signUpEvent);
+                }
+            });
+        } else{
+            setImages(posterView, promoQRView, checkInQRView);
+            setButtonVisibility(signUpEvent);
+        }
 
         //Change view to attendee list when click on view attendees button
         viewAttendeesButton.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +146,19 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
+        viewAnnouncementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                if (Objects.equals(attendee.getDocumentId(), event.getOrganizerId())) {
+                    Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementEditFragment, args);
+                } else {
+                    Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementsFragment, args);
+                }
+            }
+        });
+
         String nameString = "Name: "+event.getName();
         //String organizerString = "Organized by: ";
         FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
@@ -164,14 +180,8 @@ public class EventDetailsFragment extends Fragment {
         startDateView.setText(startDateString);
         endDateView.setText(endDateString);
 
-        if (event.getPosterPath() != null) {
-            FirebaseDB.retrieveImage(event, new FirebaseDB.GetBitmapCallBack() {
-                @Override
-                public void onResult(Bitmap bitmap) {
-                    posterView.setImageBitmap(bitmap);
-                }
-            });
-        }
+        //we set all the images on screen.
+
 
         ArrayList<String> announcementsList = event.getAnnouncements();
         if (announcementsList == null){
@@ -200,6 +210,37 @@ public class EventDetailsFragment extends Fragment {
 
     private void setAttendee(Attendee attendee){
         this.attendee = attendee;
+    }
+
+    /**
+     * This function hides the signup button if the user is the organizer of the event, or has already signed up for the event
+     * @param signUpButton The button to hide
+     */
+    private void setButtonVisibility(Button signUpButton){
+        if (event.getSignUps().contains(this.attendee.getDocumentId()) || Objects.equals(event.getOrganizerId(), this.attendee.getDocumentId())){
+            signUpButton.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * This function sets the images on the event details screen, fetching the poster from firebase, and generating QR codes from the event's QR contents
+     * @param posterView The ImageView that should display the event poster
+     * @param promoQRView The ImageView that should display the event's promo QR code
+     * @param checkInQRView The ImageView that should display the event's check-in QR code
+     */
+    private void setImages(ImageView posterView, ImageView promoQRView, ImageView checkInQRView){
+        if (this.event.getPosterPath() != null) {
+            FirebaseDB.retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
+                @Override
+                public void onResult(Bitmap bitmap) {
+                    posterView.setImageBitmap(bitmap);
+                }
+            });
+        }
+        Log.d("setImages", this.event.getQrCodePromo());
+        Log.d("setImages", this.event.getQrCode());
+        promoQRView.setImageBitmap(QRCodeGenerator.generateBitmap(this.event.getQrCodePromo(), getActivity()));
+        checkInQRView.setImageBitmap(QRCodeGenerator.generateBitmap(this.event.getQrCode(), getActivity()));
     }
 
 }

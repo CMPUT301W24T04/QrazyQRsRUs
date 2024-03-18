@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -29,8 +30,12 @@ public class MyEventsListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //NOTE: this inflates from the same xml file as the event list to browse all events
         View rootView = inflater.inflate(R.layout.fragment_event_list, container, false);
         // Inflate the layout for this fragment
+
+        TextView header = rootView.findViewById(R.id.event_list_title);
+        header.setText(R.string.my_events_fragment_header);
 
 
         ListView eventListView = rootView.findViewById(R.id.event_list_view);
@@ -53,7 +58,7 @@ public class MyEventsListFragment extends Fragment {
                 }
             });
         } else{
-            Attendee attendee = (Attendee) getArguments().getSerializable("user");
+            Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
             setAttendee(attendee);
             FirebaseDB.getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
 //            FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
