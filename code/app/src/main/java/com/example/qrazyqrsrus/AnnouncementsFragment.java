@@ -6,10 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -32,6 +35,7 @@ public class AnnouncementsFragment extends Fragment {
     private ListView announcementListView;
     private ArrayList<String> announcements;
     private ArrayAdapter<String> adapter;
+    private Button backButton;
 
     public AnnouncementsFragment() {
         // Constructor
@@ -56,10 +60,18 @@ public class AnnouncementsFragment extends Fragment {
         assert event != null;
 
         announcementListView = rootView.findViewById(R.id.list_announcements);
+        backButton = rootView.findViewById(R.id.button_back);
 
         announcements = event.getAnnouncements();
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, announcements);
         announcementListView.setAdapter(adapter);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
+            }
+        });
 
         return rootView;
     }

@@ -139,7 +139,13 @@ public class EventDetailsFragment extends Fragment {
         viewAnnouncementsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                if (Objects.equals(attendee.getDocumentId(), event.getOrganizerId())) {
+                    Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementEditFragment, args);
+                } else {
+                    Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementsFragment, args);
+                }
             }
         });
 

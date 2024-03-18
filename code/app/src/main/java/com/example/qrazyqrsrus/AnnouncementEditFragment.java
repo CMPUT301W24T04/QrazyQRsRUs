@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,6 +40,7 @@ public class AnnouncementEditFragment extends Fragment {
     private EditText announcementEditText;
     private Button addButton;
     private ListView announcementListView;
+    private Button backButton;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> announcements;
 
@@ -65,6 +68,7 @@ public class AnnouncementEditFragment extends Fragment {
 
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
         addButton = rootView.findViewById(R.id.button_add);
+        backButton = rootView.findViewById(R.id.button_back);
         announcementListView = rootView.findViewById(R.id.list_announcements);
 
         announcements = event.getAnnouncements();
@@ -87,6 +91,14 @@ public class AnnouncementEditFragment extends Fragment {
                 return true;
             }
         });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
+            }
+        });
+
 
         return rootView;
     }
