@@ -64,5 +64,14 @@ public class AnnouncementsFragment extends Fragment {
         return rootView;
     }
 
+    public static AnnouncementsFragment newInstance(Event i){
+        Bundle args = new Bundle();
+        args.putSerializable("event", i);
+
+        AnnouncementsFragment fragment = new AnnouncementsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 }
 

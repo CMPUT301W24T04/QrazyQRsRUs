@@ -110,6 +110,7 @@ public class EventDetailsFragment extends Fragment {
         ListView announcementListView = rootView.findViewById(R.id.announcement_list_view);
         Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
         Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
+        Button viewAnnouncementsButton = rootView.findViewById(R.id.view_announcements_button);
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
 
 
@@ -132,6 +133,13 @@ public class EventDetailsFragment extends Fragment {
             public void onClick(View view) {
                 event.addSignUp(attendee.getDocumentId());
                 FirebaseDB.updateEvent(event);
+            }
+        });
+
+        viewAnnouncementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 

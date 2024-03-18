@@ -155,5 +155,14 @@ public class AnnouncementEditFragment extends Fragment {
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.show();
     }
+
+    public static AnnouncementEditFragment newInstance(Event i){
+        Bundle args = new Bundle();
+        args.putSerializable("event", i);
+
+        AnnouncementEditFragment fragment = new AnnouncementEditFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 }
 
