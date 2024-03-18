@@ -547,7 +547,7 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Log.d(usersTAG, "Success");
-                        callBack.onResult((String) documentSnapshot.get("id"));
+                        callBack.onResult((String) documentSnapshot.get("name"));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
