@@ -92,7 +92,26 @@
         android:id="@+id/eventDetailsFragment"
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"
         android:label="fragment_event_details"
-        tools:layout="@layout/fragment_event_details" />
+        tools:layout="@layout/fragment_event_details">
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementEditFragment"
+            app:destination="@+id/AnnouncementEditFragment"/>
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementsFragment"
+            app:destination="@+id/AnnouncementsFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/AnnouncementEditFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementEditFragment"
+        android:label="announcement_edit_fragment"
+        tools:layout="@layout/fragment_announcement_edit"/>
+
+    <fragment
+        android:id="@+id/AnnouncementsFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementsFragment"
+        android:label="announcements_fragment"
+        tools:layout="@layout/layout_announcements"/>
+
     <fragment
         android:id="@+id/myEventsListFragment"
         android:name="com.example.qrazyqrsrus.MyEventsListFragment"

@@ -69,7 +69,26 @@
         <action
             android:id="@+id/action_eventDetailsFragment_to_mainMenu"
             app:destination="@id/mainMenu" />
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementEditFragment"
+            app:destination="@+id/AnnouncementEditFragment"/>
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementsFragment"
+            app:destination="@+id/AnnouncementsFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/AnnouncementEditFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementEditFragment"
+        android:label="announcement_edit_fragment"
+        tools:layout="@layout/fragment_announcement_edit"/>
+
+    <fragment
+        android:id="@+id/AnnouncementsFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementsFragment"
+        android:label="announcements_fragment"
+        tools:layout="@layout/layout_announcements"/>
+
     <fragment
         android:id="@+id/eventDetailsFragment2"
         android:name="com.example.qrazyqrsrus.EventDetailsFragment"

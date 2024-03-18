@@ -98,6 +98,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
+    <Button
+        android:id="@+id/view_announcements_button"
+        android:text="View Announcements"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/announcement_list_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sign_up_button"
+        />
     <TextView
         android:id="@+id/promo_qr_text"
         android:layout_width="wrap_content"
