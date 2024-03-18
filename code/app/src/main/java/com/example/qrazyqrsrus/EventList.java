@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.example.crazyqrtest.Attendee;
@@ -118,6 +119,8 @@ public class EventList extends Fragment {  // FIX LATER
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // DEFINE VIEW
+        //NOTE: This inflates from the same xml file as MyEventsFragment
+        //this is fine, but buttons have the same name
         View eventListLayout = inflater.inflate(R.layout.fragment_event_list, container, false);
         //*************************************************** ***********************************************************
         // datalist to hold event classes
@@ -136,6 +139,10 @@ public class EventList extends Fragment {  // FIX LATER
         eventListAdapter = new com.example.qrazyqrsrus.EventListAdapter(getActivity(), eventDataList);
         eventList.setAdapter(eventListAdapter);
 
+        //set the header to say "browse all events"
+        TextView header = eventListLayout.findViewById(R.id.event_list_title);
+        header.setText(R.string.browse_events_header);
+
 //        FloatingActionButton fab = eventListLayout.findViewById(R.id.new_event_button);
 //        fab.setOnClickListener(v -> {
 //            Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_newEventTextFragment);
@@ -153,7 +160,7 @@ public class EventList extends Fragment {  // FIX LATER
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_eventDetailsFragment, bundle);
+                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList3_to_eventDetailsFragment3, bundle);
             }
         });
 

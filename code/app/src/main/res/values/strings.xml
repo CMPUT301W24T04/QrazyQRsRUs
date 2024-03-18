@@ -16,4 +16,7 @@
     <string name="welcome_to_qrazyqrsrus">Welcome to QrazyQRsRUs!</string>
     <string name="events">Events:</string>
     <string name="no_args">Error: No arguments provided!</string>
+    <string name="my_events_fragment_header">Your created events:</string>
+    <string name="browse_events_header">Browse events:</string>
+    <string name="not_signed_up_error">Error: You cannot check-in to an event that you have not signed up for</string>
 </resources>

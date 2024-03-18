@@ -71,11 +71,7 @@ public class ViewProfileFragment extends Fragment {
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);
         switchGeolocation = view.findViewById(R.id.switchGeolocation);
-//        SharedPreferences preferences = getSharedPreferences("USER_PREF", MODE_PRIVATE);
 
-        // Restore state here
-//        boolean switchState = preferences.getBoolean("GeolocationSwitchState", false);
-//        switchGeolocation.setChecked(switchState);
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         Bundle args = getArguments();
@@ -103,104 +99,13 @@ public class ViewProfileFragment extends Fragment {
             }
         });
 
-        btnUpdateProfile.setOnClickListener(v -> updateUserProfile(this.attendee));
-
-        //IF WE ARE GETTING ATTENDEE FROM LIST VIEW (not editing) WE WILL ALREADY HAVE ATTENDEE
-        //************************************************************************************
-        // Get bundle from attendee click to be displayed on the profile view
-//        Bundle bundle = getArguments();
-//        Attendee attendee = (Attendee) bundle.getSerializable("current_attendee");
-//        etFullName.setText(attendee.getName());
-        //*************************************************************************************
-
-//        switchGeolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                updateGeolocation(userId, isChecked);
-//            }
-//        });
-
-//        etFullName.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                if (isProfileLoaded) {
-//                    String initials = getInitials(editable.toString());
-//                    Bitmap bitmap = createInitialsImage(initials);
-//                    imgProfilePicture.setImageBitmap(bitmap);
-////                    uploadImageToStorage(bitmap, userId);
-//                }
-//            }
-//        });
+        btnUpdateProfile.setOnClickListener(v -> {
+            updateUserProfile(this.attendee);
+        });
 
         return view;
     }
-//    private void loadUserProfile(String userId) {
-//        db.collection("Users").document(userId).get()
-//                .addOnSuccessListener(documentSnapshot -> {
-//                    if (documentSnapshot.exists()) {
-//                        UserProfile userProfile = documentSnapshot.toObject(UserProfile.class);
-//                        if (userProfile != null) {
-//                            etFullName.setText(userProfile.getName());
-//                            etAge.setText(userProfile.getAge());
-//                            etEmailAddress.setText(userProfile.getEmail());
-//                            switchGeolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                                @Override
-//                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                                    // Save state here
-//                                    SharedPreferences preferences = getSharedPreferences("USER_PREF", MODE_PRIVATE);
-//                                    preferences.edit().putBoolean("GeolocationSwitchState", isChecked).apply();
-//
-//                                    // Update Firestore
-//                                    updateGeolocation(userId, isChecked);
-//                                }
-//                            });
-//
-//
-//                            String initials = getInitials(userProfile.getName());
-//                            Bitmap bitmap = createInitialsImage(initials);
-//                            imgProfilePicture.setImageBitmap(bitmap);
-//                            isProfileLoaded = true;
-//                        } else {
-//                            Log.e("LoadUser", "UserProfile is null");
-//                        }
-//                    } else {
-//                        Toast.makeText(this, "Profile does not exist.", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                    Log.e("FirestoreError", "Error loading profile", e);
-//                    Toast.makeText(this, "Error loading profile.", Toast.LENGTH_SHORT).show();
-//                });
-//    }
 
-//    private void updateUserProfile(String userId) {
-//        String fullName = etFullName.getText().toString().trim();
-//        String age = etAge.getText().toString().trim();
-//        String emailAddress = etEmailAddress.getText().toString().trim();
-//
-//
-//        Map<String, Object> userProfileMap = new HashMap<>();
-//        userProfileMap.put("name", fullName);
-//        userProfileMap.put("age", age);
-//        userProfileMap.put("email", emailAddress);
-//
-//        db.collection("Users").document(userId)
-//                .update(userProfileMap)
-//                .addOnSuccessListener(aVoid -> Toast.makeText(this, "Profile Updated Successfully!", Toast.LENGTH_LONG).show())
-//                .addOnFailureListener(e -> Log.e("FirestoreError", "Failed to update profile", e));
-//    }
-
-//    private void updateGeolocation(String userId, boolean isOn) {
-//        db.collection("Users").document(userId).update("geolocation_on", isOn)
-//                .addOnSuccessListener(aVoid -> Log.d("UpdateProfileActivity", "Geolocation updated successfully"))
-//                .addOnFailureListener(e -> Log.e("UpdateProfileActivity", "Failed to update geolocation", e));
-//    }
 
     private String getInitials(String name) {
         String[] parts = name.trim().split("\\s+");
@@ -227,17 +132,6 @@ public class ViewProfileFragment extends Fragment {
         canvas.drawText(initials, centerX, centerY, paint);
         return image;
     }
-
-//    private void uploadImageToStorage(Bitmap bitmap, String userId) {
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//        byte[] data = baos.toByteArray();
-//
-//        StorageReference profileImagesRef = storageRef.child("profileImages/" + userId + ".png");
-//        profileImagesRef.putBytes(data)
-//                .addOnSuccessListener(aVoid -> Toast.makeText(UpdateProfileActivity.this, "Profile Image Uploaded Successfully!", Toast.LENGTH_SHORT).show())
-//                .addOnFailureListener(e -> Log.e("UpdateProfileActivity", "Failed to upload profile image", e));
-//    }
 
     private void loadInitialAttendee(Attendee attendee){
         this.attendee = attendee;
@@ -275,6 +169,18 @@ public class ViewProfileFragment extends Fragment {
     }
 
     private void updateUserProfile(Attendee attendee){
+        Bitmap profileBitmap = createInitialsImage(getInitials(etFullName.getText().toString()));
+        imgProfilePicture.setImageBitmap(profileBitmap);
+        //we make a local file on the user's device with the new image
+        String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), profileBitmap, "generatedProfilePicture", "the profile picture we generated");
+        Uri uri = Uri.parse(localFilePath);
+        //we generate a unique pathname
+        String pathName = generatePathName(etFullName.getText().toString());
+        //we upload the new profile picture
+        //delete the old image this user had
+        FirebaseDB.deleteImage(attendee.getProfilePicturePath());
+        FirebaseDB.uploadImage(uri, pathName);
+        attendee.setProfilePicturePath(pathName);
         attendee.setName(etFullName.getText().toString());
         attendee.setGeolocationOn(switchGeolocation.isChecked());
         attendee.setEmail(etEmailAddress.getText().toString());
