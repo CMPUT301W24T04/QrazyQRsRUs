@@ -79,7 +79,6 @@ public class EventDetailsFragment extends Fragment {
         TextView startDateView = rootView.findViewById(R.id.event_detail_start_date);
         TextView endDateView = rootView.findViewById(R.id.event_detail_end_date);
         ImageView posterView = rootView.findViewById(R.id.posterView);
-        ListView announcementListView = rootView.findViewById(R.id.announcement_list_view);
         Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
         Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
         Button viewAnnouncementsButton = rootView.findViewById(R.id.view_announcements_button);
@@ -174,13 +173,6 @@ public class EventDetailsFragment extends Fragment {
 
         //we set all the images on screen.
 
-
-        ArrayList<String> announcementsList = event.getAnnouncements();
-        if (announcementsList == null){
-            announcementsList = new ArrayList<String>();
-        }
-        ArrayAdapter<String> announcementsAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, announcementsList);
-        announcementListView.setAdapter(announcementsAdapter);
 
         // Inflate the layout for this fragment
         return rootView;
