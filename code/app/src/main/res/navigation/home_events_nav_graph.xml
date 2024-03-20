@@ -61,5 +61,9 @@
     <fragment
         android:id="@+id/adminViewEventsFragment"
         android:name="com.example.qrazyqrsrus.AdminViewEventsFragment"
-        android:label="AdminViewEventsFragment" />
+        android:label="AdminViewEventsFragment" >
+        <action
+            android:id="@+id/action_adminViewEventsFragment_to_announcementsFragment"
+            app:destination="@id/announcementsFragment" />
+    </fragment>
 </navigation>

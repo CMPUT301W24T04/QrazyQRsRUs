@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -42,7 +43,7 @@ public class AdminViewEventsFragment extends Fragment {
 
 
 
-    private ArrayList<Event> allEvents;
+    private ArrayList<Event> allEvents = new ArrayList<>();
     private Integer currentPosition;
 
     public AdminViewEventsFragment() {
@@ -76,8 +77,13 @@ public class AdminViewEventsFragment extends Fragment {
         previousButton = rootView.findViewById(R.id.previous_event_button);
 
         currentPosition = 0;
-        FirebaseDB.getAllEvents(allEvents);
-        updateView();
+        FirebaseDB.getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
+            @Override
+            public void onResult(ArrayList<Event> events) {
+                allEvents = new ArrayList<>(events);
+                updateView();
+            }
+        });
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +100,7 @@ public class AdminViewEventsFragment extends Fragment {
             public void onClick(View v) {
                 Bundle args = new Bundle();
                 args.putSerializable("event", allEvents.get(currentPosition));
-                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementsFragment, args);
+                Navigation.findNavController(rootView).navigate(R.id.action_adminViewEventsFragment_to_announcementsFragment, args);
             }
         });
 
@@ -113,14 +119,18 @@ public class AdminViewEventsFragment extends Fragment {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                FirebaseDB.deleteEvent(allEvents.get(currentPosition));
-//                allEvents.clear();
-//                FirebaseDB.getAllEvents(allEvents);
-//                if (currentPosition != 0) {
-//                    currentPosition -= 1;
-//                }
-//                updateView();
-                changeState();
+                FirebaseDB.deleteEvent(allEvents.get(currentPosition));
+                FirebaseDB.getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
+                    @Override
+                    public void onResult(ArrayList<Event> events) {
+                        allEvents = new ArrayList<>(events);
+                        updateView();
+                        changeState();
+                    }
+                });
+                if (currentPosition != 0) {
+                    currentPosition -= 1;
+                }
             }
         });
         nextButton.setOnClickListener(new View.OnClickListener() {
@@ -141,8 +151,6 @@ public class AdminViewEventsFragment extends Fragment {
                 }
             }
         });
-
-
 
         // Inflate the layout for this fragment
         return rootView;

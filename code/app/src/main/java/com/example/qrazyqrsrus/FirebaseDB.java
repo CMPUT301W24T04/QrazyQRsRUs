@@ -69,6 +69,9 @@ public class FirebaseDB {
     public interface GetAttendeeCallBack {
         void onResult(Attendee attendee);
     }
+    public interface GetAllEventsCallBack {
+        void onResult(ArrayList<Event> events);
+    }
 
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -375,7 +378,8 @@ public class FirebaseDB {
                 });
 
     }
-    public static void getAllEvents(ArrayList<Event> eventList) {
+    public static void getAllEvents(GetAllEventsCallBack callBack) {
+        ArrayList<Event> eventList = new ArrayList<>();
         eventsCollection
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -411,6 +415,7 @@ public class FirebaseDB {
                                 Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
                                 eventList.add(event);
                             }
+                            callBack.onResult(eventList);
                         } else {
                             Log.d(eventsTAG, "Error getting documents: ", task.getException());
                         }
