@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,14 +65,22 @@ public class AdminViewImagesFragment extends Fragment {
         cancelButton = rootView.findViewById(R.id.cancel_button);
         confirmButton = rootView.findViewById(R.id.confirm_button);
         confirmTextView = rootView.findViewById(R.id.confirm_text_view);
+        //TODO: update button colors and images with Mikael's work
         nextButton = rootView.findViewById(R.id.next_event_button);
         previousButton = rootView.findViewById(R.id.previous_event_button);
 
         currentPosition = 0;
         allImagePaths = new ArrayList<String>();
         //replace with a array list of string that will hold all paths
-        FirebaseDB.getPostersPaths(allImagePaths);
-        updateView();
+        //TODO: add callback to this firebase function
+        FirebaseDB.getPostersPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
+            @Override
+            public void onFinished() {
+                updateView();
+            }
+        });
+        //TODO: do the same thing with profile picture paths
+        //updateView();
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,13 +109,25 @@ public class AdminViewImagesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO: make delete images, and clear fields of document that had that image
-                FirebaseDB.deleteImageAdmin(allImagePaths.get(currentPosition));
-                allImagePaths.clear();
-                FirebaseDB.getPostersPaths(allImagePaths);
-                if (currentPosition != 0){
-                    currentPosition -= 1;
-                }
-                updateView();
+//                Log.d("test", allImagePaths.get(currentPosition).substring(1, allImagePaths.get(currentPosition).length() - 4));
+//                Log.d("test", allImagePaths.get(currentPosition).substring(1, 6));
+                FirebaseDB.deleteImageAdmin(allImagePaths.get(currentPosition), new FirebaseDB.OnFinishedCallback() {
+                    @Override
+                    public void onFinished() {
+                        allImagePaths.clear();
+                        //TODO: addd callback and do the same with profile pictures
+                        FirebaseDB.getPostersPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
+                            @Override
+                            public void onFinished() {
+                                if (currentPosition != 0){
+                                    currentPosition -= 1;
+                                }
+                                updateView();
+                            }
+                        });
+                    }
+                });
+
                 changeState();
             }
         });

@@ -70,6 +70,10 @@ public class FirebaseDB {
         void onResult(Attendee attendee);
     }
 
+    public interface OnFinishedCallback{
+        void onFinished();
+    }
+
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
@@ -800,7 +804,7 @@ public class FirebaseDB {
      *
      * @param postersPaths The list to be populated with poster paths
      */
-    public static void getPostersPaths(ArrayList<String> postersPaths) {
+    public static void getPostersPaths(ArrayList<String> postersPaths, OnFinishedCallback callback) {
         storage.getReference().child("poster")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -809,6 +813,7 @@ public class FirebaseDB {
                         for (StorageReference poster : listResult.getItems()) {
                             postersPaths.add(poster.getPath());
                         }
+                        callback.onFinished();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -920,7 +925,7 @@ public class FirebaseDB {
      *
      * @param imagePath This is the path of the image we're trying to get (has the file extension)
      */
-    public static void deleteImageAdmin(String imagePath) {
+    public static void deleteImageAdmin(String imagePath, OnFinishedCallback callback) {
         storage.getReference()
                 .child(imagePath)
                 .delete()
@@ -928,6 +933,59 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d(imagesTAG, "Deleted image (admin) successfully");
+                        //we look for the document (attendee or event) that has this imagePath in their posterPath field or profilePicturePathField
+                        Log.d("test", imagePath.substring(1, imagePath.length() - 4));
+                        if (imagePath.substring(1, 7).equals("poster")){
+                            eventsCollection
+                                    .whereEqualTo("posterPath", imagePath.substring(1, imagePath.length() - 4))
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                if (task.getResult() == null || task.getResult().isEmpty()) {
+
+                                                } else {
+                                                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                                        Event event = documentSnapshot.toObject(Event.class);
+                                                        event.setPosterPath(null);
+                                                        updateEvent(event);
+
+                                                    }
+                                                }
+                                                callback.onFinished();
+                                            } else {
+                                                Log.e("deleteImageAdmin", "Error trying to find the event that had this image.");
+                                                callback.onFinished();
+                                            }
+                                        }
+                                    });
+                        } else{
+                            usersCollection
+                                    .whereEqualTo("profilePicturePath", imagePath.substring(1, imagePath.length() - 4))
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                if (task.getResult() == null || task.getResult().isEmpty()) {
+
+                                                } else {
+                                                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                                        Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                                                        attendee.setProfilePicturePath(null);
+                                                        updateUser(attendee);
+                                                    }
+
+                                                }
+                                                callback.onFinished();
+                                            } else {
+                                                Log.e("deleteImageAdmin", "Error trying to find the attendee that had this image.");
+                                                callback.onFinished();
+                                            }
+                                        }
+                                    });
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
