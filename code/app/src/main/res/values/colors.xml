@@ -14,4 +14,8 @@
     <color name="pale_blue">#767B89</color>
     <color name="error_red">#D30000</color>
     <color name="nice_green">#088F8F</color>
+    <color name="nice_orange">#CA765E</color>
+    <color name="green2">#46A08C</color>
+    <color name="red2">#E72C2D</color>
+
 </resources>

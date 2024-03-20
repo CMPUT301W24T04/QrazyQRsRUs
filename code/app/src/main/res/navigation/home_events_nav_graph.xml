@@ -53,5 +53,13 @@
         android:id="@+id/adminHomeFragment"
         android:name="com.example.qrazyqrsrus.AdminHomeFragment"
         android:label="admin_home_fragment"
-        tools:layout="@layout/admin_home_fragment" />
+        tools:layout="@layout/admin_home_fragment" >
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminViewEventsFragment"
+            app:destination="@id/adminViewEventsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminViewEventsFragment"
+        android:name="com.example.qrazyqrsrus.AdminViewEventsFragment"
+        android:label="AdminViewEventsFragment" />
 </navigation>
