@@ -113,6 +113,13 @@ public class AdminViewEventsFragment extends Fragment {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                FirebaseDB.deleteEvent(allEvents.get(currentPosition));
+//                allEvents.clear();
+//                FirebaseDB.getAllEvents(allEvents);
+//                if (currentPosition != 0) {
+//                    currentPosition -= 1;
+//                }
+//                updateView();
                 changeState();
             }
         });
