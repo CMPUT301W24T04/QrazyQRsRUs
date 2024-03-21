@@ -84,9 +84,14 @@ public class MainActivity extends AppCompatActivity{
 
         // Apparently this is not good practice, but if it works, it works.
         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        Log.d("test", deviceId);
+
+
         //CurrentUser.getInstance().initializeUser(deviceId);
 
         //Attendee[] user = new Attendee[1];
+
         FirebaseDB.loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
             @Override
             public void onResult(Attendee attendee) {
