@@ -1061,7 +1061,9 @@ public class FirebaseDB {
     public static void deleteProfile(Attendee attendee) {
         attendee.setEmail(null);
         attendee.setName("Guest24");
-        deleteImage(attendee.getProfilePicturePath());
+        if (attendee.getProfilePicturePath() != null){
+            deleteImage(attendee.getProfilePicturePath());
+        }
         attendee.setProfilePicturePath(null);
 
         updateUser(attendee);
