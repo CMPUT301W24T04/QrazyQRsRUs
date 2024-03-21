@@ -148,7 +148,7 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.admin_mode_option){
-            Navigation.findNavController(getView()).navigate(R.id.action_homeFragment_to_adminHomeFragment);
+            Navigation.findNavController(getView()).navigate(R.id.action_homeFragment_to_adminLoginFragment);
             return true;
         }
         return false;

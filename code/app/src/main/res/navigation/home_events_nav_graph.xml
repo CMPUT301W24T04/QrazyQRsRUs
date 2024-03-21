@@ -17,8 +17,8 @@
             android:id="@+id/action_homeFragment_to_eventList3"
             app:destination="@id/eventList3" />
         <action
-            android:id="@+id/action_homeFragment_to_adminHomeFragment"
-            app:destination="@id/adminHomeFragment" />
+            android:id="@+id/action_homeFragment_to_adminLoginFragment"
+            app:destination="@id/adminLoginFragment" />
     </fragment>
     <fragment
         android:id="@+id/eventDetailsFragment3"
@@ -55,15 +55,28 @@
         android:label="admin_home_fragment"
         tools:layout="@layout/admin_home_fragment" >
         <action
-            android:id="@+id/action_adminHomeFragment_to_adminViewEventsFragment"
-            app:destination="@id/adminViewEventsFragment" />
+            android:id="@+id/action_adminHomeFragment_to_adminViewImagesFragment"
+            app:destination="@id/adminViewImagesFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminViewAttendeesFragment"
+            app:destination="@id/adminViewAttendeesFragment" />
     </fragment>
     <fragment
-        android:id="@+id/adminViewEventsFragment"
-        android:name="com.example.qrazyqrsrus.AdminViewEventsFragment"
-        android:label="AdminViewEventsFragment" >
+        android:id="@+id/adminViewImagesFragment"
+        android:name="com.example.qrazyqrsrus.AdminViewImagesFragment"
+        android:label="fragment_admin_view_images"
+        tools:layout="@layout/fragment_admin_view_images" />
+    <fragment
+        android:id="@+id/adminViewAttendeesFragment"
+        android:name="com.example.qrazyqrsrus.AdminViewAttendeesFragment"
+        android:label="AdminViewAttendeesFragment" />
+    <fragment
+        android:id="@+id/adminLoginFragment"
+        android:name="com.example.qrazyqrsrus.AdminLoginFragment"
+        android:label="AdminLoginFragment" >
         <action
-            android:id="@+id/action_adminViewEventsFragment_to_announcementsFragment"
-            app:destination="@id/announcementsFragment" />
+            android:id="@+id/action_adminLoginFragment_to_adminHomeFragment"
+            app:destination="@id/adminHomeFragment" />
+
     </fragment>
 </navigation>
