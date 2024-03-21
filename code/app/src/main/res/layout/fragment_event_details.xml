@@ -8,11 +8,6 @@
     tools:context=".EventDetailsFragment">
 
 
-    <ListView
-        android:id="@+id/announcement_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <ImageView
         android:id="@+id/posterView"
@@ -50,16 +45,17 @@
         android:text="Description: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/event_detail_location"/>
+
     <Button
         android:id="@+id/sign_up_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="250dp"
         android:text="Sign Up"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/promo_qr_text"
         app:layout_constraintRight_toLeftOf="@id/attendee_list_button"
-        app:layout_constraintBottom_toTopOf="@id/announcement_list_view"
-        android:textColor="@color/white" />
+        app:layout_constraintTop_toBottomOf="@+id/event_detail_details" />
 
 
     <TextView
@@ -89,15 +85,25 @@
         android:text="Location: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/event_detail_organizer" />
+
     <Button
         android:id="@+id/attendee_list_button"
-        android:text="View Attendees"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/announcement_list_view"
+        android:text="View Attendees"
+        app:layout_constraintBottom_toTopOf="@id/promo_qr_text"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/event_detail_details" />
 
+    <Button
+        android:id="@+id/view_announcements_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Announcements"
+        app:layout_constraintBottom_toTopOf="@id/promo_qr_text"
+        app:layout_constraintEnd_toStartOf="@+id/sign_up_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_detail_details" />
     <TextView
         android:id="@+id/promo_qr_text"
         android:layout_width="wrap_content"
@@ -105,6 +111,7 @@
         android:textColor="@color/white"
         android:text="Share this event with your friends:"
         app:layout_constraintTop_toBottomOf="@id/attendee_list_button"
+        app:layout_constraintBottom_toTopOf="@+id/promo_qr_view"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
     <ImageView
