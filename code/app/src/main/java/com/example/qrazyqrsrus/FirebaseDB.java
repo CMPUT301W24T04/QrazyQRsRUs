@@ -416,6 +416,41 @@ public class FirebaseDB {
     }
 
     /**
+     * Retrieves all users in the users collection, but does not store them into an Array Adapter.
+     *
+     * @param attendeeList         The list we're going to hold the users in.
+     * @param callback The OnFinishedCallback that we will invoke once firebase is done it's operation
+     */
+    public static void getAllUsers(ArrayList<Attendee> attendeeList, OnFinishedCallback callback) {
+        usersCollection
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(usersTAG, "Retrieved all users");
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("id");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+
+
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                attendeeList.add(attendee);
+                            }
+                            callback.onFinished();
+                        } else {
+                            Log.d(usersTAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+    }
+
+    /**
      * Retrieves all the events an user has signed up to
      *
      * @param user the user who as signed up to events
@@ -1026,8 +1061,7 @@ public class FirebaseDB {
     public static void deleteProfile(Attendee attendee) {
         attendee.setEmail(null);
         attendee.setName("Guest24");
-        // Waiting for the deleteImage to uncomment this
-        // deleteImage(attendee.getProfilePicturePath())
+        deleteImage(attendee.getProfilePicturePath());
         attendee.setProfilePicturePath(null);
 
         updateUser(attendee);

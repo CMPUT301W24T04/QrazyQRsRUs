@@ -37,14 +37,10 @@ public class AdminHomeFragment extends Fragment {
         });
 
         profilesButton.setOnClickListener(v -> {
-            //TODO: Add corresponding fragment to home_events_nav_graph.xml, and add an action from AdminHomeScreen to the corresponding fragment
-            //TODO: Navigate to corresponding fragment similar to this:
-            //Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment);
+            Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewAttendeesFragment);
         });
 
         imagesButton.setOnClickListener(v -> {
-            //TODO: Add corresponding fragment to home_events_nav_graph.xml, and add an action from AdminHomeScreen to the corresponding fragment
-            //TODO: Navigate to corresponding fragment similar to this:
             Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewImagesFragment);
         });
 
