@@ -54,27 +54,17 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/admin_events_button"
-        app:layout_constraintBottom_toTopOf="@id/admin_posters_button"/>
+        app:layout_constraintBottom_toTopOf="@id/admin_images_button"/>
     <Button
-        android:id="@+id/admin_posters_button"
+        android:id="@+id/admin_images_button"
         android:layout_width="250dp"
         android:layout_height="60dp"
-        android:text="View Event Posters"
+        android:text="View Images"
         android:textAllCaps="false"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_profiles_button"
-        app:layout_constraintBottom_toTopOf="@id/admin_profile_pictures_button"/>
-    <Button
-        android:id="@+id/admin_profile_pictures_button"
-        android:layout_width="250dp"
-        android:layout_height="60dp"
-        android:text="View Profile Pictures"
-        android:textAllCaps="false"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_posters_button"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/admin_profiles_button" />
+
 
 
 

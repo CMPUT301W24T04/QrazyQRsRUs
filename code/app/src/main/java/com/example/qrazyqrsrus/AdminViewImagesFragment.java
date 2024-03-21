@@ -71,16 +71,14 @@ public class AdminViewImagesFragment extends Fragment {
 
         currentPosition = 0;
         allImagePaths = new ArrayList<String>();
-        //replace with a array list of string that will hold all paths
-        //TODO: add callback to this firebase function
-        FirebaseDB.getPostersPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
+
+        //we get the initial list of all picture paths
+        FirebaseDB.getAllPicturesPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
             @Override
             public void onFinished() {
                 updateView();
             }
         });
-        //TODO: do the same thing with profile picture paths
-        //updateView();
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,20 +103,22 @@ public class AdminViewImagesFragment extends Fragment {
                 changeState();
             }
         });
+
+        //we set an onclicklistener for the confirm button
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: make delete images, and clear fields of document that had that image
-//                Log.d("test", allImagePaths.get(currentPosition).substring(1, allImagePaths.get(currentPosition).length() - 4));
-//                Log.d("test", allImagePaths.get(currentPosition).substring(1, 6));
+                //we will delete the currently viewed image
                 FirebaseDB.deleteImageAdmin(allImagePaths.get(currentPosition), new FirebaseDB.OnFinishedCallback() {
                     @Override
                     public void onFinished() {
+                        //we clear the list of image paths and get it again
                         allImagePaths.clear();
-                        //TODO: addd callback and do the same with profile pictures
-                        FirebaseDB.getPostersPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
+                        FirebaseDB.getAllPicturesPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
+                            //when the database finished this operation, we update what is being displayed on screen
                             @Override
                             public void onFinished() {
+                                //we view the previous image unless we are viewing the first image in the list
                                 if (currentPosition != 0){
                                     currentPosition -= 1;
                                 }
@@ -127,7 +127,7 @@ public class AdminViewImagesFragment extends Fragment {
                         });
                     }
                 });
-
+                //we reset the confirm, cancel, and delete button
                 changeState();
             }
         });
@@ -150,13 +150,14 @@ public class AdminViewImagesFragment extends Fragment {
             }
         });
 
-
-
-        // Inflate the layout for this fragment
         return rootView;
     }
 
+    /**
+     * This function updates the screen with the new currently viewed image
+     */
     public void updateView() {
+        Log.d("image test", allImagePaths.get(currentPosition));
         String currentImagePath = allImagePaths.get(currentPosition);
         FirebaseDB.adminRetrieveImage(currentImagePath, new FirebaseDB.GetBitmapCallBack() {
             @Override
@@ -164,32 +165,11 @@ public class AdminViewImagesFragment extends Fragment {
                 imageView.setImageBitmap(bitmap);
             }
         });
-//            String nameString = "Name: "+currentEvent.getName();
-//            String organizerString = "Organized by: ";
-//            String locationString = "Location: "+currentEvent.getLocation();
-//            String descriptionString = "Description: "+currentEvent.getDetails();
-//            String startDateString = "Starts: "+currentEvent.getStartDate();
-//            String endDateString = "Ends: "+currentEvent.getEndDate();
-//            FirebaseDB.getUserName(currentEvent.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
-//                @Override
-//                public void onResult(String string) {
-//                    organizerView.setText(organizerString + string);
-//                }
-//            });
-
-//            if (currentEvent.getPosterPath() != null) {
-//                FirebaseDB.retrieveImage(currentEvent, new FirebaseDB.GetBitmapCallBack() {
-//                    @Override
-//                    public void onResult(Bitmap bitmap) {
-//                        posterView.setImageBitmap(bitmap);
-//                    }
-//                });
-//            }
-//            else {
-//                posterView.setImageResource(R.drawable.no_image_source);
-//            }
     }
 
+    /**
+     * This function will change the browse screen to and from the mode where the Confirm and Cancel deletion button are shown
+     */
     public void changeState() {
         deleteButton.setVisibility(deleteButton.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
         cancelButton.setVisibility(cancelButton.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);

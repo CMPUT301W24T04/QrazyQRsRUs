@@ -26,8 +26,7 @@ public class AdminHomeFragment extends Fragment {
 
         Button eventsButton = view.findViewById(R.id.admin_events_button);
         Button profilesButton = view.findViewById(R.id.admin_profiles_button);
-        Button postersButton = view.findViewById(R.id.admin_posters_button);
-        Button profilePicturesButton = view.findViewById(R.id.admin_profile_pictures_button);
+        Button imagesButton = view.findViewById(R.id.admin_images_button);
 
         ImageButton backButton = view.findViewById(R.id.back_button);
 
@@ -43,16 +42,10 @@ public class AdminHomeFragment extends Fragment {
             //Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment);
         });
 
-        postersButton.setOnClickListener(v -> {
+        imagesButton.setOnClickListener(v -> {
             //TODO: Add corresponding fragment to home_events_nav_graph.xml, and add an action from AdminHomeScreen to the corresponding fragment
             //TODO: Navigate to corresponding fragment similar to this:
             Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewImagesFragment);
-        });
-
-        profilePicturesButton.setOnClickListener(v -> {
-            //TODO: Add corresponding fragment to home_events_nav_graph.xml, and add an action from AdminHomeScreen to the corresponding fragment
-            //TODO: Navigate to corresponding fragment similar to this:
-            //Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment);
         });
 
         backButton.setOnClickListener(v -> {

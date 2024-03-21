@@ -803,6 +803,7 @@ public class FirebaseDB {
      * Retrieves the paths of all posters
      *
      * @param postersPaths The list to be populated with poster paths
+     * @param callback the OnFinishedCallback to invoke when firebase has completed it's operation
      */
     public static void getPostersPaths(ArrayList<String> postersPaths, OnFinishedCallback callback) {
         storage.getReference().child("poster")
@@ -828,9 +829,10 @@ public class FirebaseDB {
      * Retrieves the paths of all profile pictures
      *
      * @param profilesPaths The list to be populated with profile picture paths
+     * @param callback the OnFinishedCallback to invoke when firebase has completed it's operation
      */
-    public static void getProfilePicturesPaths(ArrayList<String> profilesPaths) {
-        storage.getReference().child("poster")
+    public static void getProfilePicturesPaths(ArrayList<String> profilesPaths, OnFinishedCallback callback) {
+        storage.getReference().child("profile")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
@@ -838,6 +840,7 @@ public class FirebaseDB {
                         for (StorageReference profile : listResult.getItems()) {
                             profilesPaths.add(profile.getPath());
                         }
+                        callback.onFinished();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -846,6 +849,25 @@ public class FirebaseDB {
                         Log.w(imagesTAG, "Error trying to get profile pictures' paths" + e);
                     }
                 });
+    }
+
+    /**
+     * This function gets the paths of all poster images, and profile picture images
+     * @param imagePaths The ArrayList to store all of the paths
+     * @param callback The callback to invoke once firebase has finished this operation
+     */
+    public static void getAllPicturesPaths(ArrayList<String> imagePaths, OnFinishedCallback callback){
+        getPostersPaths(imagePaths, new OnFinishedCallback() {
+            @Override
+            public void onFinished() {
+                getProfilePicturesPaths(imagePaths, new OnFinishedCallback() {
+                    @Override
+                    public void onFinished() {
+                        callback.onFinished();
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -921,7 +943,7 @@ public class FirebaseDB {
     }
 
     /**
-     * Deletes an image in the storage (administrator version)
+     * Deletes an image in the storage (administrator version) and clears the image path field of whatever user/event had that image
      *
      * @param imagePath This is the path of the image we're trying to get (has the file extension)
      */
