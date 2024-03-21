@@ -6,6 +6,7 @@
     android:background="#272424"
     android:id="@+id/update_profile">
 
+
     <TextView
         android:id="@+id/tvUpdateProfile"
         android:layout_width="wrap_content"
@@ -118,7 +119,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/geoLocationContainer"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        />
 
+    <Button
+        android:id="@+id/btnDone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@id/btnCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_done_background"
+        android:padding="12dp"
+        android:textColor="#FFFFFF" />
+
+
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnDone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_cancel_background"
+        android:padding="12dp"
+        android:textColor="#FFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
