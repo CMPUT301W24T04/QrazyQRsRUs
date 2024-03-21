@@ -17,8 +17,8 @@
             android:id="@+id/action_homeFragment_to_eventList3"
             app:destination="@id/eventList3" />
         <action
-            android:id="@+id/action_homeFragment_to_adminHomeFragment"
-            app:destination="@id/adminHomeFragment" />
+            android:id="@+id/action_homeFragment_to_adminLoginFragment"
+            app:destination="@id/adminLoginFragment" />
     </fragment>
     <fragment
         android:id="@+id/eventDetailsFragment3"
@@ -70,4 +70,12 @@
         android:id="@+id/adminViewAttendeesFragment"
         android:name="com.example.qrazyqrsrus.AdminViewAttendeesFragment"
         android:label="AdminViewAttendeesFragment" />
+    <fragment
+        android:id="@+id/adminLoginFragment"
+        android:name="com.example.qrazyqrsrus.AdminLoginFragment"
+        android:label="AdminLoginFragment" >
+        <action
+            android:id="@+id/action_adminLoginFragment_to_adminHomeFragment"
+            app:destination="@id/adminHomeFragment" />
+    </fragment>
 </navigation>

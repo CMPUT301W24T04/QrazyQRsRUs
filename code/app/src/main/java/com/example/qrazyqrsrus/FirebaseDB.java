@@ -74,11 +74,18 @@ public class FirebaseDB {
         void onFinished();
     }
 
+    public interface AttemptLoginCallback {
+        void onResult();
+
+        void onNoResult();
+    }
+
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
     final static CollectionReference eventsCollection = db.collection("Events");
     final static CollectionReference checkInsCollection = db.collection("CheckIns");
+    final static CollectionReference adminLoginsCollection = db.collection("Logins");
 
     final static String usersTAG = "Users";
     final static String eventsTAG = "Events";
@@ -1067,5 +1074,34 @@ public class FirebaseDB {
         attendee.setProfilePicturePath(null);
 
         updateUser(attendee);
+    }
+
+    /**
+     * This function looks for a document with matching admin login details to the user's input
+     * @param username The username input by the user
+     * @param password The password input by the user
+     * @param callback The callback we invoked to tell if the user input valid or invalid admin login credentials
+     */
+    public static void attemptAdminLogin(String username, String password, AttemptLoginCallback callback){
+        adminLoginsCollection
+                .whereEqualTo("user", username)
+                .whereEqualTo("pass", password)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            //if there is no matching adminLogin document, we do not log the user in
+                            if (task.getResult() == null || task.getResult().isEmpty()) {
+                                callback.onNoResult();
+                            } else {
+                                //if there is a matching adminLogin document, we log the user in to the admin screen
+                                callback.onResult();
+                            }
+                        } else {
+                            Log.e("MainActivity", "Error trying to login");
+                        }
+                    }
+                });
     }
 }
