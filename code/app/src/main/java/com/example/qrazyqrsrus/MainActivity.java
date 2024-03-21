@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity{
 
         // Apparently this is not good practice, but if it works, it works.
         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
+        Log.d("test", deviceId);
 
         FirebaseDB.loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
             @Override
