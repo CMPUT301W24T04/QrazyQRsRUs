@@ -125,6 +125,7 @@ public class AdminViewEventsFragment extends Fragment {
                     public void onResult(ArrayList<Event> events) {
                         allEvents = new ArrayList<>(events);
                         updateView();
+                        Toast.makeText(getContext(), "Event successfully deleted", Toast.LENGTH_SHORT).show();
                         changeState();
                     }
                 });
