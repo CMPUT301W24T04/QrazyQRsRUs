@@ -57,10 +57,19 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
         // get name and num_checkins from the content fragment
         TextView Name = view.findViewById(R.id.name_attendee);
+        TextView checkins = view.findViewById(R.id.number_check_ins);
+        TextView signedup = view.findViewById(R.id.signed_up);
         //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
 
         // change value of name and num_checkins from content value
         Name.setText(attendee.getName());
+//        if(attendee.getSignedup() == true){
+//            signedup.setText("Signed up: yes");
+//        }
+//        if(attendee.getSignedup() == false){
+//            signedup.setText("Signed up: No");
+//        }
+
 //        num_checkins = "0"; //.setText(attendee.getNum_checkins().toString());
 
         return view;

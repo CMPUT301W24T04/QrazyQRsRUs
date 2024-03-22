@@ -119,7 +119,10 @@ public class EventDetailsFragment extends Fragment {
         viewAttendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2);
+                // pass the event as a bundle to the attendeeList so we know which event to get from
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2,args);
             }
         });
 

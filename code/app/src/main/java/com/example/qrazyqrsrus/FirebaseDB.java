@@ -534,7 +534,7 @@ public class FirebaseDB {
      * @param event the event we're getting the attendees
      * @param attendeeArrayList the list passed in to get the events
      */
-    public static void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList) {
+    public static void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList,  ArrayAdapter<Attendee> attendeeArrayAdapter) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId())
                 .get()
@@ -561,6 +561,7 @@ public class FirebaseDB {
                                     });
 
                         }
+                        attendeeArrayAdapter.notifyDataSetChanged();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -954,12 +955,44 @@ public class FirebaseDB {
     }
 
     /**
-     * Gets users as a sub-collection from events
+     * Gets users from the list of users field in each event
+     * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
      * @param event
      */
-    public static void getEventUser(Event event){
-        eventsCollection
-                .whereEqualTo("qrCode", event.getQrCode()); //Finds document with the QR code of event clicked on
+    public static void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter){
+        checkInsCollection
+                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("id");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+
+//                                Attendee attendee = document.toObject(Attendee.class);
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                attendeeDataList.add(attendee);
+
+                            }
+                            attendeeListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
+                    }
+                });
+
+
+
 
     }
 }
