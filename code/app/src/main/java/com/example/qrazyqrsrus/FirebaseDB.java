@@ -1132,7 +1132,7 @@ public class FirebaseDB {
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
      * @param event
      */
-    public static void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter){
+    public static void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
                 .get()
@@ -1163,6 +1163,8 @@ public class FirebaseDB {
                         Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
                     }
                 });
+    }
+
      /**
      * This function looks for a document with matching admin login details to the user's input
      * @param username The username input by the user
