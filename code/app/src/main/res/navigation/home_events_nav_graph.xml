@@ -92,5 +92,8 @@
         <action
             android:id="@+id/action_adminViewEventsFragment_to_announcementEditFragment"
             app:destination="@id/announcementEditFragment" />
+        <action
+            android:id="@+id/action_adminViewEventsFragment_to_announcementsFragment"
+            app:destination="@id/announcementsFragment" />
     </fragment>
 </navigation>
