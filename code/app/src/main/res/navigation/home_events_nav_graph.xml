@@ -60,6 +60,9 @@
         <action
             android:id="@+id/action_adminHomeFragment_to_adminViewAttendeesFragment"
             app:destination="@id/adminViewAttendeesFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_announcementEditFragment"
+            app:destination="@id/announcementEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminViewImagesFragment"
