@@ -100,7 +100,7 @@ public class AdminViewEventsFragment extends Fragment {
             public void onClick(View v) {
                 Bundle args = new Bundle();
                 args.putSerializable("event", allEvents.get(currentPosition));
-                Navigation.findNavController(rootView).navigate(R.id.action_adminHomeFragment_to_announcementEditFragment, args);
+                Navigation.findNavController(rootView).navigate(R.id.action_adminViewEventsFragment_to_announcementEditFragment, args);
             }
         });
 
