@@ -12,6 +12,7 @@ public class Attendee implements Serializable {
     private String email;
     private String profilePicturePath;
     private Boolean geolocationOn;
+    private Boolean signedup; //added
 
     public Attendee() {
 
@@ -55,6 +56,13 @@ public class Attendee implements Serializable {
         this.name = noName;
         this.documentId = documentId;
         this.id = id;
+    }
+
+    public Attendee(String noName, String documentId, String id, boolean signedup) {
+        this.name = noName;
+        this.documentId = documentId;
+        this.id = id;
+        this.signedup = signedup;
     }
 
     /**
@@ -108,4 +116,5 @@ public class Attendee implements Serializable {
     public void setGeolocationOn(Boolean geolocationOn) {
         this.geolocationOn = geolocationOn;
     }
+
 }
