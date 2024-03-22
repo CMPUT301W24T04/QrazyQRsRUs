@@ -158,8 +158,8 @@ public class AdminViewAttendeesFragment extends Fragment {
     public void updateView() {
         Attendee currentAttendee = allAttendees.get(currentPosition);
 
-        nameView.setText(currentAttendee.getName());
-        emailView.setText(currentAttendee.getEmail());
+        nameView.setText(currentAttendee.getName() != null ? currentAttendee.getName() : "N/A");
+        emailView.setText(currentAttendee.getEmail() != null ? currentAttendee.getEmail() : "N/A");
         if (currentAttendee.getGeolocationOn() == null){
             geolocationSwitch.setChecked(false);
         } else{

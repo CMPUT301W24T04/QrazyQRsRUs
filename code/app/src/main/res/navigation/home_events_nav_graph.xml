@@ -60,6 +60,12 @@
         <action
             android:id="@+id/action_adminHomeFragment_to_adminViewAttendeesFragment"
             app:destination="@id/adminViewAttendeesFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_announcementEditFragment"
+            app:destination="@id/announcementEditFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminViewEventsFragment"
+            app:destination="@id/adminViewEventsFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminViewImagesFragment"
@@ -78,5 +84,16 @@
             android:id="@+id/action_adminLoginFragment_to_adminHomeFragment"
             app:destination="@id/adminHomeFragment" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/adminViewEventsFragment"
+        android:name="com.example.qrazyqrsrus.AdminViewEventsFragment"
+        android:label="AdminViewEventsFragment" >
+        <action
+            android:id="@+id/action_adminViewEventsFragment_to_announcementEditFragment"
+            app:destination="@id/announcementEditFragment" />
+        <action
+            android:id="@+id/action_adminViewEventsFragment_to_announcementsFragment"
+            app:destination="@id/announcementsFragment" />
     </fragment>
 </navigation>
