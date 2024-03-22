@@ -69,12 +69,26 @@ public class FirebaseDB {
     public interface GetAttendeeCallBack {
         void onResult(Attendee attendee);
     }
+    public interface GetAllEventsCallBack {
+        void onResult(ArrayList<Event> events);
+    }
+
+    public interface OnFinishedCallback{
+        void onFinished();
+    }
+
+    public interface AttemptLoginCallback {
+        void onResult();
+
+        void onNoResult();
+    }
 
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
     final static CollectionReference eventsCollection = db.collection("Events");
     final static CollectionReference checkInsCollection = db.collection("CheckIns");
+    final static CollectionReference adminLoginsCollection = db.collection("Logins");
 
     final static String usersTAG = "Users";
     final static String eventsTAG = "Events";
@@ -375,6 +389,51 @@ public class FirebaseDB {
                 });
 
     }
+    public static void getAllEvents(GetAllEventsCallBack callBack) {
+        ArrayList<Event> eventList = new ArrayList<>();
+        eventsCollection
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(eventsTAG, "Retrieved all events");
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String id = document.getId();
+                                String name = (String) document.getData().get("name");
+                                String organizerId = (String) document.getData().get("organizerId");
+                                String details = (String) document.getData().get("details");
+                                String location = (String) document.getData().get("location");
+                                String startDate = (String) document.getData().get("startDate");
+                                String endDate = (String) document.getData().get("endDate");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                String posterPath = (String) document.getData().get("posterPath");
+                                String qrCode = (String) document.getData().get("qrCode");
+                                String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                if (announcements == null){
+                                    announcements = new ArrayList<String>();
+                                }
+                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                                if (signUps == null){
+                                    signUps = new ArrayList<String>();
+                                }
+                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                                if (checkIns == null){
+                                    checkIns = new ArrayList<String>();
+                                }
+
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                eventList.add(event);
+                            }
+                            callBack.onResult(eventList);
+                        } else {
+                            Log.d(eventsTAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+    }
 
     /**
      * Retrieves all users in the users collection
@@ -403,6 +462,41 @@ public class FirebaseDB {
                                 attendeeList.add(attendee);
                                 attendeeArrayAdapter.notifyDataSetChanged();
                             }
+                        } else {
+                            Log.d(usersTAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+    }
+
+    /**
+     * Retrieves all users in the users collection, but does not store them into an Array Adapter.
+     *
+     * @param attendeeList         The list we're going to hold the users in.
+     * @param callback The OnFinishedCallback that we will invoke once firebase is done it's operation
+     */
+    public static void getAllUsers(ArrayList<Attendee> attendeeList, OnFinishedCallback callback) {
+        usersCollection
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(usersTAG, "Retrieved all users");
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("id");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+
+
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                attendeeList.add(attendee);
+                            }
+                            callback.onFinished();
                         } else {
                             Log.d(usersTAG, "Error getting documents: ", task.getException());
                         }
@@ -583,7 +677,7 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Log.d(usersTAG, "Success");
-                        callBack.onResult((String) documentSnapshot.get("id"));
+                        callBack.onResult((String) documentSnapshot.get("name"));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -800,8 +894,9 @@ public class FirebaseDB {
      * Retrieves the paths of all posters
      *
      * @param postersPaths The list to be populated with poster paths
+     * @param callback the OnFinishedCallback to invoke when firebase has completed it's operation
      */
-    public static void getPostersPaths(ArrayList<String> postersPaths) {
+    public static void getPostersPaths(ArrayList<String> postersPaths, OnFinishedCallback callback) {
         storage.getReference().child("poster")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -810,6 +905,7 @@ public class FirebaseDB {
                         for (StorageReference poster : listResult.getItems()) {
                             postersPaths.add(poster.getPath());
                         }
+                        callback.onFinished();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -824,9 +920,10 @@ public class FirebaseDB {
      * Retrieves the paths of all profile pictures
      *
      * @param profilesPaths The list to be populated with profile picture paths
+     * @param callback the OnFinishedCallback to invoke when firebase has completed it's operation
      */
-    public static void getProfilePicturesPaths(ArrayList<String> profilesPaths) {
-        storage.getReference().child("poster")
+    public static void getProfilePicturesPaths(ArrayList<String> profilesPaths, OnFinishedCallback callback) {
+        storage.getReference().child("profile")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
@@ -834,6 +931,7 @@ public class FirebaseDB {
                         for (StorageReference profile : listResult.getItems()) {
                             profilesPaths.add(profile.getPath());
                         }
+                        callback.onFinished();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -842,6 +940,25 @@ public class FirebaseDB {
                         Log.w(imagesTAG, "Error trying to get profile pictures' paths" + e);
                     }
                 });
+    }
+
+    /**
+     * This function gets the paths of all poster images, and profile picture images
+     * @param imagePaths The ArrayList to store all of the paths
+     * @param callback The callback to invoke once firebase has finished this operation
+     */
+    public static void getAllPicturesPaths(ArrayList<String> imagePaths, OnFinishedCallback callback){
+        getPostersPaths(imagePaths, new OnFinishedCallback() {
+            @Override
+            public void onFinished() {
+                getProfilePicturesPaths(imagePaths, new OnFinishedCallback() {
+                    @Override
+                    public void onFinished() {
+                        callback.onFinished();
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -917,11 +1034,11 @@ public class FirebaseDB {
     }
 
     /**
-     * Deletes an image in the storage (administrator version)
+     * Deletes an image in the storage (administrator version) and clears the image path field of whatever user/event had that image
      *
      * @param imagePath This is the path of the image we're trying to get (has the file extension)
      */
-    public static void deleteImageAdmin(String imagePath) {
+    public static void deleteImageAdmin(String imagePath, OnFinishedCallback callback) {
         storage.getReference()
                 .child(imagePath)
                 .delete()
@@ -929,6 +1046,59 @@ public class FirebaseDB {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d(imagesTAG, "Deleted image (admin) successfully");
+                        //we look for the document (attendee or event) that has this imagePath in their posterPath field or profilePicturePathField
+                        Log.d("test", imagePath.substring(1, imagePath.length() - 4));
+                        if (imagePath.substring(1, 7).equals("poster")){
+                            eventsCollection
+                                    .whereEqualTo("posterPath", imagePath.substring(1, imagePath.length() - 4))
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                if (task.getResult() == null || task.getResult().isEmpty()) {
+
+                                                } else {
+                                                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                                        Event event = documentSnapshot.toObject(Event.class);
+                                                        event.setPosterPath(null);
+                                                        updateEvent(event);
+
+                                                    }
+                                                }
+                                                callback.onFinished();
+                                            } else {
+                                                Log.e("deleteImageAdmin", "Error trying to find the event that had this image.");
+                                                callback.onFinished();
+                                            }
+                                        }
+                                    });
+                        } else{
+                            usersCollection
+                                    .whereEqualTo("profilePicturePath", imagePath.substring(1, imagePath.length() - 4))
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                if (task.getResult() == null || task.getResult().isEmpty()) {
+
+                                                } else {
+                                                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                                        Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                                                        attendee.setProfilePicturePath(null);
+                                                        updateUser(attendee);
+                                                    }
+
+                                                }
+                                                callback.onFinished();
+                                            } else {
+                                                Log.e("deleteImageAdmin", "Error trying to find the attendee that had this image.");
+                                                callback.onFinished();
+                                            }
+                                        }
+                                    });
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -947,14 +1117,16 @@ public class FirebaseDB {
     public static void deleteProfile(Attendee attendee) {
         attendee.setEmail(null);
         attendee.setName("Guest24");
-        // Waiting for the deleteImage to uncomment this
-        // deleteImage(attendee.getProfilePicturePath())
+        if (attendee.getProfilePicturePath() != null){
+            deleteImage(attendee.getProfilePicturePath());
+        }
         attendee.setProfilePicturePath(null);
 
         updateUser(attendee);
     }
 
     /**
+
      * Gets users from the list of users field in each event
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
      * @param event
@@ -990,9 +1162,34 @@ public class FirebaseDB {
                         Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
                     }
                 });
+     /**
+     * This function looks for a document with matching admin login details to the user's input
+     * @param username The username input by the user
+     * @param password The password input by the user
+     * @param callback The callback we invoked to tell if the user input valid or invalid admin login credentials
+     */
+    public static void attemptAdminLogin(String username, String password, AttemptLoginCallback callback){
+        adminLoginsCollection
+                .whereEqualTo("user", username)
+                .whereEqualTo("pass", password)
 
-
-
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            //if there is no matching adminLogin document, we do not log the user in
+                            if (task.getResult() == null || task.getResult().isEmpty()) {
+                                callback.onNoResult();
+                            } else {
+                                //if there is a matching adminLogin document, we log the user in to the admin screen
+                                callback.onResult();
+                            }
+                        } else {
+                            Log.e("MainActivity", "Error trying to login");
+                        }
+                    }
+                });
 
     }
 }
