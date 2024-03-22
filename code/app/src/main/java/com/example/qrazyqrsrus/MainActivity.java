@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity{
                     if (isUnique) {
                         //if there is no existing checkIn with the attendee's document ID and the event's document ID we make a new one
                         CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId());
-                        FirebaseDB.addCheckInToEvent(newCheckIn, event.getDocumentId());
+                        FirebaseDB.addCheckInToEvent(newCheckIn, event);
                     } else{
                         //in this case the event should already have the checkIn in it's checkIn list
                         checkIn.incrementCheckIns();

@@ -868,9 +868,9 @@ public class FirebaseDB {
     /**
      * This functions creates a new checkIn for the user that is joining the event, and adds the documentID of the checkIn to the event's field in firebase
      * @param checkIn the object representing the checkIn. this holds the document ID of the event, and attendee that is checking in
-     * @param eventDocId the document ID of the event
+     * @param event the event we are changing
      */
-    public static void addCheckInToEvent(CheckIn checkIn, String eventDocId) {
+    public static void addCheckInToEvent(CheckIn checkIn, Event event) {
         checkInsCollection
                 .add(checkIn)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -879,10 +879,11 @@ public class FirebaseDB {
                         checkIn.setDocumentId(documentReference.getId());
                         //update checkIn to get the document ID set in the field for future accesses
                         updateCheckIn(checkIn);
-                        //update the event's field to contain the ID of the new checkIn document
-                        eventsCollection
-                                .document(eventDocId)
-                                .update("checkIns", FieldValue.arrayUnion(checkIn.getDocumentId()));
+                        //we delete the signup from the event's field
+                        event.deleteSignUp(checkIn.getAttendeeDocId());
+                        //we add the checkin and update our event :)
+                        event.addCheckIn(checkIn.getDocumentId());
+                        updateEvent(event);
                     }
                 });
 
