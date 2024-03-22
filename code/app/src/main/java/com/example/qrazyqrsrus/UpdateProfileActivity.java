@@ -183,7 +183,7 @@
 //        return image;
 //    }
 //
-//    private void uploadImageToStorage(Bitmap bitmap, String userId) {
+//    private void up  ImageToStorage(Bitmap bitmap, String userId) {
 //        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
 //        byte[] data = baos.toByteArray();

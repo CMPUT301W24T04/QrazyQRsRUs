@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
@@ -29,14 +30,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -51,6 +55,8 @@ public class ViewProfileFragment extends Fragment {
     private FirebaseFirestore db;
     private boolean isProfileLoaded = false;
 
+    private Button btnDone, btnCancel;
+
     String userId;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,15 +68,50 @@ public class ViewProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.update_profile, container, false);
-//        ImageView backButton = view.findViewById(R.id.backButton);
-        //backButton.setOnClickListener(v -> finish());
+
+        btnDone = view.findViewById(R.id.btnDone);
+        btnCancel = view.findViewById(R.id.btnCancel);
 
         etFullName = view.findViewById(R.id.etFullName);
-//        etAge = view.findViewById(R.id.etAge);
         etEmailAddress = view.findViewById(R.id.etEmailAddress);
+
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);
         switchGeolocation = view.findViewById(R.id.switchGeolocation);
+
+        // Set the EditTexts to non-editable initially
+        etFullName.setEnabled(false);
+        etEmailAddress.setEnabled(false);
+        // Set the buttons to invisible initially
+        btnDone.setVisibility(View.INVISIBLE);
+        btnCancel.setVisibility(View.INVISIBLE);
+
+        //TextWatcher
+        etFullName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Nothing needed here
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Nothing needed here
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isProfileLoaded) {
+                    String newName = s.toString();
+                    if (!newName.isEmpty()) {
+                        String initials = getInitials(newName);
+                        Bitmap bitmap = createInitialsImage(initials);
+                        imgProfilePicture.setImageBitmap(bitmap);
+                    }
+                }
+            }
+        });
+
+
 
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -86,6 +127,15 @@ public class ViewProfileFragment extends Fragment {
             new ErrorDialog(R.string.no_args).show(getActivity().getSupportFragmentManager(), "Error Dialog");
         }
 
+        // In onCreateView after initializing views
+        btnUpdateProfile.setOnClickListener(v -> enterEditMode());
+        Button btnDone = view.findViewById(R.id.btnDone);
+        Button btnCancel = view.findViewById(R.id.btnCancel);
+
+        btnDone.setOnClickListener(v -> saveChanges());
+        btnCancel.setOnClickListener(v -> revertChanges());
+
+
 //        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
 //            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
 //                restrictEdits();
@@ -99,9 +149,9 @@ public class ViewProfileFragment extends Fragment {
             }
         });
 
-        btnUpdateProfile.setOnClickListener(v -> {
-            updateUserProfile(this.attendee);
-        });
+//        btnUpdateProfile.setOnClickListener(v -> {
+//            updateUserProfile(this.attendee);
+//        });
 
         return view;
     }
@@ -154,10 +204,16 @@ public class ViewProfileFragment extends Fragment {
             //the idea to get a uri from a bitmap was taken from https://stackoverflow.com/questions/12555420/how-to-get-a-uri-object-from-bitmap Accessed on March 7th, 2024
             //posted by user Ajay (https://stackoverflow.com/users/840802/ajay) in the post https://stackoverflow.com/a/16167993
             String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), profileBitmap, "generatedProfilePicture", "the profile picture we generated");
-            Uri uri = Uri.parse(localFilePath);
-            String pathName = generatePathName(attendee.getName());
-            FirebaseDB.uploadImage(uri, pathName);
-            this.attendee.setProfilePicturePath(pathName);
+            if (localFilePath != null) {
+                Uri uri = Uri.parse(localFilePath);
+                String pathName = generatePathName(attendee.getName());
+                FirebaseDB.uploadImage(uri, pathName);
+                this.attendee.setProfilePicturePath(pathName);
+            }
+            else{
+                Log.e("ProfilePicture", "Failed to insert image into MediaStore,localFilePath is null");
+
+            }
         } else{
             FirebaseDB.retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
                 @Override
@@ -166,6 +222,7 @@ public class ViewProfileFragment extends Fragment {
                 }
             });
         }
+        isProfileLoaded = true;
     }
 
     private void updateUserProfile(Attendee attendee){
@@ -185,12 +242,56 @@ public class ViewProfileFragment extends Fragment {
         attendee.setGeolocationOn(switchGeolocation.isChecked());
         attendee.setEmail(etEmailAddress.getText().toString());
         FirebaseDB.updateUser(attendee);
+        Toast.makeText(getContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show();
+        exitEditMode();
+
     }
 
     private String generatePathName(String attendeeName){
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String pathName = "profile/" + attendeeName + timeStamp;
         return pathName;
+    }
+
+    private void enterEditMode() {
+        // Make EditTexts editable
+        etFullName.setEnabled(true);
+        etEmailAddress.setEnabled(true);
+
+        // Show "Done" and "Cancel" buttons
+        btnDone.setVisibility(View.VISIBLE);
+        btnCancel.setVisibility(View.VISIBLE);
+
+        // Hide "Update Profile" button
+        btnUpdateProfile.setVisibility(View.GONE);
+    }
+
+    private void saveChanges() {
+        updateUserProfile(this.attendee);
+    }
+
+
+
+
+
+    private void revertChanges() {
+        // Reset information to the last saved state
+        loadInitialAttendee(this.attendee);
+
+        // Make fields non-editable and update UI back to view mode
+        exitEditMode();
+    }
+    private void exitEditMode() {
+        // Make EditTexts non-editable
+        etFullName.setEnabled(false);
+        etEmailAddress.setEnabled(false);
+
+        // Hide "Done" and "Cancel" buttons
+        btnDone.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+
+        // Show "Update Profile" button
+        btnUpdateProfile.setVisibility(View.VISIBLE);
     }
 
     public static ViewProfileFragment newInstance(Attendee attendee){
