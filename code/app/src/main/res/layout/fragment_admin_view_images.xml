@@ -106,13 +106,13 @@
             android:id="@+id/previous_event_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/baseline_check_24" />
+            android:background="@drawable/arrow_back_24" />
 
         <Button
             android:id="@+id/next_event_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/baseline_check_24" />
+            android:background="@drawable/arrow_forward_24" />
 
 
 
