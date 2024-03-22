@@ -10,14 +10,15 @@
 
     <ListView
         android:id="@+id/event_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="568dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="64dp"
-        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         android:id="@+id/event_list_title"
