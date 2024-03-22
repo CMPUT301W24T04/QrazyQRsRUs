@@ -63,6 +63,9 @@
         <action
             android:id="@+id/action_adminHomeFragment_to_announcementEditFragment"
             app:destination="@id/announcementEditFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminViewEventsFragment"
+            app:destination="@id/adminViewEventsFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminViewImagesFragment"
@@ -82,4 +85,8 @@
             app:destination="@id/adminHomeFragment" />
 
     </fragment>
+    <fragment
+        android:id="@+id/adminViewEventsFragment"
+        android:name="com.example.qrazyqrsrus.AdminViewEventsFragment"
+        android:label="AdminViewEventsFragment" />
 </navigation>
