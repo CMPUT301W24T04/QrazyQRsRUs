@@ -628,7 +628,7 @@ public class FirebaseDB {
      * @param event the event we're getting the attendees
      * @param attendeeArrayList the list passed in to get the events
      */
-    public static void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList) {
+    public static void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList,  ArrayAdapter<Attendee> attendeeArrayAdapter) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId())
                 .get()
@@ -655,6 +655,7 @@ public class FirebaseDB {
                                     });
 
                         }
+                        attendeeArrayAdapter.notifyDataSetChanged();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -1126,6 +1127,43 @@ public class FirebaseDB {
     }
 
     /**
+
+     * Gets users from the list of users field in each event
+     * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
+     * @param event
+     */
+    public static void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter){
+        checkInsCollection
+                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("id");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+
+//                                Attendee attendee = document.toObject(Attendee.class);
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                attendeeDataList.add(attendee);
+
+                            }
+                            attendeeListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
+                    }
+                });
+     /**
      * This function looks for a document with matching admin login details to the user's input
      * @param username The username input by the user
      * @param password The password input by the user
@@ -1135,6 +1173,7 @@ public class FirebaseDB {
         adminLoginsCollection
                 .whereEqualTo("user", username)
                 .whereEqualTo("pass", password)
+
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -1152,5 +1191,6 @@ public class FirebaseDB {
                         }
                     }
                 });
+
     }
 }

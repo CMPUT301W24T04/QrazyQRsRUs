@@ -114,6 +114,17 @@ public class EventDetailsFragment extends Fragment {
             setButtonVisibility(signUpEvent);
         }
 
+        //Change view to attendee list when click on view attendees button
+        viewAttendeesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // pass the event as a bundle to the attendeeList so we know which event to get from
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2,args);
+            }
+        });
+
 
         backButton.setOnClickListener(new View.OnClickListener() {
             // need to get attendeeID and eventID first

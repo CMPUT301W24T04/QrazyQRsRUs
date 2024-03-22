@@ -26,6 +26,7 @@ public class Event implements Serializable {
     private ArrayList<String> signUps= new ArrayList<String>();
     private ArrayList<String> checkIns= new ArrayList<String>();
 
+
     /**
      * Represents the event
      */
@@ -323,20 +324,19 @@ public class Event implements Serializable {
      * @param event
      * @return Boolean
      */
-    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
-        if (event.getSignUps().contains(userDocumentId)) {
-            return true;
-        }
-        ArrayList<Attendee> tempList = new ArrayList<>();
-        ArrayList<String> tempList2 = new ArrayList<>();
-        FirebaseDB.getEventCheckedIn(event, tempList);
-        for (Attendee attendee : tempList) {
-            tempList2.add(attendee.getDocumentId());
-        }
-        if (tempList2.contains(userDocumentId)) {
-            return true;
-        }
-        return false;
-
-    }
+//    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
+//        if (event.getSignUps().contains(userDocumentId)) {
+//            return true;
+//        }
+//        ArrayList<Attendee> tempList = new ArrayList<>();
+//        ArrayList<String> tempList2 = new ArrayList<>();
+//        FirebaseDB.getEventCheckedIn(event, tempList, attendeeListAdapter);
+//        for (Attendee attendee : tempList) {
+//            tempList2.add(attendee.getDocumentId());
+//        }
+//        if (tempList2.contains(userDocumentId)) {
+//            return true;
+//        }
+//        return false;
+//    }
 }
