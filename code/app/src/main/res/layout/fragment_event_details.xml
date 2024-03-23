@@ -7,7 +7,7 @@
     android:background="@color/background"
     tools:context=".EventDetailsFragment">
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <ImageView
         android:id="@+id/posterView"
         android:layout_width="0dp"
         android:layout_height="170dp"
