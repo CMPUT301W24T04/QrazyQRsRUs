@@ -78,5 +78,16 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     testImplementation("org.mockito:mockito-core:5.11.0")
+
+    // FCM
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
+
+    // Coroutines
+//    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
+//    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
+
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
 }
 
