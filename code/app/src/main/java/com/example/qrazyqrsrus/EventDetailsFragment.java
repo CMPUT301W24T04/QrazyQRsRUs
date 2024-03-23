@@ -1,7 +1,9 @@
 package com.example.qrazyqrsrus;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +46,9 @@ public class EventDetailsFragment extends Fragment {
 
     private Attendee attendee;
     private Event event;
+
+    private Bitmap promoBitmap;
+    private Bitmap checkInBitmap;
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -85,6 +91,8 @@ public class EventDetailsFragment extends Fragment {
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
         ImageView promoQRView = rootView.findViewById(R.id.promo_qr_view);
         ImageView checkInQRView = rootView.findViewById(R.id.check_in_qr_view);
+        Button promoQRShare = rootView.findViewById(R.id.promo_share_button);
+        Button checkInQRShare = rootView.findViewById(R.id.check_in_share_button);
 
         //try to get event and attendee from bundle
         //if attendee is not there, thats fine, if event not there, very bad.
@@ -161,6 +169,36 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
+        promoQRShare.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //we start by creating new intent with binary content that contains the image of the QR code we would like to share
+                //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                Uri uriToImage = getUriToShare(promoBitmap);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                shareIntent.setType("image/jpeg");
+                startActivity(Intent.createChooser(shareIntent, null));
+            }
+        });
+
+        checkInQRShare.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //we start by creating new intent with binary content that contains the image of the QR code we would like to share
+                //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                Uri uriToImage = getUriToShare(checkInBitmap);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                shareIntent.setType("image/jpeg");
+                startActivity(Intent.createChooser(shareIntent, null));
+            }
+        });
+
         String nameString = "Name: "+event.getName();
         //String organizerString = "Organized by: ";
         FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
@@ -234,8 +272,22 @@ public class EventDetailsFragment extends Fragment {
         }
         Log.d("setImages", this.event.getQrCodePromo());
         Log.d("setImages", this.event.getQrCode());
-        promoQRView.setImageBitmap(QRCodeGenerator.generateBitmap(this.event.getQrCodePromo(), getActivity()));
-        checkInQRView.setImageBitmap(QRCodeGenerator.generateBitmap(this.event.getQrCode(), getActivity()));
+        this.promoBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCodePromo(), getActivity());
+        promoQRView.setImageBitmap(this.promoBitmap);
+        this.checkInBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCode(), getActivity());
+        checkInQRView.setImageBitmap(this.checkInBitmap);
+    }
+
+    private Uri getUriToShare(Bitmap bitmap){
+        Uri uri = null;
+        String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, "QrToBeShared", "the qr we are sharing");
+        if (localFilePath != null) {
+            uri = Uri.parse(localFilePath);
+        }
+        else{
+            Log.e("ShareQRCode", "Failed to create Uri from bitmap");
+        }
+        return uri;
     }
 
 }
