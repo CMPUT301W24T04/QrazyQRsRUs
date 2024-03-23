@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 /**
@@ -1217,11 +1218,11 @@ public class FirebaseDB {
 
     /**
      * This function subscribes a user to the topic that FCM will send new announcements to as push notifications
-     * @param event The event the user is subscribing to
+     * @param topicName The name of the topic in FCM that the user is subscribing to
      */
-    public static void subscribeAttendeeToEventTopic(Event event){
+    public static void subscribeAttendeeToEventTopic(String topicName){
         messaging
-                .subscribeToTopic(event.getName())
+                .subscribeToTopic(topicName)
                 .addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
@@ -1235,4 +1236,6 @@ public class FirebaseDB {
                     }
                 });
     }
+
+
 }

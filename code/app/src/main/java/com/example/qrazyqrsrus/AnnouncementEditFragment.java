@@ -43,7 +43,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.HttpException;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
@@ -57,7 +60,7 @@ import android.Manifest;
  * @see AnnouncementsFragment
  * @version 1
  */
-public class AnnouncementEditFragment extends Fragment {
+public class AnnouncementEditFragment extends Fragment implements Callback<MessageSentResponse> {
 
     private EditText announcementEditText;
     private Button addButton;
@@ -109,8 +112,13 @@ public class AnnouncementEditFragment extends Fragment {
         event = (Event) getArguments().get("event");
         assert event != null;
 
-        FirebaseDB.subscribeAttendeeToEventTopic(event);
+        //we should be subscribing the person whenever they sign up/checkin, not here
+        //we should also be creating a unique topic for each event
+        FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
+        //we amke the notification channel to send notifications to
+        //this can be done in MainActivity, it doesn't really matter
         createNotificationChannel();
+        //we ask for permission to send notifcations if they are not yet granted
         requestNotificationPermission();
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
         addButton = rootView.findViewById(R.id.button_add);
@@ -278,15 +286,14 @@ public class AnnouncementEditFragment extends Fragment {
 
         try{
             if (isBroadcast){
-                api.broadcast(dto);
+                api.broadcast(dto).enqueue(this);
             } else{
-                api.sendMessage(dto);
+                api.sendMessage(dto).enqueue(this);
             }
 
         } catch (HttpException e){
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -307,6 +314,16 @@ public class AnnouncementEditFragment extends Fragment {
             NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    @Override
+    public void onResponse(Call<MessageSentResponse> call, Response<MessageSentResponse> response) {
+        Log.d("hooray", "it should work");
+    }
+
+    @Override
+    public void onFailure(Call<MessageSentResponse> call, Throwable t) {
+        Log.d("huh oh", "it dont work");
     }
 }
 
