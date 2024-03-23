@@ -47,6 +47,8 @@ import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
+import android.Manifest;
+
 /**
  * Fragment to display the Announcement Edit section which
  * only the organizer can access. Enables them to send and delete
@@ -107,6 +109,7 @@ public class AnnouncementEditFragment extends Fragment {
         event = (Event) getArguments().get("event");
         assert event != null;
 
+        FirebaseDB.subscribeAttendeeToEventTopic(event);
         createNotificationChannel();
         requestNotificationPermission();
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
@@ -180,7 +183,7 @@ public class AnnouncementEditFragment extends Fragment {
             NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             if (!notificationManager.areNotificationsEnabled()){
                 //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
-                requestPermissionLauncher.launch("Can QrazyQRsRUs send you push notifications?");
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
             }
         }
     }

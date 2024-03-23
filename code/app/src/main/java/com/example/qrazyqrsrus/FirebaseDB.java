@@ -1214,4 +1214,25 @@ public class FirebaseDB {
                     }
                 });
     }
+
+    /**
+     * This function subscribes a user to the topic that FCM will send new announcements to as push notifications
+     * @param event The event the user is subscribing to
+     */
+    public static void subscribeAttendeeToEventTopic(Event event){
+        messaging
+                .subscribeToTopic(event.getName())
+                .addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        Log.d("topic", "successfully subscribed user to event topic");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("topic", "failed to subscribe user to event topic");
+                    }
+                });
+    }
 }
