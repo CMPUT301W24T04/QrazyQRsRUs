@@ -555,7 +555,7 @@ public class FirebaseDB {
      * @param eventList the list passed in to get the events
      * @param adapter the adapter used to update the ListView
      */
-    public static void geEventsCheckedIn(Attendee user, ArrayList<Event> eventList, HomeCheckedInListAdapter adapter) {
+    public static void getEventsCheckedIn(Attendee user, ArrayList<Event> eventList, HomeCheckedInListAdapter adapter) {
         ArrayList<String> myCheckIns = new ArrayList<>();
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
