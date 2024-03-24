@@ -1138,17 +1138,26 @@ public class FirebaseDB {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                String id = (String) document.getData().get("id");
-                                String name = (String) document.getData().get("name");
-                                String email = (String) document.getData().get("email");
-                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-
-//                                Attendee attendee = document.toObject(Attendee.class);
-                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                attendeeDataList.add(attendee);
-
+                                // check if the checked in user has a name that exists
+                                if(document.get("name") != null){
+                                    String documentId = document.getId();
+                                    String id = (String) document.getData().get("id");
+                                    String name = (String) document.getData().get("name");
+                                    String email = (String) document.getData().get("email");
+                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                    Integer checkins = (Integer) document.getData().get("numberOfCheckins");
+                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
+                                    attendeeDataList.add(attendee);
+                                }
+                                // otherwise add a default name
+                                else{
+                                    String documentId = document.getId();
+                                    String id = (String) document.getData().get("id");
+                                    Integer checkins = (Integer) document.getData().get("numberOfCheckins");
+                                    Attendee attendee = new Attendee("No Name", documentId, id, checkins);
+                                    attendeeDataList.add(attendee);
+                                }
                             }
                             attendeeListAdapter.notifyDataSetChanged();
                         }

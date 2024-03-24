@@ -126,26 +126,6 @@ public class AttendeeList extends Fragment {
         FirebaseDB.getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
         //FirebaseDB.getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
 
-        //see who is signed up for the event as well
-//        for(Integer i = 0; i < attendeeDataList.size(); i++){
-//            // check if the checked-in user is also signed-up
-//            if(event.getSignUps().contains(attendeeDataList.get(i))){
-//                Attendee current_attendee = attendeeDataList.get(i);
-//                // set this attendee to signed_up for the event
-//                current_attendee.setSignedup(true);
-//            }
-//            else{
-//                Attendee current_attendee = attendeeDataList.get(i);
-//                // set this attendee to not signed_up for the event
-//                current_attendee.setSignedup(false);
-//            }
-//        }
-
-        //TODO: REMOVE PEOPLE SIGNED UP FROM PEOPLE CHECKED-IN
-        //
-
-
-
         // populate the attendees list
         //FirebaseDB.getAllUsers(attendeeDataList, attendeeListAdapter);
         attendeeList.setAdapter(attendeeListAdapter);

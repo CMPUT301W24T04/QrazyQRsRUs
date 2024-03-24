@@ -62,14 +62,11 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
         // change value of name and num_checkins from content value
         Name.setText(attendee.getName());
-//        if(attendee.getSignedup() == true){
-//            signedup.setText("Signed up: yes");
-//        }
-//        if(attendee.getSignedup() == false){
-//            signedup.setText("Signed up: No");
-//        }
 
-//        num_checkins = "0"; //.setText(attendee.getNum_checkins().toString());
+//        String num_checkins = attendee.getCheckins().toString();
+        //concatnate number of checkins to the sentence using .concat()
+        //checkins.setText("# Check Ins: ".concat(attendee.getCheckins().toString())); // https://www.w3schools.com/jsref/jsref_concat_string.asp
+
 
         return view;
     }
