@@ -84,6 +84,8 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
             }
         });
 
+        Bundle args = getArguments();
+        handleArguments(args, view);
         createToolbar(view);
 
         return view;
@@ -116,10 +118,12 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
     private Bundle makeNewBundle(){
         Bundle bundle = getArguments();
         View view = getView();
-        bundle.putSerializable("name", ((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString());
-        bundle.putSerializable("organizerId", ( (Attendee) bundle.getSerializable("attendee")).getDocumentId());
-        bundle.putSerializable("location", ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
-        bundle.putSerializable("details", ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
+        builder.setName(((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString());
+        builder.setLocation(((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
+        builder.setDetails(((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        builder.setOrganizerId(((Attendee) bundle.getSerializable("attendee")).getDocumentId());
+
         String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
 
         Integer maxAttendees = null;
@@ -131,9 +135,26 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
             }
         }
 
-        bundle.putSerializable("max_attendees", maxAttendees);
+        builder.setMaxAttendees(maxAttendees);
+        //we put the updates builder back into the bundle
+        bundle.putSerializable("builder", builder);
 
         return bundle;
+    }
+
+    private void handleArguments(Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder.getName() != null){
+            //if builder.getName() != null, the user has already been to this screen, so we restore their input
+            ((EditText) view.findViewById(R.id.event_name_edit_text)).setText(builder.getName());
+            ((EditText) view.findViewById(R.id.event_location_edit_text)).setText(builder.getLocation());
+            ((EditText) view.findViewById(R.id.event_details_edit_text)).setText(builder.getDetails());
+            //we check if user set maxAttendees
+            if (builder.getMaxAttendees() != null){
+                ((SwitchCompat) view.findViewById(R.id.limit_attendees_toggle)).setChecked(true);
+                ((EditText) view.findViewById(R.id.max_attendees_edit_text)).setText(builder.getMaxAttendees().toString());
+            }
+        }
     }
 
 }

@@ -50,6 +50,9 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
     private Toolbar toolbar;
 
     private Uri uri;
+    private String initialPath;
+
+    private String path;
 
     /**
      * save the image as an instance
@@ -101,6 +104,8 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.new_event_image_fragment, container, false);
+        Bundle bundle = getArguments();
+        handleArguments(bundle, view);
         createToolbar(view);
         //temporarily display event name here
 //        ((TextView) view.findViewById(R.id.new_event_image_text)).setText(((Event) getArguments().getSerializable("event")).getName());
@@ -126,6 +131,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
                         imageView = (ImageView) view.findViewById(R.id.new_event_display_event_poster);
                         updateImage(uri);
                         this.uri = uri;
+                        this.path = generateUniquePathName(((Event.EventBuilder) bundle.getSerializable("builder")).getName());
                     } else {
 //                        Log.d("PhotoPicker", "No media selected");
                     }
@@ -160,7 +166,9 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         //we check which item id was clicked on, navigating accordingly
         if (id == R.id.back_button){
             //go to previous screen
-            Navigation.findNavController(getView()).navigate(R.id.action_newEventImageFragment_to_newEventTextFragment);
+            Bundle args = getArguments();
+            args = makeNewBundle(args);
+            Navigation.findNavController(getView()).navigate(R.id.action_newEventImageFragment_to_newEventTextFragment, args);
             return true;
         }
         else if (id == R.id.cancel_button){
@@ -211,9 +219,49 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         return pathName;
     }
     private Bundle makeNewBundle(Bundle bundle){
-        String pathName = generateUniquePathName((String) bundle.getSerializable("name"));
-        bundle.putSerializable("posterPath", pathName);
-        bundle.putParcelable("uri", this.uri);
+        Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
+        if (this.uri == null){
+            //if this.uri is null, the user either 1) did not upload an image or 2) had uploaded an image before, but returned to this screen and deleted the image
+            if (this.initialPath != null){
+                FirebaseDB.deleteImage(this.initialPath);
+                builder.setUri(null);
+                builder.setPosterPath(null);
+            }
+            return bundle;
+        } else{
+            //if this.uri is not null, the user either 1) uploaded an image for the first time or changed the image or 2) did not change the image they initially uploaded
+            if (this.initialPath == null || this.initialPath != this.path){
+                if (this.initialPath != null){
+                    FirebaseDB.deleteImage(this.initialPath);
+                }
+                FirebaseDB.uploadImage(this.uri, this.path);
+                builder.setUri(this.uri);
+                builder.setPosterPath(this.path);
+            }
+
+        }
+
+        bundle.putSerializable("builder", builder);
         return bundle;
+    }
+
+    private void handleArguments(Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        //if builder.getPosterPath != null, the user has already been to this screen so we restore their state
+        if (builder.getPosterPath() != null){
+            this.uri = builder.getUri();
+            this.initialPath = builder.getPosterPath();
+            this.path = this.initialPath;
+            FirebaseDB.retrieveImage(builder.getPosterPath(), new FirebaseDB.GetBitmapCallBack() {
+                @Override
+                public void onResult(Bitmap bitmap) {
+                    ((ImageView) view.findViewById(R.id.new_event_display_event_poster)).setImageBitmap(bitmap);
+                }
+            });
+        } else{
+            this.uri = null;
+            this.initialPath = null;
+            this.path = null;
+        }
     }
 }

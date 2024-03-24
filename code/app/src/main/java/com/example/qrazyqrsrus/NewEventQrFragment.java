@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -41,9 +43,10 @@ import java.util.Date;
 /**
  * Creates a new QR for the fragment
  */
-public class NewEventQrFragment extends Fragment {
+public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
     private String checkInQRContent;
+    private Toolbar toolbar;
     public static NewEventQrFragment newInstance(String param1, String param2) {
         NewEventQrFragment fragment = new NewEventQrFragment();
         Bundle args = new Bundle();
@@ -107,31 +110,75 @@ public class NewEventQrFragment extends Fragment {
         FloatingActionButton fab = view.findViewById(R.id.qr_screen_finish_button);
         fab.setOnClickListener(v -> {
             //TODO: store event to firebase before navigating back
-            Bundle args = makeNewBundle(getArguments());
+            Bundle args = null;
+            try {
+                args = makeNewBundle(getArguments());
+                Event event = ((Event.EventBuilder) args.getSerializable("builder")).build();
+                FirebaseDB.addEvent(event);
+                Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
+            } catch (Exception e) {
+                new ErrorDialog(R.string.no_qr_code).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+            }
 //            Event event = modifyEvent(this.checkInQRContent, (Event) args.getSerializable("event"));
 //            args.putSerializable("event", event);
-            String name = (String) args.getSerializable("name");
-            String organizerId = (String) args.getSerializable("organizerId");
-            String location = (String) args.getSerializable("location");
-            String details = (String) args.getSerializable("details");
-            Integer max_attendees = (Integer) args.getSerializable("max_attendees");
-            LocalDateTime startDate = (LocalDateTime) args.getSerializable("startDate");
-            LocalDateTime endDate = (LocalDateTime) args.getSerializable("endDate");
-            String posterPath = (String) args.getSerializable("posterPath");
-            Uri uri = (Uri) args.getParcelable("uri");
-            FirebaseDB.uploadImage(uri, posterPath);
-            String qrCodePromo = (String) args.getSerializable("qrCodePromo");
-            String qrCode = (String) args.getSerializable("qrCode");
-            FirebaseDB.uploadImage(uri, posterPath);
-
-            Event event = new Event(name, organizerId, details, location, startDate, endDate, max_attendees);
-            event.setPosterPath(posterPath);
-            event.setQrCodePromo(qrCodePromo);
-            event.setQrCode(qrCode);
-            FirebaseDB.addEvent(event);
-            Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
+//            String name = (String) args.getSerializable("name");
+//            String organizerId = (String) args.getSerializable("organizerId");
+//            String location = (String) args.getSerializable("location");
+//            String details = (String) args.getSerializable("details");
+//            Integer max_attendees = (Integer) args.getSerializable("max_attendees");
+//            LocalDateTime startDate = (LocalDateTime) args.getSerializable("startDate");
+//            LocalDateTime endDate = (LocalDateTime) args.getSerializable("endDate");
+//            String posterPath = (String) args.getSerializable("posterPath");
+//            Uri uri = (Uri) args.getParcelable("uri");
+//            FirebaseDB.uploadImage(uri, posterPath);
+//            String qrCodePromo = (String) args.getSerializable("qrCodePromo");
+//            String qrCode = (String) args.getSerializable("qrCode");
+//            FirebaseDB.uploadImage(uri, posterPath);
+//
+//            Event event = new Event(name, organizerId, details, location, startDate, endDate, max_attendees);
+//            event.setPosterPath(posterPath);
+//            event.setQrCodePromo(qrCodePromo);
+//            event.setQrCode(qrCode);
+//            FirebaseDB.addEvent(event);
+//            Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
         });
+        Bundle bundle = getArguments();
+        handleArguments(bundle, view);
+        createToolbar(view);
         return view;
+    }
+
+    private void createToolbar(View view){
+        //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
+        //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
+        //it was posted by the user Faisal Naseer (https://stackoverflow.com/users/2641848/faisal-naseer) in the post https://stackoverflow.com/a/45653449
+        toolbar = (Toolbar) view.findViewById(R.id.checkin_screen_toolbar);
+        toolbar.inflateMenu(R.menu.menu_with_back_button);
+        //the fragment implements the Toolbar.OnMenuItemClick interface, pass itself.
+        toolbar.setOnMenuItemClickListener(this);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        int id = item.getItemId();
+        //we check which item id was clicked on, navigating accordingly
+        if (id == R.id.back_button){
+            //go to previous screen
+            Bundle args = getArguments();
+            try{
+                args = makeNewBundle(args);
+            } catch (Exception e){
+                //this is allowed
+            }
+            Navigation.findNavController(getView()).navigate(R.id.action_newEventQrFragment_to_newEventPromoQrFragment, args);
+            return true;
+        }
+        else if (id == R.id.cancel_button){
+            //leave entire new event sequence
+            Navigation.findNavController(getView()).navigate(R.id.action_newEventQrFragment_to_eventList2);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -146,7 +193,7 @@ public class NewEventQrFragment extends Fragment {
         QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
-                generateBitmap(qrContent);
+                generateBitmap(qrContent, getView());
             }
 
             @Override
@@ -166,7 +213,7 @@ public class NewEventQrFragment extends Fragment {
         QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
-                generateBitmap(qrContent);
+                generateBitmap(qrContent, getView());
             }
 
             @Override
@@ -180,10 +227,10 @@ public class NewEventQrFragment extends Fragment {
      * This function will try to generate an image bitmap of a qr code that encodes the provided content. It will update the ImageView on screen and set the checkInQRContent to use to build the Event object
      * @param content
      */
-    private void generateBitmap(String content){
+    private void generateBitmap(String content, View view){
         Bitmap bitmap = QRCodeGenerator.generateBitmap(content, getActivity());
         if (bitmap != null){
-            ((ImageView) getView().findViewById(R.id.new_event_display_qr_code)).setImageBitmap(bitmap);
+            ((ImageView) view.findViewById(R.id.new_event_display_qr_code)).setImageBitmap(bitmap);
             checkInQRContent = content;
             saveImage(bitmap);
         } else{
@@ -236,9 +283,25 @@ public class NewEventQrFragment extends Fragment {
      * @param bundle The bundle that holds the event fields so far
      * @return The updated bundle.
      */
-    private Bundle makeNewBundle(Bundle bundle){
-        bundle.putSerializable("qrCode", this.checkInQRContent);
+
+
+    private Bundle makeNewBundle(Bundle bundle) throws Exception{
+        Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
+        if (this.checkInQRContent == null){
+            throw new Exception();
+        } else{
+            builder.setQrCode(this.checkInQRContent);
+        }
+
+        bundle.putSerializable("builder", builder);
         return bundle;
+    }
+
+    private void handleArguments(Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder.getQrCode() != null){
+            generateBitmap(builder.getQrCode(), view);
+        }
     }
 
 }

@@ -81,6 +81,7 @@ public class MyEventsListFragment extends Fragment {
         fab.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putSerializable("attendee", this.attendee);
+            args.putSerializable("builder", new Event.EventBuilder());
             Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_newEventTextFragment, args);
         });
 

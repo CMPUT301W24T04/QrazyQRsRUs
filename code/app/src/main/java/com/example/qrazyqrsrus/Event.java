@@ -1,5 +1,7 @@
 package com.example.qrazyqrsrus;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -318,12 +320,28 @@ public class Event implements Serializable {
         this.checkIns.add(checkIn);
     }
 
-    /**
-     * checkes if user is checked in or signed up
-     * @param userDocumentId
-     * @param event
-     * @return Boolean
+    /** get
+     *
+     * @return integer of maximum number of attendees this event can have
      */
+    public Integer getMaxAttendees() {
+        return maxAttendees;
+    }
+
+    /**
+     * sets maximum number of attendees
+     * @param maxAttendees
+     */
+    public void setMaxAttendees(Integer maxAttendees) {
+        this.maxAttendees = maxAttendees;
+    }
+
+    //    /**
+//     * checkes if user is checked in or signed up
+//     * @param userDocumentId
+//     * @param event
+//     * @return Boolean
+//     */
 //    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
 //        if (event.getSignUps().contains(userDocumentId)) {
 //            return true;
@@ -339,4 +357,143 @@ public class Event implements Serializable {
 //        }
 //        return false;
 //    }
+
+    /**
+     * This constructor creates a new event using the Event Builder
+     * @param builder the event builder we are building from
+     */
+    private Event(EventBuilder builder){
+        this.documentId = null;
+        this.name = builder.name;
+        this.organizerId = builder.organizerId;
+        this.details = builder.details;
+        this.maxAttendees = builder.maxAttendees;
+        this.location = builder.location;
+        this.startDate = builder.startDate; //.format(formatter);
+        this.endDate = builder.endDate; //.format(formatter);
+        this.geolocationOn = builder.geolocationOn;
+        this.posterPath = builder.posterPath;
+        this.qrCode = builder.qrCode;
+        this.qrCodePromo = builder.qrCodePromo;
+        this.announcements = new ArrayList<String>();
+        this.signUps = new ArrayList<String>();
+        this.checkIns = new ArrayList<String>();
+    }
+
+    public static class EventBuilder implements Serializable{
+        private String name = null;
+        private String organizerId = null;
+        private String location = null;
+        private String details = null;
+        private Integer maxAttendees = null;
+        private String startDate = null;
+        private String endDate = null;
+        private Boolean geolocationOn = null;
+        private String posterPath = null;
+        private String qrCode = null;
+        private String qrCodePromo = null;
+        private Uri uri = null;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getOrganizerId() {
+            return organizerId;
+        }
+
+        public void setOrganizerId(String organizerId) {
+            this.organizerId = organizerId;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
+
+        public String getDetails() {
+            return details;
+        }
+
+        public void setDetails(String details) {
+            this.details = details;
+        }
+
+        public Integer getMaxAttendees() {
+            return maxAttendees;
+        }
+
+        public void setMaxAttendees(Integer maxAttendees) {
+            this.maxAttendees = maxAttendees;
+        }
+
+        public String getStartDate() {
+            return startDate;
+        }
+
+        public void setStartDate(String startDate) {
+            this.startDate = startDate;
+        }
+
+        public String getEndDate() {
+            return endDate;
+        }
+
+        public void setEndDate(String endDate) {
+            this.endDate = endDate;
+        }
+
+        public Boolean getGeolocationOn() {
+            return geolocationOn;
+        }
+
+        public void setGeolocationOn(Boolean geolocationOn) {
+            this.geolocationOn = geolocationOn;
+        }
+
+        public String getPosterPath() {
+            return posterPath;
+        }
+
+        public void setPosterPath(String posterPath) {
+            this.posterPath = posterPath;
+        }
+
+        public String getQrCode() {
+            return qrCode;
+        }
+
+        public void setQrCode(String qrCode) {
+            this.qrCode = qrCode;
+        }
+
+        public String getQrCodePromo() {
+            return qrCodePromo;
+        }
+
+        public void setQrCodePromo(String qrCodePromo) {
+            this.qrCodePromo = qrCodePromo;
+        }
+
+        public Uri getUri() {
+            return uri;
+        }
+
+        public void setUri(Uri uri) {
+            this.uri = uri;
+        }
+
+        public Event build(){
+            //return a new Event using the builder constructor
+            return new Event(this);
+        }
+    }
+
 }

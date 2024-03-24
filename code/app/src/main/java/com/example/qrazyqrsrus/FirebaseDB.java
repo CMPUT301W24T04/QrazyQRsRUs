@@ -320,6 +320,27 @@ public class FirebaseDB {
         }
     }
 
+    public static void retrieveImage(String path, GetBitmapCallBack callBack) {
+        try {
+            StorageReference storageRef = storage.getReference(path + ".jpg");
+            File localFile = File.createTempFile(path.split("/")[1], "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    Log.d(imagesTAG, "Successfully retrieved image");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
+                }
+            });
+        } catch (IOException exception) {
+            Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
+        }
+    }
+
     /**
      * Deletes an image from the database
      *
