@@ -20,4 +20,7 @@
     <string name="browse_events_header">Browse events:</string>
     <string name="not_signed_up_error">Error: You cannot check-in to an event that you have not signed up for</string>
     <string name="wrong_admin_login_error">Error: Invalid admin credentials</string>
+    <string name="signed_up_text">Signed up</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="checked_in_text">Checked In</string>
 </resources>

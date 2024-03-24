@@ -52,7 +52,13 @@ public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
 
 
         // set values of textviews based on the object attributes
-        Name.setText(event.getName()); //.getEventName());
+        String tempName = event.getName();
+        if (tempName.length() > 20) {
+            String newText = tempName.substring(0, 20) + "...";
+            Name.setText(newText);
+        } else {
+            Name.setText(tempName);
+        }
 
         return view;
     }
