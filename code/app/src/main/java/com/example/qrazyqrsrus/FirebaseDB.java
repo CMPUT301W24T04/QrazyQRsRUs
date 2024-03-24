@@ -1169,7 +1169,7 @@ public class FirebaseDB {
     public static void getEventSignedUpUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
         for(Integer i = 0; i < event.getSignUps().size(); i++){
             usersCollection
-                    .whereEqualTo("documentId", i)
+                    .whereEqualTo("documentId", event.getSignUps().get(i))
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
