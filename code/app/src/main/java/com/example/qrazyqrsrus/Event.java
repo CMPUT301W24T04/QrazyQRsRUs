@@ -318,6 +318,14 @@ public class Event implements Serializable {
         this.checkIns.add(checkIn);
     }
 
+    public Integer getMaxAttendees(){
+        return this.maxAttendees;
+    }
+
+    public void setMaxAttendees(Integer maxAttendees){
+        this.maxAttendees = maxAttendees;
+    }
+
     /**
      * checkes if user is checked in or signed up
      * @param userDocumentId
