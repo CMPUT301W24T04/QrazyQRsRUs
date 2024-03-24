@@ -74,8 +74,10 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
     private ArrayList<String> announcements;
     private String messageText;
     private String tokenToSendTo;
-    //THIS MAY NOT BE CORRECT, specifically the create part
     private Event event;
+    //we use Retrofit to create our Java interface out of the HTTP Api defined on the backend
+    //this definition was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
+    //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
     private FcmApi api = new Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080/")
             .addConverterFactory(MoshiConverterFactory.create())
@@ -270,6 +272,8 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
         return fragment;
     }
 
+    //this function was adapted from a function written by Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
+    //it was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner Accessed on Mar. 23rd, 2024
     /**
      * This function sends the HTTP request to our API that will tell firebase to send a push notification
      * @param isBroadcast a boolean that represents whether this message should be broadcast or not
@@ -286,8 +290,10 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
 
         try{
             if (isBroadcast){
+                //we make an asynchronous HTTP request to the server to send a message to the topic
                 api.broadcast(dto).enqueue(this);
             } else{
+                //we make an asynchronous HTTP request to the server to send a message to a specific user
                 api.sendMessage(dto).enqueue(this);
             }
 
