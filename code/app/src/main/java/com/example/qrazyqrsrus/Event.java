@@ -16,6 +16,7 @@ public class Event implements Serializable {
     private String location;
     private String details;
     private Integer maxAttendees;
+    private Integer attendeeCount;
     private String startDate;
     private String endDate;
     private Boolean geolocationOn;
@@ -287,7 +288,15 @@ public class Event implements Serializable {
      * @return
      */
     public void addSignUp(String signUp) {
-        this.signUps.add(signUp);
+        if (this.maxAttendees!=null){
+            if (this.attendeeCount < this.maxAttendees){
+                this.signUps.add(signUp);
+                this.attendeeCount += 1;
+            }
+        } else {
+            this.signUps.add(signUp);
+        }
+
     }
     /** removes user
      *
@@ -324,6 +333,14 @@ public class Event implements Serializable {
 
     public void setMaxAttendees(Integer maxAttendees){
         this.maxAttendees = maxAttendees;
+    }
+
+    public Integer getAttendeeCount(){
+        return this.attendeeCount;
+    }
+
+    public void setAttendeeCount(Integer attendeeCount){
+        this.attendeeCount = attendeeCount;
     }
 
     /**
