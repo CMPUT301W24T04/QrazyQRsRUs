@@ -151,23 +151,23 @@ public class AttendeeList extends Fragment {
         attendeeList.setAdapter(attendeeListAdapter);
 
         // When the list is clicked, reveal the attendee profile information
-        attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // pass attendee in a bundle
-                //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
-                Bundle bundle = new Bundle();
-                Attendee current_attendee = attendeeListAdapter.getItem(i);
-                bundle.putSerializable("current_attendee", current_attendee);
-//                attendee_info.setArguments(bundle);
-
-//                startActivity(i);
+//        attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                // pass attendee in a bundle
+//                //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
+//                Bundle bundle = new Bundle();
+//                Attendee current_attendee = attendeeListAdapter.getItem(i);
+//                bundle.putSerializable("current_attendee", current_attendee);
+////                attendee_info.setArguments(bundle);
 //
-//                //turn the textviews into the desired names based on the name lists
-//                Name.setText(attendee_value);
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView,bundle);
-            }
-        });
+////                startActivity(i);
+////
+////                //turn the textviews into the desired names based on the name lists
+////                Name.setText(attendee_value);
+//                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView,bundle);
+//            }
+//        });
 
         // go back when back button is pressed
         attendeeListLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
