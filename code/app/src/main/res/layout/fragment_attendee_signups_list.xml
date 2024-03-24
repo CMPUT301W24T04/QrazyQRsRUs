@@ -9,7 +9,7 @@
     tools:context=".MainActivity">
 
     <ListView
-        android:id="@+id/attendee_list_view"
+        android:id="@+id/attendee_signups_list_view"
         android:layout_width="match_parent"
         android:layout_height="568dp"
         android:layout_marginTop="64dp"
@@ -24,7 +24,7 @@
         android:id="@+id/app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="People in attendance"
+        android:text="Users Signed Up"
         android:textColor="@color/white"
         android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,10 +44,10 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button_view_signups"
+        android:id="@+id/button_view_checkins"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Signps"
+        android:text="View Checkins"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

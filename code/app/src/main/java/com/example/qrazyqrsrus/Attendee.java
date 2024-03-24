@@ -117,4 +117,5 @@ public class Attendee implements Serializable {
         this.geolocationOn = geolocationOn;
     }
 
+    //
 }
