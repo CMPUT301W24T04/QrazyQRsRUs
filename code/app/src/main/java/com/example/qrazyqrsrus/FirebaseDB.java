@@ -877,14 +877,18 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        checkIn.setDocumentId(documentReference.getId());
-                        //update checkIn to get the document ID set in the field for future accesses
-                        updateCheckIn(checkIn);
-                        //we delete the signup from the event's field
-                        event.deleteSignUp(checkIn.getAttendeeDocId());
-                        //we add the checkin and update our event :)
-                        event.addCheckIn(checkIn.getDocumentId());
-                        updateEvent(event);
+                        if (event.deleteSignUp(checkIn.getDocumentId())){
+                            if(event.addCheckIn(checkIn.getDocumentId())){
+                                checkIn.setDocumentId(documentReference.getId());
+                                //update checkIn to get the document ID set in the field for future accesses
+                                updateCheckIn(checkIn);
+                                //we delete the signup from the event's field
+                                event.deleteSignUp(checkIn.getAttendeeDocId());
+                                //we add the checkin and update our event :)
+                                event.addCheckIn(checkIn.getDocumentId());
+                                updateEvent(event);
+                            }
+                        }
                     }
                 });
 

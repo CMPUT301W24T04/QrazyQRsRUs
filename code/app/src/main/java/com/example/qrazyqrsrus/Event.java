@@ -16,7 +16,6 @@ public class Event implements Serializable {
     private String location;
     private String details;
     private Integer maxAttendees;
-    private Integer attendeeCount;
     private String startDate;
     private String endDate;
     private Boolean geolocationOn;
@@ -289,12 +288,11 @@ public class Event implements Serializable {
      */
     public boolean addSignUp(String signUp) {
 
-        if (this.maxAttendees != null && this.attendeeCount >= this.maxAttendees) {
+        if (this.maxAttendees != null && this.getAttendeeCount() >= this.maxAttendees) {
             return false;
         }
 
         this.signUps.add(signUp);
-        this.attendeeCount += 1;
         return true;
     }
 
@@ -302,8 +300,12 @@ public class Event implements Serializable {
      *
      * @return
      */
-    public void deleteSignUp(String userId) {
-        this.signUps.remove(userId);
+    public boolean deleteSignUp(String userId) {
+        if (signUps.contains(userId)){
+            this.signUps.remove(userId);
+            return true;
+        }
+        return false;
     }
     /** get
      *
@@ -323,8 +325,13 @@ public class Event implements Serializable {
      *
      * @return
      */
-    public void addCheckIn(String checkIn) {
+    public boolean addCheckIn(String checkIn) {
+        if (this.maxAttendees != null && this.getAttendeeCount() >= this.maxAttendees) {
+            return false;
+        }
+
         this.checkIns.add(checkIn);
+        return true;
     }
 
     public Integer getMaxAttendees(){
@@ -336,19 +343,16 @@ public class Event implements Serializable {
     }
 
     public Integer getAttendeeCount(){
-        return this.attendeeCount;
+        return this.signUps.size() + this.checkIns.size();
     }
-
-    public void setAttendeeCount(Integer attendeeCount){
-        this.attendeeCount = attendeeCount;
-    }
-
     /**
      * checkes if user is checked in or signed up
      * @param userDocumentId
      * @param event
      * @return Boolean
      */
+
+
 //    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
 //        if (event.getSignUps().contains(userDocumentId)) {
 //            return true;

@@ -128,9 +128,6 @@ public class NewEventQrFragment extends Fragment {
             event.setPosterPath(posterPath);
             event.setQrCodePromo(qrCodePromo);
             event.setQrCode(qrCode);
-            if (maxAttendees != null){
-                event.setAttendeeCount(0);
-            }
             FirebaseDB.addEvent(event);
             Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
         });
