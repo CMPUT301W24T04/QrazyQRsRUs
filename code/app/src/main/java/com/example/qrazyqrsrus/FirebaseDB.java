@@ -97,6 +97,9 @@ public class FirebaseDB {
     final static String eventsTAG = "Events";
     final static String imagesTAG = "Images";
 
+    //dependency injection doesn't work, because db is a static variable
+    //consider refactoring FirebaseDB into a singleton with dependency injection
+    //we don't want to mock FirebaseDB, we want to mock FirebaseFirestore.getInstance()
     public FirebaseDB(FirebaseFirestore firestoreInstance){
         db = firestoreInstance;
     }

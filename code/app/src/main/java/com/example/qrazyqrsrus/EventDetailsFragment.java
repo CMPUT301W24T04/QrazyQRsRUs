@@ -272,10 +272,22 @@ public class EventDetailsFragment extends Fragment {
         }
         Log.d("setImages", this.event.getQrCodePromo());
         Log.d("setImages", this.event.getQrCode());
-        this.promoBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCodePromo(), getActivity());
-        promoQRView.setImageBitmap(this.promoBitmap);
-        this.checkInBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCode(), getActivity());
-        checkInQRView.setImageBitmap(this.checkInBitmap);
+        this.promoBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCodePromo());
+        if (this.promoBitmap == null){
+            Log.d("promoBitmap", "failure");
+            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+        } else{
+            promoQRView.setImageBitmap(this.promoBitmap);
+        }
+
+        this.checkInBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCode());
+        if (this.checkInBitmap == null){
+            Log.d("checkInBitmap", "failure");
+            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+        } else{
+            checkInQRView.setImageBitmap(this.checkInBitmap);
+        }
+
     }
 
     private Uri getUriToShare(Bitmap bitmap){

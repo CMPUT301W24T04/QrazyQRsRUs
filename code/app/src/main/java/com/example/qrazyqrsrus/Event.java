@@ -319,6 +319,13 @@ public class Event implements Serializable {
     public void addCheckIn(String checkIn) {
         this.checkIns.add(checkIn);
     }
+    /** removes checkin
+     *
+     * @return
+     */
+    public void deleteCheckIn(String checkIn) {
+        this.checkIns.remove(checkIn);
+    }
 
     /** get
      *

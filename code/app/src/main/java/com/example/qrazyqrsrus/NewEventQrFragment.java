@@ -228,7 +228,7 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
      * @param content
      */
     private void generateBitmap(String content, View view){
-        Bitmap bitmap = QRCodeGenerator.generateBitmap(content, getActivity());
+        Bitmap bitmap = QRCodeGenerator.generateBitmap(content);
         if (bitmap != null){
             ((ImageView) view.findViewById(R.id.new_event_display_qr_code)).setImageBitmap(bitmap);
             checkInQRContent = content;
