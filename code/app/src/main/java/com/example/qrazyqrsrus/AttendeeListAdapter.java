@@ -62,10 +62,11 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
         // change value of name and num_checkins from content value
         Name.setText(attendee.getName());
+        String checkins_string = "" + attendee.getCheckins();
 
 //        String num_checkins = attendee.getCheckins().toString();
         //concatnate number of checkins to the sentence using .concat()
-        //checkins.setText("# Check Ins: ".concat(attendee.getCheckins().toString())); // https://www.w3schools.com/jsref/jsref_concat_string.asp
+        checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
 
 
         return view;

@@ -35,7 +35,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 /**
- * Shows the list of attendees for the event
+ * Shows the list of who is signed up for a specific event
  */
 public class AttendeeSignupsList extends Fragment {
     // Define the lists and adapter where the attendee information is held

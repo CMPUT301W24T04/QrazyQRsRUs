@@ -12,7 +12,7 @@ public class Attendee implements Serializable {
     private String email;
     private String profilePicturePath;
     private Boolean geolocationOn;
-    private Integer checkins;
+    private long checkins;
 
     public Attendee() {
 
@@ -45,7 +45,7 @@ public class Attendee implements Serializable {
         this.profilePicturePath = profilePicturePath;
         this.geolocationOn = geolocationOn;
     }
-    public Attendee(String id, String documentId, String name, String email, String profilePicturePath, Boolean geolocationOn, Integer checkins) {
+    public Attendee(String id, String documentId, String name, String email, String profilePicturePath, Boolean geolocationOn, long checkins) {
         this.id = id;
         this.documentId = documentId;
         this.name = name;
@@ -67,7 +67,7 @@ public class Attendee implements Serializable {
         this.id = id;
     }
 
-    public Attendee(String noName, String documentId, String id, Integer checkins) {
+    public Attendee(String noName, String documentId, String id, long checkins) {
         this.name = noName;
         this.documentId = documentId;
         this.id = id;
@@ -126,11 +126,11 @@ public class Attendee implements Serializable {
         this.geolocationOn = geolocationOn;
     }
 
-    public Integer getCheckins() {
+    public long getCheckins() {
         return checkins;
     }
 
-    public void setCheckins(Integer checkins) {
+    public void setCheckins(long checkins) {
         this.checkins = checkins;
     }
 }
