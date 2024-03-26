@@ -593,6 +593,10 @@ public class FirebaseDB {
                         for (DocumentSnapshot documentSnapshot : task.getResult()) {
                             myCheckIns.add((String) documentSnapshot.get("eventDocId"));
                         }
+                        //if user is not checked in to anything
+                        if (myCheckIns.isEmpty()){
+                            return;
+                        }
                         eventsCollection.whereIn("documentId", myCheckIns).get()
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
