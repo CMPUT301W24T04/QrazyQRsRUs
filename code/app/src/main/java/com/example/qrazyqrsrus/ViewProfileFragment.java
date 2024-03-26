@@ -117,8 +117,8 @@ public class ViewProfileFragment extends Fragment {
 
         Bundle args = getArguments();
         Attendee attendeeClicked;
-        Log.d("profile_error", userId);
-        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
+//        Log.d("profile_error", userId);
+//        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
         if (args != null){
             if(!Objects.equals(userId, ((Attendee) args.getSerializable("attendee")).getId())){
                 restrictEdits();
@@ -136,18 +136,20 @@ public class ViewProfileFragment extends Fragment {
         btnCancel.setOnClickListener(v -> revertChanges());
 
 
-//        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
-//            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
-//                restrictEdits();
-//            }
-//        }
-        //loadUserProfile(userId);
-        FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                loadInitialAttendee(attendee);
+        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
+            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
+                restrictEdits();
             }
-        });
+        }
+        loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
+        //loadUserProfile(userId);
+//        FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+//            @Override
+//            public void onResult(Attendee attendee) {
+//
+//            }
+//        });
+
 
 //        btnUpdateProfile.setOnClickListener(v -> {
 //            updateUserProfile(this.attendee);
@@ -306,7 +308,7 @@ public class ViewProfileFragment extends Fragment {
     private void restrictEdits(){
         etEmailAddress.setInputType(0);
         etFullName.setInputType(0);
-        etAge.setInputType(0);
+//        etAge.setInputType(0);
         switchGeolocation.setInputType(0);
         btnUpdateProfile.setVisibility(View.GONE);
     }
