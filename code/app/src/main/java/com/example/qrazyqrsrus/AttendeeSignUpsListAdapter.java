@@ -11,14 +11,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+/**
+ * Saves the attendee class in a content view and adds that content to the list
+ */
+public class AttendeeSignUpsListAdapter extends ArrayAdapter<Attendee> {
 
-public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
-    private ArrayList<Event> events;
+    private ArrayList<Attendee> attendees;
     private Context context;
 
-    public HomeCheckedInListAdapter(Context context, ArrayList<Event> events){
-        super(context,0, events);
-        this.events = events;
+    /**
+     * Constructor to hold the attendee content
+     * @param context
+     * @param attendees
+     */
+    public AttendeeSignUpsListAdapter(Context context, ArrayList<Attendee> attendees){
+        super(context,0, attendees);
+        this.attendees = attendees;
         this.context = context;
     }
 
@@ -33,7 +41,7 @@ public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
      *        always of the right type (see {@link #getViewTypeCount()} and
      *        {@link #getItemViewType(int)}).
      * @param parent The parent that this view will eventually be attached to
-     * @return view
+     * @return
      */
     @NonNull
     @Override
@@ -42,24 +50,18 @@ public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
         View view = convertView;
 
         if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.checked_in_list_content, parent,false);
+            view = LayoutInflater.from(context).inflate(R.layout.attendee_signups_list_content, parent,false);
         }
         // get position of the attendee
-        Event event = events.get(position);
+        Attendee attendee = attendees.get(position);
 
-        // get textviews from content fragment
-        TextView Name = view.findViewById(R.id.checked_in_name);
+        // get name and num_checkins from the content fragment
+        TextView Name = view.findViewById(R.id.name_signedup_attendee);
 
-
-        // set values of textviews based on the object attributes
-        String tempName = event.getName();
-        if (tempName.length() > 20) {
-            String newText = tempName.substring(0, 20) + "...";
-            Name.setText(newText);
-        } else {
-            Name.setText(tempName);
-        }
+        // change value of name and num_checkins from content value
+        Name.setText(attendee.getName());
 
         return view;
     }
+    //
 }

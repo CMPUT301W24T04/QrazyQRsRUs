@@ -147,6 +147,7 @@ public class ViewProfileFragment extends Fragment {
 
         Bundle args = getArguments();
 
+
         if (args != null && args.containsKey("attendee")) {
             Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
             if (attendeeClicked != null) {
@@ -163,6 +164,14 @@ public class ViewProfileFragment extends Fragment {
                 Log.e("ViewProfileFragment", "Attendee object not found in arguments.");
                 // Handle the case when attendee is not passed in arguments
                 // Show error dialog or toast
+
+//         Attendee attendeeClicked;
+// //        Log.d("profile_error", userId);
+// //        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
+//         if (args != null){
+//             if(!Objects.equals(userId, ((Attendee) args.getSerializable("attendee")).getId())){
+//                 restrictEdits();
+
             }
         } else {
             Log.e("ViewProfileFragment", "No arguments found.");
@@ -179,18 +188,20 @@ public class ViewProfileFragment extends Fragment {
         btnCancel.setOnClickListener(v -> revertChanges());
 
 
-//        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
-//            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
-//                restrictEdits();
-//            }
-//        }
-        //loadUserProfile(userId);
-        FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                loadInitialAttendee(attendee);
+        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
+            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
+                restrictEdits();
             }
-        });
+        }
+        loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
+        //loadUserProfile(userId);
+//        FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+//            @Override
+//            public void onResult(Attendee attendee) {
+//
+//            }
+//        });
+
 
 //        btnUpdateProfile.setOnClickListener(v -> {
 //            updateUserProfile(this.attendee);
@@ -349,7 +360,7 @@ public class ViewProfileFragment extends Fragment {
     private void restrictEdits(){
         etEmailAddress.setInputType(0);
         etFullName.setInputType(0);
-        etAge.setInputType(0);
+//        etAge.setInputType(0);
         switchGeolocation.setInputType(0);
         btnUpdateProfile.setVisibility(View.GONE);
     }
