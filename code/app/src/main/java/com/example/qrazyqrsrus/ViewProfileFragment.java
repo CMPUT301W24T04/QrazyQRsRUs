@@ -146,6 +146,7 @@ public class ViewProfileFragment extends Fragment {
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         Bundle args = getArguments();
+
         if (args != null && args.containsKey("attendee")) {
             Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
             if (attendeeClicked != null) {
