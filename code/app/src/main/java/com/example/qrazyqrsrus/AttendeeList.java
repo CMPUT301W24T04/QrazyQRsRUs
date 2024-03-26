@@ -104,7 +104,8 @@ public class AttendeeList extends Fragment {
         attendeeListLayout.findViewById(R.id.button_back_checkin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_eventDetailsFragment);
+                Bundle bundle = getArguments();
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_eventDetailsFragment, bundle);
             }
         });
 

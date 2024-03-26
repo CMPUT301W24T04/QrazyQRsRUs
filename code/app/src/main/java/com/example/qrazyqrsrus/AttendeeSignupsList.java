@@ -123,7 +123,8 @@ public class AttendeeSignupsList extends Fragment {
         attendeeListLayout.findViewById(R.id.button_back_signups).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeSignupsList_to_eventDetailsFragment);
+                Bundle bundle = getArguments();
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeSignupsList_to_eventDetailsFragment, bundle);
             }
         });
         attendeeListLayout.findViewById(R.id.button_view_checkins).setOnClickListener(new View.OnClickListener() {
