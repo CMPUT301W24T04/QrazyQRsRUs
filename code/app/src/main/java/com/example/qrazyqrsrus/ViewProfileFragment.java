@@ -2,6 +2,9 @@ package com.example.qrazyqrsrus;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -26,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -37,6 +42,10 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,9 +67,28 @@ public class ViewProfileFragment extends Fragment {
     private Button btnDone, btnCancel;
 
     String userId;
+
+    private ActivityResultLauncher<String> galleryActivityResultLauncher;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        storage = FirebaseStorage.getInstance();
+
+        galleryActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        imgProfilePicture.setImageURI(uri);
+                        String pathname = generatePathName(attendee.getName());
+                        FirebaseDB.uploadImage(uri,pathname);
+                        attendee.setProfilePicturePath(pathname);
+                        FirebaseDB.updateUser(attendee);
+
+                    }
+                }
+        );
     }
 
     @Nullable
@@ -77,7 +105,9 @@ public class ViewProfileFragment extends Fragment {
 
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);
+        imgProfilePicture.setOnClickListener(v -> showProfilePictureOptionsDialog());
         switchGeolocation = view.findViewById(R.id.switchGeolocation);
+
 
         // Set the EditTexts to non-editable initially
         etFullName.setEnabled(false);
@@ -116,15 +146,37 @@ public class ViewProfileFragment extends Fragment {
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         Bundle args = getArguments();
-        Attendee attendeeClicked;
-//        Log.d("profile_error", userId);
-//        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
-        if (args != null){
-            if(!Objects.equals(userId, ((Attendee) args.getSerializable("attendee")).getId())){
-                restrictEdits();
+
+
+        if (args != null && args.containsKey("attendee")) {
+            Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
+            if (attendeeClicked != null) {
+                userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+                Log.d("profile_error", "User ID: " + userId);
+                Log.d("profile_error", "Attendee ID: " + attendeeClicked.getId());
+
+                if (!Objects.equals(userId, attendeeClicked.getId())) {
+                    restrictEdits();
+                }
+                // Load initial attendee data
+                loadInitialAttendee(attendeeClicked);
+            } else {
+                Log.e("ViewProfileFragment", "Attendee object not found in arguments.");
+                // Handle the case when attendee is not passed in arguments
+                // Show error dialog or toast
+
+//         Attendee attendeeClicked;
+// //        Log.d("profile_error", userId);
+// //        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
+//         if (args != null){
+//             if(!Objects.equals(userId, ((Attendee) args.getSerializable("attendee")).getId())){
+//                 restrictEdits();
+
             }
-        } else{
-            new ErrorDialog(R.string.no_args).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+        } else {
+            Log.e("ViewProfileFragment", "No arguments found.");
+            // Handle the case when no arguments were set for this fragment
+            // Show error dialog or toast
         }
 
         // In onCreateView after initializing views
@@ -312,4 +364,77 @@ public class ViewProfileFragment extends Fragment {
         switchGeolocation.setInputType(0);
         btnUpdateProfile.setVisibility(View.GONE);
     }
+
+    private void showProfilePictureOptionsDialog() {
+        // Inflate the dialog view
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_profile_picture_options, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(dialogView)
+                .create();
+
+        dialog.show();
+
+        dialogView.findViewById(R.id.ivGallery).setOnClickListener(view -> {
+            openGalleryForImage();
+            dialog.dismiss();
+        });
+
+        dialogView.findViewById(R.id.ivDelete).setOnClickListener(view -> {
+            deleteProfileImage();
+            dialog.dismiss();
+        });
+    }
+
+
+    private void openGalleryForImage() {
+        galleryActivityResultLauncher.launch("image/*");
+    }
+
+
+    private void deleteProfileImage() {
+        // Set initials image here
+        Bitmap initialsBitmap = createInitialsImage(getInitials(attendee.getName()));
+        imgProfilePicture.setImageBitmap(initialsBitmap);
+        // Remove the reference to the profile picture in Firebase if necessary
+        // Code to delete the image from Firebase Storage
+        attendee.setProfilePicturePath(null);
+        FirebaseDB.updateUser(attendee);
+    }
+    private void uploadImageToFirebase(Uri imageUri) {
+        if (imageUri != null) {
+            String pathName = generatePathName(attendee.getName());
+            StorageReference profileImageRef = storage.getReference().child(pathName);
+
+            // Upload the file to Firebase Storage
+            profileImageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        // Here we only save the pathName (reference to the image in Firebase Storage) instead of the full download URL.
+                        attendee.setProfilePicturePath(pathName); // Save the reference path
+                        FirebaseDB.updateUser(attendee);
+                        Log.d("ProfilePicture", "Image successfully uploaded and reference saved.");
+                        Toast.makeText(getContext(), "Profile picture updated.", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("ProfilePicture", "Upload failed", e);
+                        Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "No image selected.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
