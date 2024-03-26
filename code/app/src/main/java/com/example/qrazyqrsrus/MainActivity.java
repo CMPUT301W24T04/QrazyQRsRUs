@@ -1,5 +1,7 @@
 package com.example.qrazyqrsrus;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +14,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -77,6 +81,15 @@ public class MainActivity extends AppCompatActivity{
 
     });
 
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Log.d("Notification Permissions", "user accepted notification permissions");
+                } else {
+                    Log.e("Notification Permissions", "user denied notification permissions");
+                }
+            });
+
 //    qrHandler =
 
     @Override
@@ -116,6 +129,14 @@ public class MainActivity extends AppCompatActivity{
                 ChangeFragment(new HomeEventsFragment());
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (!notificationManager.areNotificationsEnabled()){
+                //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
 
 
 

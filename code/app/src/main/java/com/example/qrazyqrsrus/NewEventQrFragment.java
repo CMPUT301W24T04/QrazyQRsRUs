@@ -145,6 +145,7 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
         Bundle bundle = getArguments();
         handleArguments(bundle, view);
         createToolbar(view);
+//        FirebaseDB.subscribeAttendeeToEventTopic();
         return view;
     }
 

@@ -27,6 +27,7 @@ public class Event implements Serializable {
     private ArrayList<String> announcements = new ArrayList<String>();
     private ArrayList<String> signUps= new ArrayList<String>();
     private ArrayList<String> checkIns= new ArrayList<String>();
+    private String organizerToken;
 
 
     /**
