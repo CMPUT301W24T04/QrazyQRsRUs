@@ -12,7 +12,7 @@ public class Attendee implements Serializable {
     private String email;
     private String profilePicturePath;
     private Boolean geolocationOn;
-    private Boolean signedup; //added
+    private long checkins;
 
     public Attendee() {
 
@@ -25,6 +25,7 @@ public class Attendee implements Serializable {
     // Constructor for a new attendee
     public Attendee(String id) {
         this.id = id;
+        this.name = "Guest24";
     }
 
     /**
@@ -45,6 +46,15 @@ public class Attendee implements Serializable {
         this.profilePicturePath = profilePicturePath;
         this.geolocationOn = geolocationOn;
     }
+    public Attendee(String id, String documentId, String name, String email, String profilePicturePath, Boolean geolocationOn, long checkins) {
+        this.id = id;
+        this.documentId = documentId;
+        this.name = name;
+        this.email = email;
+        this.profilePicturePath = profilePicturePath;
+        this.geolocationOn = geolocationOn;
+        this.checkins = checkins;
+    }
 
     /**
      * Constructor for attendee with limited information when their info is not full inputted
@@ -58,11 +68,11 @@ public class Attendee implements Serializable {
         this.id = id;
     }
 
-    public Attendee(String noName, String documentId, String id, boolean signedup) {
+    public Attendee(String noName, String documentId, String id, long checkins) {
         this.name = noName;
         this.documentId = documentId;
         this.id = id;
-        this.signedup = signedup;
+        this.checkins = checkins;
     }
 
     /**
@@ -117,4 +127,11 @@ public class Attendee implements Serializable {
         this.geolocationOn = geolocationOn;
     }
 
+    public long getCheckins() {
+        return checkins;
+    }
+
+    public void setCheckins(long checkins) {
+        this.checkins = checkins;
+    }
 }

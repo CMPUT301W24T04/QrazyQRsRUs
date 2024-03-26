@@ -85,6 +85,10 @@ public class FirebaseDB {
         void onNoResult();
     }
 
+    public interface StringArrayCallback {
+        void onResult(ArrayList<String> array);
+    }
+
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static FirebaseMessaging messaging = FirebaseMessaging.getInstance();
@@ -575,10 +579,11 @@ public class FirebaseDB {
      * Retrieves all the events an user has checked in to
      *
      * @param user the user who as checked in to events
-     * @param eventArrayList the list passed in to get the events
+     * @param eventList the list passed in to get the events
+     * @param adapter the adapter used to update the ListView
      */
-    public static void getAttendeeCheckedInEvents(Attendee user, ArrayList<Event> eventArrayList, HomeCheckedInListAdapter adapter) {
-        ArrayList<String> attendeeCheckIns = new ArrayList<>();
+    public static void getEventsCheckedIn(Attendee user, ArrayList<Event> eventList, HomeCheckedInListAdapter adapter) {
+        ArrayList<String> myCheckIns = new ArrayList<>();
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
                 .get()
@@ -586,39 +591,50 @@ public class FirebaseDB {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                            attendeeCheckIns.add((String) documentSnapshot.get("eventDocId"));
+                            myCheckIns.add((String) documentSnapshot.get("eventDocId"));
                         }
+                        eventsCollection.whereIn("documentId", myCheckIns).get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (DocumentSnapshot document : task.getResult()) {
+                                                String id = document.getId();
+                                                String name = (String) document.getData().get("name");
+                                                String organizerId = (String) document.getData().get("organizerId");
+                                                String details = (String) document.getData().get("details");
+                                                String location = (String) document.getData().get("location");
+                                                String startDate = (String) document.getData().get("startDate");
+                                                String endDate = (String) document.getData().get("endDate");
+                                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                                String posterPath = (String) document.getData().get("posterPath");
+                                                String qrCode = (String) document.getData().get("qrCode");
+                                                String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                                if (announcements == null){
+                                                    announcements = new ArrayList<String>();
+                                                }
+                                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                                                if (signUps == null){
+                                                    signUps = new ArrayList<String>();
+                                                }
+                                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                                                if (checkIns == null){
+                                                    checkIns = new ArrayList<String>();
+                                                }
+
+                                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                                eventList.add(event);
+                                            }
+                                            adapter.notifyDataSetChanged();
+                                        } else {
+                                            Log.d("Firestore", "Error getting documents: ", task.getException());
+                                        }
+                                    }
+                                });
                     }
                 });
-        for (String id : attendeeCheckIns) {
-            eventsCollection
-                    .document(id)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            Event event = documentSnapshot.toObject(Event.class);
 
-                            if (event.getAnnouncements() == null){
-                                event.setAnnouncements(new ArrayList<String>());
-                            }
-                            if (event.getSignUps() == null){
-                                event.setSignUps(new ArrayList<String>());
-                            }
-                            if (event.getCheckIns() == null){
-                                event.setCheckIns(new ArrayList<String>());
-                            }
-                            eventArrayList.add(event);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(eventsTAG, "Didn't find it" + e);
-                        }
-                    });
-        }
-        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -1139,7 +1155,6 @@ public class FirebaseDB {
 
     /**
      * Removes the profile of a user
-     *
      * @param attendee The user whose profile we want to remove
      */
     public static void deleteProfile(Attendee attendee) {
@@ -1154,7 +1169,6 @@ public class FirebaseDB {
     }
 
     /**
-
      * Gets users from the list of users field in each event
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
      * @param event
@@ -1168,17 +1182,26 @@ public class FirebaseDB {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                String id = (String) document.getData().get("id");
-                                String name = (String) document.getData().get("name");
-                                String email = (String) document.getData().get("email");
-                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-
-//                                Attendee attendee = document.toObject(Attendee.class);
-                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                attendeeDataList.add(attendee);
-
+                                // check if the checked in user has a name that exists
+                                if(document.get("name") != null){
+                                    String documentId = document.getId();
+                                    String id = (String) document.getData().get("id");
+                                    String name = (String) document.getData().get("name");
+                                    String email = (String) document.getData().get("email");
+                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
+                                    attendeeDataList.add(attendee);
+                                }
+                                // otherwise add a default name
+                                else{
+                                    String documentId = document.getId();
+                                    String id = (String) document.getData().get("id");
+                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+                                    Attendee attendee = new Attendee("No Name", documentId, id, checkins);
+                                    attendeeDataList.add(attendee);
+                                }
                             }
                             attendeeListAdapter.notifyDataSetChanged();
                         }
@@ -1192,6 +1215,46 @@ public class FirebaseDB {
                 });
     }
 
+    /**
+     * Gets users from the list of signed up users field in each event
+     * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
+     * @param event
+     */
+    public static void getEventSignedUpUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
+        for(Integer i = 0; i < event.getSignUps().size(); i++){
+            usersCollection
+                    .whereEqualTo("documentId", event.getSignUps().get(i))
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String documentId = document.getId();
+                                    String id = (String) document.getData().get("id");
+                                    String name = (String) document.getData().get("name");
+                                    String email = (String) document.getData().get("email");
+                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+
+//                                Attendee attendee = document.toObject(Attendee.class);
+                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                    attendeeDataList.add(attendee);
+                                }
+                                attendeeListAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
+                        }
+                    });
+
+        }
+    }
+  
      /**
      * This function looks for a document with matching admin login details to the user's input
      * @param username The username input by the user

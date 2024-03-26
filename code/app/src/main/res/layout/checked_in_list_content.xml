@@ -12,13 +12,13 @@
 
         <TextView
             android:id="@+id/check_symbol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="75sp"
+            android:layout_height="35sp"
             android:background="@color/nice_green"
-            android:padding="10dp"
-            android:text="Checked In"
+            android:gravity="center"
+            android:text="@string/checked_in_text"
             android:textColor="@color/white"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:textStyle="bold|italic"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -27,7 +27,7 @@
             android:id="@+id/checked_in_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Placeholder"
+            android:text="@string/placeholder"
             android:textColor="@color/background"
             android:textSize="20sp"
             android:textStyle="bold"

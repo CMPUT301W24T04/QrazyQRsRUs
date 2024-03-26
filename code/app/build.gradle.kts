@@ -41,7 +41,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.fragment:fragment-testing:1.3.6")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
 
     //Navigation
     //from https://developer.android.com/guide/navigation#kts on Feb. 19, 2024
@@ -64,7 +64,7 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     //firestore
-    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 

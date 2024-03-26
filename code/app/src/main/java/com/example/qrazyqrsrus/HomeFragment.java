@@ -83,13 +83,13 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             FirebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getAttendeeCheckedInEvents(attendee, checkedInEvents, homeCheckedInListAdapter);
+                    FirebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
                     FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("user");
-            FirebaseDB.getAttendeeCheckedInEvents(attendee, checkedInEvents, homeCheckedInListAdapter);
+            FirebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
             FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
         }
 

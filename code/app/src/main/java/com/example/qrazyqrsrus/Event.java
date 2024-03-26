@@ -2,6 +2,8 @@ package com.example.qrazyqrsrus;
 
 import android.net.Uri;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -319,6 +321,15 @@ public class Event implements Serializable {
      */
     public void addCheckIn(String checkIn) {
         this.checkIns.add(checkIn);
+
+        // Change this to notification when we've implemented notification
+        if (checkIns.size() == 1) {
+            Log.d("Milestone", "You've got your 1st attendance!");
+        } else if (checkIns.size() == 10) {
+            Log.d("Milestone", "You've got your 10th attendance!");
+        } else if (checkIns.size() == 100) {
+            Log.d("Milestone", "You've got your 100th attendance!");
+        }
     }
     /** removes checkin
      *
