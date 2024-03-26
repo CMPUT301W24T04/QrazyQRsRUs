@@ -287,7 +287,7 @@ public class Event implements Serializable {
      * @return
      */
     public void addSignUp(String signUp) {
-        if (this.maxAttendees == null || (this.getAttendeeCount() >= this.maxAttendees)){
+        if (this.maxAttendees == null || (this.getAttendeeCount() < this.maxAttendees)){
             this.signUps.add(signUp);
         }
     }

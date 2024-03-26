@@ -143,11 +143,8 @@ public class EventDetailsFragment extends Fragment {
             // need to get attendeeID and eventID first
             @Override
             public void onClick(View view) {
-                boolean status = event.addSignUp(attendee.getDocumentId());
-                if (status){
-                    FirebaseDB.updateEvent(event);
-                }
-                // implement error dialogue in else statement here
+                event.addSignUp(attendee.getDocumentId());
+                FirebaseDB.updateEvent(event);
             }
         });
 
