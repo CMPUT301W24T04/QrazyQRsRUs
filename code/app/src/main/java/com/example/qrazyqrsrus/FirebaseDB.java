@@ -1211,4 +1211,17 @@ public class FirebaseDB {
                 });
 
     }
+
+    public static void userCheckedIntoEvent(Attendee user, Event event, UniqueCheckCallBack callBack) {
+        checkInsCollection
+                .whereEqualTo("attendeeDocId", user.getDocumentId())
+                .whereEqualTo("eventDocId", event.getDocumentId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        callBack.onResult(!queryDocumentSnapshots.isEmpty());
+                    }
+                });
+    }
 }
