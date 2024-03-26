@@ -200,7 +200,7 @@ public class ViewProfileFragment extends Fragment {
             if (attendee.getName() == null){
                 profileBitmap = createInitialsImage(getInitials(userId));
             } else{
-                profileBitmap = createInitialsImage(attendee.getName());
+                profileBitmap = createInitialsImage(getInitials(attendee.getName()));
             }
             imgProfilePicture.setImageBitmap(profileBitmap);
             //the idea to get a uri from a bitmap was taken from https://stackoverflow.com/questions/12555420/how-to-get-a-uri-object-from-bitmap Accessed on March 7th, 2024

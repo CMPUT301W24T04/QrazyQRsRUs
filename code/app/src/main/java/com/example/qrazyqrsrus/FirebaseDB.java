@@ -869,9 +869,9 @@ public class FirebaseDB {
     /**
      * This functions creates a new checkIn for the user that is joining the event, and adds the documentID of the checkIn to the event's field in firebase
      * @param checkIn the object representing the checkIn. this holds the document ID of the event, and attendee that is checking in
-     * @param eventDocId the document ID of the event
+     * @param event the event we are changing
      */
-    public static void addCheckInToEvent(CheckIn checkIn, String eventDocId) {
+    public static void addCheckInToEvent(CheckIn checkIn, Event event) {
         checkInsCollection
                 .add(checkIn)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -880,10 +880,11 @@ public class FirebaseDB {
                         checkIn.setDocumentId(documentReference.getId());
                         //update checkIn to get the document ID set in the field for future accesses
                         updateCheckIn(checkIn);
-                        //update the event's field to contain the ID of the new checkIn document
-                        eventsCollection
-                                .document(eventDocId)
-                                .update("checkIns", FieldValue.arrayUnion(checkIn.getDocumentId()));
+                        //we delete the signup from the event's field
+                        event.deleteSignUp(checkIn.getAttendeeDocId());
+                        //we add the checkin and update our event :)
+                        event.addCheckIn(checkIn.getDocumentId());
+                        updateEvent(event);
                     }
                 });
 
@@ -1170,6 +1171,7 @@ public class FirebaseDB {
                     }
                 });
     }
+
     /**
      * Gets users from the list of signed up users field in each event
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
@@ -1208,37 +1210,8 @@ public class FirebaseDB {
                     });
 
         }
-//        usersCollection
-//                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                String documentId = document.getId();
-//                                String id = (String) document.getData().get("id");
-//                                String name = (String) document.getData().get("name");
-//                                String email = (String) document.getData().get("email");
-//                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-//                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-//
-////                                Attendee attendee = document.toObject(Attendee.class);
-//                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
-//                                attendeeDataList.add(attendee);
-//
-//                            }
-//                            attendeeListAdapter.notifyDataSetChanged();
-//                        }
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
-//                    }
-//                });
     }
+  
      /**
      * This function looks for a document with matching admin login details to the user's input
      * @param username The username input by the user
