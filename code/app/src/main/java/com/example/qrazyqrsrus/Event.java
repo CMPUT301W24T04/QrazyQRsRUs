@@ -286,14 +286,10 @@ public class Event implements Serializable {
      *
      * @return
      */
-    public boolean addSignUp(String signUp) {
-
-        if (this.maxAttendees != null && this.getAttendeeCount() >= this.maxAttendees) {
-            return false;
+    public void addSignUp(String signUp) {
+        if (this.maxAttendees == null || (this.getAttendeeCount() >= this.maxAttendees)){
+            this.signUps.add(signUp);
         }
-
-        this.signUps.add(signUp);
-        return true;
     }
 
     /** removes user
