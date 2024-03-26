@@ -25,6 +25,7 @@ public class Attendee implements Serializable {
     // Constructor for a new attendee
     public Attendee(String id) {
         this.id = id;
+        this.name = "Guest24";
     }
 
     /**
