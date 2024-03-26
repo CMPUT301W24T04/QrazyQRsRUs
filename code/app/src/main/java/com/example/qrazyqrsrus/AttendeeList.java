@@ -44,55 +44,6 @@ public class AttendeeList extends Fragment {
     AttendeeListAdapter attendeeListAdapter;
 
     /**
-     * Gets attendees from a specific database based on its collection reference called
-     * @param collectionReference
-     */
-    private void getData(CollectionReference collectionReference){
-        // get attendee information and add it to a list of attendees for viewing
-        collectionReference
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("Attendees", "Retrieved all Attendees");
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                //
-                                if(document.getData().size()==0){
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    Attendee attendee = new Attendee("No Name", documentId, id);
-                                    attendeeDataList.add(attendee);
-                                    attendeeListAdapter.notifyDataSetChanged();
-                                }
-                                if(document.getData().size()==1){
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    Attendee attendee = new Attendee("No Name", documentId, id);
-                                    attendeeDataList.add(attendee);
-                                    attendeeListAdapter.notifyDataSetChanged();
-                                }
-                                else{
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    String name = (String) document.getData().get("name");
-                                    String email = (String) document.getData().get("email");
-                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                    attendeeDataList.add(attendee);
-                                    attendeeListAdapter.notifyDataSetChanged();
-                                }
-
-                            }
-                        } else {
-                            Log.d("Attendees", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
-
-    /**
      * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
@@ -131,26 +82,26 @@ public class AttendeeList extends Fragment {
         attendeeList.setAdapter(attendeeListAdapter);
 
         // When the list is clicked, reveal the attendee profile information
-//        attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                // pass attendee in a bundle
-//                //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
-//                Bundle bundle = new Bundle();
-//                Attendee current_attendee = attendeeListAdapter.getItem(i);
-//                bundle.putSerializable("current_attendee", current_attendee);
-////                attendee_info.setArguments(bundle);
+        attendeeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // pass attendee in a bundle
+                //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
+                Bundle bundle = new Bundle();
+                Attendee current_attendee = attendeeListAdapter.getItem(i);
+                bundle.putSerializable("attendee", current_attendee);
+//                attendee_info.setArguments(bundle);
+
+//                startActivity(i);
 //
-////                startActivity(i);
-////
-////                //turn the textviews into the desired names based on the name lists
-////                Name.setText(attendee_value);
-//                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView,bundle);
-//            }
-//        });
+//                //turn the textviews into the desired names based on the name lists
+//                Name.setText(attendee_value);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_viewProfileFragment,bundle);
+            }
+        });
 
         // go back when back button is pressed
-        attendeeListLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
+        attendeeListLayout.findViewById(R.id.button_back_checkin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_eventDetailsFragment);

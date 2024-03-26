@@ -1195,7 +1195,6 @@ public class FirebaseDB {
 //                                Attendee attendee = document.toObject(Attendee.class);
                                     Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
                                     attendeeDataList.add(attendee);
-
                                 }
                                 attendeeListAdapter.notifyDataSetChanged();
                             }
