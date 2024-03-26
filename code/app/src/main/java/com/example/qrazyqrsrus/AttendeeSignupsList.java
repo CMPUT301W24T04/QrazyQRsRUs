@@ -35,14 +35,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 /**
- * Shows the list of attendees for the event
+ * Shows the list of who is signed up for a specific event
  */
-public class AttendeeList extends Fragment {
+public class AttendeeSignupsList extends Fragment {
     // Define the lists and adapter where the attendee information is held
     ListView attendeeList;
     ArrayList<Attendee> attendeeDataList;
-    AttendeeListAdapter attendeeListAdapter;
-
+    AttendeeSignUpsListAdapter attendeeListAdapter;
     /**
      * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -59,7 +58,7 @@ public class AttendeeList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // DEFINE VIEW
-        View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_list, container, false);
+        View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_signups_list, container, false);
         //**************************************************************************************************************
         //INITIAL LIST FOR TESTING
         attendeeDataList = new ArrayList<>();
@@ -68,14 +67,34 @@ public class AttendeeList extends Fragment {
 //        getData(collectionReference);
 
         // update attendee list and shows it on the listview
-        attendeeList = attendeeListLayout.findViewById(R.id.attendee_list_view);
-        attendeeListAdapter = new AttendeeListAdapter(getActivity(), attendeeDataList);
+        attendeeList = attendeeListLayout.findViewById(R.id.attendee_signups_list_view);
+        attendeeListAdapter = new AttendeeSignUpsListAdapter(getActivity(), attendeeDataList);
 
         //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
-        FirebaseDB.getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
+        FirebaseDB.getEventSignedUpUsers(event, attendeeDataList, attendeeListAdapter);
         //FirebaseDB.getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
+
+        //see who is signed up for the event as well
+//        for(Integer i = 0; i < attendeeDataList.size(); i++){
+//            // check if the checked-in user is also signed-up
+//            if(event.getSignUps().contains(attendeeDataList.get(i))){
+//                Attendee current_attendee = attendeeDataList.get(i);
+//                // set this attendee to signed_up for the event
+//                current_attendee.setSignedup(true);
+//            }
+//            else{
+//                Attendee current_attendee = attendeeDataList.get(i);
+//                // set this attendee to not signed_up for the event
+//                current_attendee.setSignedup(false);
+//            }
+//        }
+
+        //TODO: REMOVE PEOPLE SIGNED UP FROM PEOPLE CHECKED-IN
+        //
+
+
 
         // populate the attendees list
         //FirebaseDB.getAllUsers(attendeeDataList, attendeeListAdapter);
@@ -96,30 +115,27 @@ public class AttendeeList extends Fragment {
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_viewProfileFragment,bundle);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeSignupsList_to_viewProfileFragment2,bundle);
             }
         });
 
         // go back when back button is pressed
-        attendeeListLayout.findViewById(R.id.button_back_checkin).setOnClickListener(new View.OnClickListener() {
+        attendeeListLayout.findViewById(R.id.button_back_signups).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = getArguments();
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_eventDetailsFragment, bundle);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeSignupsList_to_eventDetailsFragment, bundle);
             }
         });
-
-        attendeeListLayout.findViewById(R.id.button_view_signups).setOnClickListener(new View.OnClickListener() {
+        attendeeListLayout.findViewById(R.id.button_view_checkins).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
                 args.putSerializable("event", event);
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_attendeeSignupsList,args);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeSignupsList_to_attendeeList2,args);
             }
         });
 
         return attendeeListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
-
-
     }
 }
