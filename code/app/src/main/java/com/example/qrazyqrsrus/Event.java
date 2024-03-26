@@ -321,14 +321,12 @@ public class Event implements Serializable {
      *
      * @return
      */
-    public boolean addCheckIn(String checkIn) {
-        if (this.maxAttendees != null && this.getAttendeeCount() >= this.maxAttendees) {
-            return false;
+    public void addCheckIn(String checkIn) {
+        if (this.maxAttendees == null || this.getAttendeeCount() < this.maxAttendees) {
+            this.checkIns.add(checkIn);
         }
-
-        this.checkIns.add(checkIn);
-        return true;
     }
+
 
     public Integer getMaxAttendees(){
         return this.maxAttendees;
