@@ -133,5 +133,33 @@
         <action
             android:id="@+id/action_attendeeList2_to_eventDetailsFragment"
             app:destination="@id/eventDetailsFragment" />
+        <action
+            android:id="@+id/action_attendeeList2_to_attendeeSignupsList"
+            app:destination="@id/attendeeSignupsList" />
+        <action
+            android:id="@+id/action_attendeeList2_to_viewProfileFragment"
+            app:destination="@id/viewProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeSignupsList"
+        android:name="com.example.qrazyqrsrus.AttendeeSignupsList"
+        android:label="AttendeeSignupsList" >
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_viewProfileFragment2"
+            app:destination="@id/viewProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewProfileFragment"
+        android:name="com.example.qrazyqrsrus.ViewProfileFragment"
+        android:label="ViewProfileFragment" >
+        <action
+            android:id="@+id/action_viewProfileFragment_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
     </fragment>
 </navigation>

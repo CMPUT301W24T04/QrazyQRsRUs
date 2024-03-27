@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Saves the attendee class in a content view and adds that content to the list
  */
-public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
+public class AttendeeSignUpsListAdapter extends ArrayAdapter<Attendee> {
 
     private ArrayList<Attendee> attendees;
     private Context context;
@@ -24,7 +24,7 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
      * @param context
      * @param attendees
      */
-    public AttendeeListAdapter(Context context, ArrayList<Attendee> attendees){
+    public AttendeeSignUpsListAdapter(Context context, ArrayList<Attendee> attendees){
         super(context,0, attendees);
         this.attendees = attendees;
         this.context = context;
@@ -50,24 +50,16 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         View view = convertView;
 
         if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.attendee_list_content, parent,false);
+            view = LayoutInflater.from(context).inflate(R.layout.attendee_signups_list_content, parent,false);
         }
         // get position of the attendee
         Attendee attendee = attendees.get(position);
 
         // get name and num_checkins from the content fragment
-        TextView Name = view.findViewById(R.id.name_attendee);
-        TextView checkins = view.findViewById(R.id.number_check_ins);
-        //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
+        TextView Name = view.findViewById(R.id.name_signedup_attendee);
 
         // change value of name and num_checkins from content value
         Name.setText(attendee.getName());
-        String checkins_string = "" + attendee.getCheckins();
-
-//        String num_checkins = attendee.getCheckins().toString();
-        //concatnate number of checkins to the sentence using .concat()
-        checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
-
 
         return view;
     }
