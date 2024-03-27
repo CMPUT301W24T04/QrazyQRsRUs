@@ -23,10 +23,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
     private ActivityMainBinding binding;
-
-    private NavController navController;
-    private ArrayList<Event> eventList = new ArrayList<Event>();
-
     private String deviceId;
 
     Attendee[] user = new Attendee[1];
@@ -138,8 +134,6 @@ public class MainActivity extends AppCompatActivity{
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
-        //was getting java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState when using .commit()
-        //fragmentTransaction.commitAllowingStateLoss();
     }
 
 

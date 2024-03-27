@@ -43,6 +43,7 @@ public class EventDetailsFragment extends Fragment {
 
     private Attendee attendee;
     private Event event;
+    private Boolean isCheckedIn;
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -87,13 +88,17 @@ public class EventDetailsFragment extends Fragment {
         ImageView checkInQRView = rootView.findViewById(R.id.check_in_qr_view);
 
         //try to get event and attendee from bundle
-        //if attendee is not there, thats fine, if event not there, very bad.
+        //if attendee is not there, that's fine, if event not there, very bad.
         if (getArguments() == null){
             System.out.println("No Arguments provided");
             return null;
         } else{
             this.event = (Event) getArguments().get("event");
             this.attendee = (Attendee) getArguments().get("attendee");
+            this.isCheckedIn = (Boolean) getArguments().get("isCheckedIn");
+            if (Boolean.TRUE.equals(isCheckedIn)) {
+                signUpEvent.setVisibility(View.GONE);
+            }
 
         }
 
@@ -107,6 +112,9 @@ public class EventDetailsFragment extends Fragment {
                     setAttendee(attendee);
                     setImages(posterView, promoQRView, checkInQRView);
                     setButtonVisibility(signUpEvent);
+                    if (!Objects.equals(event.getOrganizerId(), attendee.getDocumentId())) {
+                        viewAttendeesButton.setVisibility(View.GONE);
+                    }
                 }
             });
         } else{
@@ -135,7 +143,7 @@ public class EventDetailsFragment extends Fragment {
                 try{
                     Navigation.findNavController(rootView).popBackStack();
                 } catch (Exception e){
-
+                    backButton.setVisibility(View.GONE);
                 }
             }
         });

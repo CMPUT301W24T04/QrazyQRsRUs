@@ -93,7 +93,8 @@
         android:text="View Attendees"
         app:layout_constraintBottom_toTopOf="@id/promo_qr_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/event_detail_details" />
+        app:layout_constraintTop_toBottomOf="@+id/event_detail_details"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/view_announcements_button"
