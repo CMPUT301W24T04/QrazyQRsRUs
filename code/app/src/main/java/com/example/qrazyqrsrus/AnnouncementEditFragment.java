@@ -60,7 +60,7 @@ import android.Manifest;
  * @see AnnouncementsFragment
  * @version 1
  */
-public class AnnouncementEditFragment extends Fragment implements Callback<MessageSentResponse> {
+public class AnnouncementEditFragment extends Fragment{
 
     private EditText announcementEditText;
     private Button addButton;
@@ -126,10 +126,6 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
         addButton = rootView.findViewById(R.id.button_add);
         backButton = rootView.findViewById(R.id.button_back);
         announcementListView = rootView.findViewById(R.id.list_announcements);
-        setTokenButton = rootView.findViewById(R.id.button_set_token);
-        broadcastButton = rootView.findViewById(R.id.button_broadcast);
-        setTokenEditText = rootView.findViewById(R.id.edit_token);
-        copyTokenButton = rootView.findViewById(R.id.button_copy_token);
 
         announcements = event.getAnnouncements();
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, announcements);
@@ -138,7 +134,7 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage(false);
+                NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString());
                 addAnnouncement(event);
                 FirebaseDB.updateEvent(event); // Updates the database with new event
             }
@@ -159,28 +155,6 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
                 Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
             }
         });
-
-        setTokenButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                tokenToSendTo = setTokenEditText.getText().toString();
-            }
-        });
-
-        broadcastButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                sendMessage(true);
-            }
-        });
-
-        copyTokenButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                FirebaseDB.getToken();
-            }
-        });
-
 
         return rootView;
     }
@@ -272,36 +246,6 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
         return fragment;
     }
 
-    //this function was adapted from a function written by Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
-    //it was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner Accessed on Mar. 23rd, 2024
-    /**
-     * This function sends the HTTP request to our API that will tell firebase to send a push notification
-     * @param isBroadcast a boolean that represents whether this message should be broadcast or not
-     */
-    private void sendMessage(Boolean isBroadcast){
-        String to;
-        NotificationBody body = new NotificationBody(event.getName(), announcementEditText.getText().toString());
-        if (!isBroadcast){
-            to = tokenToSendTo;
-        } else{
-            to = null;
-        }
-        SendMessageDto dto = new SendMessageDto(to, body);
-
-        try{
-            if (isBroadcast){
-                //we make an asynchronous HTTP request to the server to send a message to the topic
-                api.broadcast(dto).enqueue(this);
-            } else{
-                //we make an asynchronous HTTP request to the server to send a message to a specific user
-                api.sendMessage(dto).enqueue(this);
-            }
-
-        } catch (HttpException e){
-            e.printStackTrace();
-        }
-    }
-
     /**
      * This function registers a new Android Notification Channel where event announcements will be send to.
      * If the channel already exists, this does nothing.
@@ -322,14 +266,5 @@ public class AnnouncementEditFragment extends Fragment implements Callback<Messa
         }
     }
 
-    @Override
-    public void onResponse(Call<MessageSentResponse> call, Response<MessageSentResponse> response) {
-        Log.d("hooray", "it should work");
-    }
-
-    @Override
-    public void onFailure(Call<MessageSentResponse> call, Throwable t) {
-        Log.d("huh oh", "it dont work");
-    }
 }
 

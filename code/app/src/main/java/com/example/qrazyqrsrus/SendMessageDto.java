@@ -8,10 +8,12 @@ import com.google.gson.Gson;
 public class SendMessageDto {
     private String to;
     private NotificationBody notification;
+    private String topic;
 
-    public SendMessageDto(String to, NotificationBody notification) {
+    public SendMessageDto(String to, NotificationBody notification, String topic) {
         this.to = to;
         this.notification = notification;
+        this.topic = topic;
     }
 
     public String getTo() {
@@ -28,6 +30,14 @@ public class SendMessageDto {
 
     public void setNotification(NotificationBody notification) {
         this.notification = notification;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     /**

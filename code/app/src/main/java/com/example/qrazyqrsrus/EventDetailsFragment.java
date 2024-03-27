@@ -153,6 +153,7 @@ public class EventDetailsFragment extends Fragment {
             public void onClick(View view) {
                 event.addSignUp(attendee.getDocumentId());
                 FirebaseDB.updateEvent(event);
+                FirebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
             }
         });
 

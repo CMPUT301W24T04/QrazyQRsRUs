@@ -4,6 +4,7 @@ package com.example.qrazyqrsrus;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -68,8 +70,14 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            Bundle bundle = makeNewBundle();
-            Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
+            FirebaseDB.getToken(new FirebaseDB.GetTokenCallback() {
+                @Override
+                public void onResult(String token) {
+                    Log.d("newEventTextFragment", token);
+                    Bundle bundle = makeNewBundle(token);
+                    Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
+                }
+            });
         });
 
         SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
@@ -115,7 +123,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
      *
      * @return  a Bundle containing all of the user input, and the userID of the organizer
      */
-    private Bundle makeNewBundle(){
+    private Bundle makeNewBundle(String organizerToken){
         Bundle bundle = getArguments();
         View view = getView();
         Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
@@ -123,6 +131,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         builder.setLocation(((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         builder.setDetails(((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
         builder.setOrganizerId(((Attendee) bundle.getSerializable("attendee")).getDocumentId());
+        builder.setOrganizerToken(organizerToken);
 
         String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
 

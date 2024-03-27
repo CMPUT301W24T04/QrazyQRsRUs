@@ -189,7 +189,7 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
     private void tryGenerateNewQR(){
         //we generate a timestamp to append to the name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String qrContent = ((String) (getArguments().getSerializable("name"))) + "_" + timeStamp + "_checkin";
+        String qrContent = ((Event.EventBuilder) (getArguments().getSerializable("builder"))).getName() + "_" + timeStamp + "_checkin";
         //we check if our qr code is unique
         QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override

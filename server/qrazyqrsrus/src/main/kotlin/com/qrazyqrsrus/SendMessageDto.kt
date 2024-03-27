@@ -9,13 +9,15 @@ import com.google.firebase.messaging.Notification
 
 data class SendMessageDto(
     val to: String?,
-    val notification: NotificationBody
+    val notification: NotificationBody,
+    val topic: String?
 )
 
 
 data class NotificationBody(
     val title: String,
-    val body: String
+    val body: String,
+    val topic: String
 )
 
 //this function is used to convert a data transfer obejct into a Message object used by the firebase admin sdk to send push notifications
@@ -31,7 +33,7 @@ fun SendMessageDto.toMessage(): Message {
         )
         .apply {
             if(to == null) {
-                setTopic("EVENT")
+                setTopic(topic)
             } else {
                 setToken(to)
             }

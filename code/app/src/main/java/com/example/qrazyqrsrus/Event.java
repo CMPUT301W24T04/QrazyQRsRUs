@@ -58,7 +58,7 @@ public class Event implements Serializable {
     public Event(String documentId, String name, String organizerId, String details,
                  String location, LocalDateTime startDate, LocalDateTime endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
-                 String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
+                 String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns, Integer maxAttendees) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.documentId = documentId;
@@ -73,6 +73,7 @@ public class Event implements Serializable {
         this.posterPath = posterPath;
         this.qrCode = qrCode;
         this.qrCodePromo = qrCodePromo;
+        this.organizerToken = organizerToken;
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
@@ -81,7 +82,7 @@ public class Event implements Serializable {
     public Event(String documentId, String name, String organizerId, String details,
                  String location, String startDate, String endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
-                 String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
+                 String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
         this.documentId = documentId;
         this.name = name;
@@ -94,6 +95,7 @@ public class Event implements Serializable {
         this.posterPath = posterPath;
         this.qrCode = qrCode;
         this.qrCodePromo = qrCodePromo;
+        this.organizerToken = organizerToken;
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
@@ -293,6 +295,14 @@ public class Event implements Serializable {
      */
     public void addSignUp(String signUp) {
         this.signUps.add(signUp);
+        // Change this to notification when we've implemented notification
+        if (signUps.size() == 1) {
+            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st signup!");
+        } else if (signUps.size() == 10) {
+            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th signup!");
+        } else if (signUps.size() == 100) {
+            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th signup!");
+        }
     }
     /** removes user
      *
@@ -324,11 +334,11 @@ public class Event implements Serializable {
 
         // Change this to notification when we've implemented notification
         if (checkIns.size() == 1) {
-            Log.d("Milestone", "You've got your 1st attendance!");
+            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st check-in!");
         } else if (checkIns.size() == 10) {
-            Log.d("Milestone", "You've got your 10th attendance!");
+            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th check-in!");
         } else if (checkIns.size() == 100) {
-            Log.d("Milestone", "You've got your 100th attendance!");
+            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th check-in!");
         }
     }
     /** removes checkin
@@ -377,6 +387,22 @@ public class Event implements Serializable {
 //        return false;
 //    }
 
+    /** get
+     *
+     * @return string of the organizers FCM token
+     */
+    public String getOrganizerToken() {
+        return organizerToken;
+    }
+
+    /** set
+     *
+     *
+     */
+    public void setOrganizerToken(String organizerToken) {
+        this.organizerToken = organizerToken;
+    }
+
     /**
      * This constructor creates a new event using the Event Builder
      * @param builder the event builder we are building from
@@ -394,6 +420,7 @@ public class Event implements Serializable {
         this.posterPath = builder.posterPath;
         this.qrCode = builder.qrCode;
         this.qrCodePromo = builder.qrCodePromo;
+        this.organizerToken = builder.organizerToken;
         this.announcements = new ArrayList<String>();
         this.signUps = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
@@ -412,6 +439,7 @@ public class Event implements Serializable {
         private String qrCode = null;
         private String qrCodePromo = null;
         private Uri uri = null;
+        private String organizerToken = null;
 
         public String getName() {
             return name;
@@ -507,6 +535,14 @@ public class Event implements Serializable {
 
         public void setUri(Uri uri) {
             this.uri = uri;
+        }
+
+        public String getOrganizerToken() {
+            return organizerToken;
+        }
+
+        public void setOrganizerToken(String organizerToken) {
+            this.organizerToken = organizerToken;
         }
 
         public Event build(){

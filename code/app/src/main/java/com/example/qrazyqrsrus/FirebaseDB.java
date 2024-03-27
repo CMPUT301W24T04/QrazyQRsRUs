@@ -89,6 +89,10 @@ public class FirebaseDB {
         void onResult(ArrayList<String> array);
     }
 
+    public interface GetTokenCallback{
+        void onResult(String token);
+    }
+
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static FirebaseMessaging messaging = FirebaseMessaging.getInstance();
@@ -228,7 +232,8 @@ public class FirebaseDB {
                 .update("announcements", event.getAnnouncements(),
                         "checkIns", event.getCheckIns(), "signUps",
                         event.getSignUps(), "posterPath", event.getPosterPath(),
-                        "qrCode", event.getQrCode(), "documentId", event.getDocumentId())
+                        "qrCode", event.getQrCode(), "documentId", event.getDocumentId(),
+                        "organizerToken", event.getOrganizerToken())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -396,6 +401,7 @@ public class FirebaseDB {
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                String organizerToken = (String) document.getData().get("organizerToken");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
@@ -409,7 +415,7 @@ public class FirebaseDB {
                                     checkIns = new ArrayList<String>();
                                 }
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
                                 eventList.add(event);
                             }
                             eventArrayAdapter.notifyDataSetChanged();
@@ -441,6 +447,7 @@ public class FirebaseDB {
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                String organizerToken = (String) document.getData().get("organizerToken");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
@@ -454,7 +461,7 @@ public class FirebaseDB {
                                     checkIns = new ArrayList<String>();
                                 }
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
                                 eventList.add(event);
                             }
                             callBack.onResult(eventList);
@@ -614,6 +621,7 @@ public class FirebaseDB {
                                                 String posterPath = (String) document.getData().get("posterPath");
                                                 String qrCode = (String) document.getData().get("qrCode");
                                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                                String organizerToken = (String) document.getData().get("organizerToken");
                                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                                 if (announcements == null){
                                                     announcements = new ArrayList<String>();
@@ -627,7 +635,7 @@ public class FirebaseDB {
                                                     checkIns = new ArrayList<String>();
                                                 }
 
-                                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
                                                 eventList.add(event);
                                             }
                                             adapter.notifyDataSetChanged();
@@ -1290,12 +1298,13 @@ public class FirebaseDB {
 
     }
 
-    public static void getToken(){
+    public static void getToken(GetTokenCallback callback){
         messaging
                 .getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
                     public void onComplete(@NonNull Task<String> task) {
+                        callback.onResult(task.getResult());
                         Log.d("token", task.getResult());
                     }
                 })

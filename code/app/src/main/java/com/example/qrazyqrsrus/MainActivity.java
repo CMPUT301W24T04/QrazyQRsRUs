@@ -104,9 +104,9 @@ public class MainActivity extends AppCompatActivity{
         Log.d("test", deviceId);
 
         //we don't need to getToken, this is just for testing
-        FirebaseDB.getToken();
+        //FirebaseDB.getToken();
         //we shouldn't subscribe the user here, this is just for testing
-        FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
+        //FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Announcements";
             String description = "Receive push notifications from event organizers";
