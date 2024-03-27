@@ -289,14 +289,21 @@ public class Event implements Serializable {
      * @return
      */
     public void addSignUp(String signUp) {
-        this.signUps.add(signUp);
+        if (this.maxAttendees == null || (this.getAttendeeCount() < this.maxAttendees)){
+            this.signUps.add(signUp);
+        }
     }
+
     /** removes user
      *
      * @return
      */
-    public void deleteSignUp(String userId) {
-        this.signUps.remove(userId);
+    public boolean deleteSignUp(String userId) {
+        if (signUps.contains(userId)){
+            this.signUps.remove(userId);
+            return true;
+        }
+        return false;
     }
     /** get
      *
@@ -317,6 +324,18 @@ public class Event implements Serializable {
      * @return
      */
     public void addCheckIn(String checkIn) {
+        if (this.maxAttendees == null || this.getAttendeeCount() < this.maxAttendees) {
+            this.checkIns.add(checkIn);
+        }
+    }
+
+
+    public Integer getMaxAttendees(){
+        return this.maxAttendees;
+    }
+
+    public void setMaxAttendees(Integer maxAttendees){
+        this.maxAttendees = maxAttendees;
         this.checkIns.add(checkIn);
 
         // Change this to notification when we've implemented notification
@@ -329,12 +348,17 @@ public class Event implements Serializable {
         }
     }
 
+    public Integer getAttendeeCount(){
+        return this.signUps.size() + this.checkIns.size();
+    }
     /**
      * checkes if user is checked in or signed up
      * @param userDocumentId
      * @param event
      * @return Boolean
      */
+
+
 //    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
 //        if (event.getSignUps().contains(userDocumentId)) {
 //            return true;
