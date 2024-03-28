@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -15,6 +16,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -28,9 +30,10 @@ import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private ActivityMainBinding binding;
     private String deviceId;
+    private Activity activity = this;
 
     Attendee[] user = new Attendee[1];
     private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
@@ -47,15 +50,23 @@ public class MainActivity extends AppCompatActivity{
             FirebaseDB.checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                 @Override
                 public void onResult(boolean isUnique, CheckIn checkIn) {
-                    if (isUnique) {
-                        //if there is no existing checkIn with the attendee's document ID and the event's document ID we make a new one
-                        CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId());
-                        FirebaseDB.addCheckInToEvent(newCheckIn, event);
-                    } else{
-                        //in this case the event should already have the checkIn in it's checkIn list
-                        checkIn.incrementCheckIns();
-                        FirebaseDB.updateCheckIn(checkIn);
-                    }
+                    LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
+                        @Override
+                        public void onResult(double longitude, double latitude) {
+                            if (isUnique){
+                                //if the user has not yet chcked into the event, we make a new one
+                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                FirebaseDB.addCheckInToEvent(newCheckIn, event);
+                            } else{
+                                //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
+                                checkIn.setLongitude(longitude);
+                                checkIn.setLatitude(latitude);
+                                checkIn.incrementCheckIn();
+                                FirebaseDB.updateCheckIn(checkIn);
+                            }
+
+                        }
+                    });
                 }
             });
             ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));

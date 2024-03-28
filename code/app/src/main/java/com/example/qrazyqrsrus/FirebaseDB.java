@@ -876,8 +876,8 @@ public class FirebaseDB {
                 .document(checkIn.getDocumentId())
                 .update("attendeeDocId", checkIn.getAttendeeDocId(),
                         "documentId", checkIn.getDocumentId(),
-                        "eventDocId", checkIn.getEventDocId(), "location", checkIn.getLocation(),
-                        "numberOfCheckIns", checkIn.getNumberOfCheckIns())
+                        "eventDocId", checkIn.getEventDocId(), "longitude", checkIn.getLongitude(),
+                        "latitude",checkIn.getLatitude() ,"numberOfCheckIns", checkIn.getNumberOfCheckIns())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
