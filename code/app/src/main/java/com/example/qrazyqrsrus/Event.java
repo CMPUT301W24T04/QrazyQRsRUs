@@ -326,6 +326,14 @@ public class Event implements Serializable {
     public void addCheckIn(String checkIn) {
         if (this.maxAttendees == null || this.getAttendeeCount() < this.maxAttendees) {
             this.checkIns.add(checkIn);
+            // Change this to notification when we've implemented notification
+            if (checkIns.size() == 1) {
+                Log.d("Milestone", "You've got your 1st attendance!");
+            } else if (checkIns.size() == 10) {
+                Log.d("Milestone", "You've got your 10th attendance!");
+            } else if (checkIns.size() == 100) {
+                Log.d("Milestone", "You've got your 100th attendance!");
+            }
         }
     }
 
@@ -336,15 +344,6 @@ public class Event implements Serializable {
 
     public void setMaxAttendees(Integer maxAttendees){
         this.maxAttendees = maxAttendees;
-
-        // Change this to notification when we've implemented notification
-        if (checkIns.size() == 1) {
-            Log.d("Milestone", "You've got your 1st attendance!");
-        } else if (checkIns.size() == 10) {
-            Log.d("Milestone", "You've got your 10th attendance!");
-        } else if (checkIns.size() == 100) {
-            Log.d("Milestone", "You've got your 100th attendance!");
-        }
     }
 
     public Integer getAttendeeCount(){
