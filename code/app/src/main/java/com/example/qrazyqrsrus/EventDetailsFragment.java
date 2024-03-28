@@ -83,6 +83,7 @@ public class EventDetailsFragment extends Fragment {
         Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
         Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
         Button viewAnnouncementsButton = rootView.findViewById(R.id.view_announcements_button);
+        Button viewLocations = rootView.findViewById(R.id.button_geolocation);
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
         ImageView promoQRView = rootView.findViewById(R.id.promo_qr_view);
         ImageView checkInQRView = rootView.findViewById(R.id.check_in_qr_view);
@@ -126,6 +127,18 @@ public class EventDetailsFragment extends Fragment {
                 Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2,args);
             }
         });
+
+        //Change view to locations when click on view geolocation button
+        viewLocations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // pass the event as a bundle to the attendeeList so we know which event to get from
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_geoLocation,args);
+            }
+        });
+
 
 
         backButton.setOnClickListener(new View.OnClickListener() {
