@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -50,9 +52,12 @@ import java.util.Date;
 /**
  * genertates the promo QR code for the event
  */
-public class NewEventPromoQrFragment extends Fragment {
+public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
     //private ImageView imageView;
     private boolean successfulQRSelection;
+
+    private String initialQRContent;
+    private Toolbar toolbar;
 
     private String promoQRContent;
     public static NewEventPromoQrFragment newInstance(String param1, String param2) {
@@ -93,7 +98,7 @@ public class NewEventPromoQrFragment extends Fragment {
 
         Button newQrButton = view.findViewById(R.id.new_event_generate_qr_button);
         newQrButton.setOnClickListener(v -> {
-            generateNewQR();
+            tryGenerateNewQR();
         });
         Button uploadQrButton = view.findViewById(R.id.new_event_upload_qr_button);
         uploadQrButton.setOnClickListener(v -> {
@@ -101,98 +106,131 @@ public class NewEventPromoQrFragment extends Fragment {
         });
         FloatingActionButton fab = view.findViewById(R.id.promo_screen_next_screen);
         fab.setOnClickListener(v -> {
-            Bundle args = makeNewBundle(getArguments());
-//            Event event = modifyEvent(this.promoQRContent, (Event) args.getSerializable("event"));
-//            args.putSerializable("event", event);
-            Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment, args);
+            try{
+                Bundle args = makeNewBundle(getArguments());
+                Navigation.findNavController(view).navigate(R.id.action_newEventPromoQrFragment_to_newEventQrFragment, args);
+            } catch (Exception e){
+                new ErrorDialog(R.string.no_qr_code).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+            }
+
         });
+        Bundle bundle = getArguments();
+        handleArguments(bundle, view);
+        createToolbar(view);
+
         return view;
     }
 
-    private void generateNewQR(){
-        try {
-            //we generate a timestamp that contains the date and time the qr was generated. this allows us to prevent naming our qrcode as something already saved in the database
-            //this idea for safe name generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            //content is a string that should tie the qr code to the event.
-            //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-            String qrContent = ((String) (getArguments().getSerializable("name"))) + "_" + timeStamp + "_promo";
-            Bitmap bitmap = barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, 400, 400);
-            //getView() might be null here?
-            ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
-            imageViewQrCode.setImageBitmap(bitmap);
-            FirebaseDB.checkUnique(qrContent, 0, new FirebaseDB.UniqueCheckCallBack() {
-                @Override
-                public void onResult(boolean isUnique) {
+    private void createToolbar(View view){
+        //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
+        //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
+        //it was posted by the user Faisal Naseer (https://stackoverflow.com/users/2641848/faisal-naseer) in the post https://stackoverflow.com/a/45653449
+        toolbar = (Toolbar) view.findViewById(R.id.promo_screen_toolbar);
+        toolbar.inflateMenu(R.menu.menu_with_back_button);
+        //the fragment implements the Toolbar.OnMenuItemClick interface, pass itself.
+        toolbar.setOnMenuItemClickListener(this);
+    }
 
-                    if (isUnique) {
-                        saveImage(bitmap);
-                        promoQRContent = qrContent;
-                        //successfulQRSelection = true;
-                    } else {
-                        new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
-//                        TextView errorBar = getView().findViewById(R.id.error_bar);
-//                        errorBar.setText("Error: " + R.string.qr_not_unique);
-//                        errorBar.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        } catch(Exception e) {
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        int id = item.getItemId();
+        //we check which item id was clicked on, navigating accordingly
+        if (id == R.id.back_button){
+            //go to previous screen
+            Bundle args = getArguments();
+            try{
+                //if a promo QR code has been generated, we save it and navigate back
+                args = makeNewBundle(args);
+            } catch (Exception e){
+                //this is allowed
+            }
+            //we navigate backwards, potentially with new args, potentially without if we did not generate anything
+            Navigation.findNavController(getView()).navigate(R.id.action_newEventPromoQrFragment_to_newEventImageFragment, args);
+            return true;
+        }
+        else if (id == R.id.cancel_button){
+            //leave entire new event sequence
+            Navigation.findNavController(getView()).navigate(R.id.action_newEventPromoQrFragment_to_myEventsListFragment);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * This function will try to generate a new QR code, handling the case that the generated qr code is already being used by an event in the database
+     *
+     */
+    private void tryGenerateNewQR(){
+        //we generate a timestamp to append to the name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String qrContent = ((Event.EventBuilder) (getArguments().getSerializable("builder"))).getName() + "_" + timeStamp + "_checkin";
+        //we check if our qr code is unique
+        QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+            @Override
+            public void onUnique() {
+                generateBitmap(qrContent, getView());
+            }
+
+            @Override
+            public void onNotUnique() {
+                new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+            }
+        });
+    }
+
+    /**
+     * This function will try to use a user uploaded QR code, handling the case that the uploaded qr code is already being used by an event in the database
+     * @param content The content of the uploaded image, that will be checked to see if it is already in use.
+     */
+    private void tryGenerateNewQR(String content){
+        String qrContent = content;
+        //we check if our qr code is unique
+        QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+            @Override
+            public void onUnique() {
+                generateBitmap(qrContent, getView());
+            }
+
+            @Override
+            public void onNotUnique() {
+                new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+            }
+        });
+    }
+
+    /**
+     * This function will try to generate an image bitmap of a qr code that encodes the provided content. It will update the ImageView on screen and set the checkInQRContent to use to build the Event object
+     * @param content
+     */
+    private void generateBitmap(String content, View view){
+        Bitmap bitmap = QRCodeGenerator.generateBitmap(content);
+        if (bitmap != null){
+            ((ImageView) view.findViewById(R.id.new_event_display_qr_code)).setImageBitmap(bitmap);
+            promoQRContent = content;
+            saveImage(bitmap);
+        } else{
+            Log.d("generateBitmap", "error generating the bitmap");
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
-            //it would be unexpected that qr generation fails, but for now we will display error bar and prompt user to try again
-//            TextView errorBar = getView().findViewById(R.id.error_bar);
-//            errorBar.setText("Error: " + R.string.qr_generation_failed);
-//            errorBar.setVisibility(View.VISIBLE);
         }
     }
 
-    //this function generates a qr code from the user's uploaded qr code after scanning it to verify it's contents
-    private void generateNewQR(Result result){
-        try {
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            //content is a string that should tie the qr code to the event.
-            //when we scan the qr code, we can easily get content, and navigate an event details screen that displays the corresponding event
-            Bitmap bitmap = barcodeEncoder.encodeBitmap(result.getText(), BarcodeFormat.QR_CODE, 400, 400);
-            //getView() might be null here?
-            ImageView imageViewQrCode = (ImageView) getView().findViewById(R.id.new_event_display_qr_code);
-            imageViewQrCode.setImageBitmap(bitmap);
-            FirebaseDB.checkUnique(result.getText(), 0,  new FirebaseDB.UniqueCheckCallBack() {
-                @Override
-                public void onResult(boolean isUnique) {
-
-                    if (isUnique) {
-                        saveImage(bitmap);
-                        promoQRContent = result.getText();
-                        //successfulQRSelection = true;
-                    } else {
-                        new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
-//                        TextView errorBar = getView().findViewById(R.id.error_bar);
-//                        errorBar.setText("Error: " + R.string.qr_not_unique);
-//                        errorBar.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        } catch(Exception e) {
-            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
-            //it would be unexpected that qr generation when we provide it with the content.
-//            TextView errorBar = getView().findViewById(R.id.error_bar);
-//            errorBar.setText("Error: " + R.string.qr_generation_failed);
-//            errorBar.setVisibility(View.VISIBLE);
-        }
-    }
-
-    //we save the image upon button press
+    /**
+     * This function saves an image of the QR code they have generated/uploaded to their device.
+     * @param bitmap The bitmap of the image to be saved
+     */
     private void saveImage(Bitmap bitmap){
         //we generate a timestamp that contains the date and time the image was saved. this allows us to prevent naming our file as something already saved in the phone's gallery
         //this idea for safe filename generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_promo_";
+        String imageFileName = "JPEG_" + timeStamp + "_";
         //we save the image using MediaStore
         MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, imageFileName, "should be qr code");
     }
 
-    //this function launches the activity to upload a QR code
+    /**
+     * This function launches the activity for a user to upload their own QR code
+     * @param pickMedia The activity to be launched
+     */
     private void uploadQr(ActivityResultLauncher<PickVisualMediaRequest> pickMedia){
         pickMedia.launch(new PickVisualMediaRequest.Builder()
                 //we only want images
@@ -200,72 +238,42 @@ public class NewEventPromoQrFragment extends Fragment {
                 .build());
     }
 
-    //this function gets the image uploaded by the user, and scans it using ZXing to verify they uploaded a QR code
+    /**
+     * This function handles the checking of the uploaded image, making sure that it can be recognized as a qr code.
+     * @param uri The uri of the image uploaded
+     */
     private void imageUploaded(Uri uri){
-        //we get the bitmap from the uri that is returned by the imagePicker activity
-        //we upload this bitmap to the database, and display it on-screen
-        ImageDecoder.Source imageSource;
-        Bitmap bitmap = null;
-        try {
-            //this requires API 28; if this is a problem, we will have to use a bitmap
-            //if we use a Source instead of a bitmap, it allows us to use the same source to display the photo in multiple sizes/orientations
-            //imageSource = createSource(getContext().getContentResolver(), uri);
-            //imageView.setImageBitmap(decodeBitmap(imageSource, this));
-            //deprecated, see https://developer.android.com/reference/android/provider/MediaStore.Images.Media#getBitmap(android.content.ContentResolver,%20android.net.Uri)
-            //we try to get the bitmap of the image uploaded by the user
-            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-        } catch (IOException e) {
-            //it is unexpected that image upload would fail. if it does, we will make the error bar visible with the unique image upload failed string
-            new ErrorDialog(R.string.image_upload_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
-//            TextView errorBar = getView().findViewById(R.id.error_bar);
-//            errorBar.setText("Error: " + R.string.image_upload_failed);
-//            errorBar.setVisibility(View.VISIBLE);
-        }
-        //we will convert the bitmap of the uploaded image to an RGB luminance source
-        //this sequence was made with the help of ZXing documentation, and https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing Accessed on Mar. 5th, 2024
-        //the post was amde by the user Hugo Allexis Cardona (https://stackoverflow.com/users/1797127/hugo-allexis-cardona) on the post https://stackoverflow.com/a/55427749
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
-        //we create a new Binarizer that ZXing will use to convert the data from the LuminanceSource into 1D data
-        HybridBinarizer binarizer = new HybridBinarizer(source);
-        //we create a new BinaryBitmap, the type that a reader in ZXing can actually decode
-        BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
-        //finally, we create a MultiFormatReader, that attempts to find any kind of barcode from an image
-        MultiFormatReader reader = new MultiFormatReader();
-        try {
-
-            Result result = reader.decode(binaryBitmap);
-            generateNewQR(result);
-
-        } catch (NotFoundException e) {
-            //if a user selects an image that is not qr code, it may fail to be decoded. in that case we prompt the user to select something else, or generate a qr code
-            new ErrorDialog(R.string.qr_upload_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
-//            showErrorBar(String.valueOf(R.string.qr_upload_error));
-//            TextView errorBar = getView().findViewById(R.id.error_bar);
-//            errorBar.setText("Error: " + R.string.qr_upload_error);
-//            errorBar.setVisibility(View.VISIBLE);
+        //we call the scanImage function to get the content of the uploaded image
+        String content = QRCodeScanHandler.scanImage(getContext().getContentResolver(), uri);
+        if (content == null){
+            //if the uploaded image failed to be recognized as a qr code
+            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+        } else{
+            tryGenerateNewQR(content);
         }
     }
 
+    /**
+     * This function makes a bundle to pass to the next fragment, allowing it to access the data input by the user while making a new event
+     * @param bundle The bundle that holds the event fields so far
+     * @return The updated bundle.
+     */
+    private Bundle makeNewBundle(Bundle bundle) throws Exception{
+        Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
+        if (this.promoQRContent == null){
+            throw new Exception();
+        } else{
+            builder.setQrCodePromo(this.promoQRContent);
+        }
 
-
-//    private void showErrorBar(String errorMessage){
-//        TextView errorBar = getView().findViewById(R.id.error_bar);
-//        errorBar.setText("Error: " + errorMessage);
-//        errorBar.setVisibility(View.VISIBLE);
-//    }
-
-//    private Event modifyEvent(String promoQR, Event event){
-//        event.setQrCodePromo(promoQR);
-//        return event;
-//    }
-    private Bundle makeNewBundle(Bundle bundle){
-        bundle.putSerializable("qrCodePromo", this.promoQRContent);
+        bundle.putSerializable("builder", builder);
         return bundle;
     }
 
-
+    private void handleArguments(Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder.getQrCodePromo() != null){
+            generateBitmap(builder.getQrCodePromo(), view);
+        }
+    }
 }

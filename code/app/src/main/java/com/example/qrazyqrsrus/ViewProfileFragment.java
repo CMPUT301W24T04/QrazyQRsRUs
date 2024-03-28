@@ -63,8 +63,10 @@ public class ViewProfileFragment extends Fragment {
     private Switch switchGeolocation;
     private FirebaseFirestore db;
     private boolean isProfileLoaded = false;
-
     private Button btnDone, btnCancel;
+    private Boolean imageUpdates;
+    private Uri newImageUri;
+    private Boolean imageDeleted = false;
 
     String userId;
 
@@ -80,12 +82,10 @@ public class ViewProfileFragment extends Fragment {
                 new ActivityResultContracts.GetContent(),
                 uri -> {
                     if (uri != null) {
+                        //we update the state to communicate the user has uploaded an image, that may need to be stored to firebase
                         imgProfilePicture.setImageURI(uri);
-                        String pathname = generatePathName(attendee.getName());
-                        FirebaseDB.uploadImage(uri,pathname);
-                        attendee.setProfilePicturePath(pathname);
-                        FirebaseDB.updateUser(attendee);
-
+                        newImageUri = uri;
+                        imageDeleted = false;
                     }
                 }
         );
@@ -105,7 +105,12 @@ public class ViewProfileFragment extends Fragment {
 
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);
-        imgProfilePicture.setOnClickListener(v -> showProfilePictureOptionsDialog());
+        imgProfilePicture.setOnClickListener(v -> {
+            //only open the dialog if we are in the edit mode
+            if (imageUpdates){
+                showProfilePictureOptionsDialog();
+            }
+        });
         switchGeolocation = view.findViewById(R.id.switchGeolocation);
 
 
@@ -130,14 +135,7 @@ public class ViewProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (isProfileLoaded) {
-                    String newName = s.toString();
-                    if (!newName.isEmpty()) {
-                        String initials = getInitials(newName);
-                        Bitmap bitmap = createInitialsImage(initials);
-                        imgProfilePicture.setImageBitmap(bitmap);
-                    }
-                }
+                //don't make any updates until the user presses the confirm button
             }
         });
 
@@ -151,7 +149,6 @@ public class ViewProfileFragment extends Fragment {
         if (args != null && args.containsKey("attendee")) {
             Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
             if (attendeeClicked != null) {
-                userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                 Log.d("profile_error", "User ID: " + userId);
                 Log.d("profile_error", "Attendee ID: " + attendeeClicked.getId());
 
@@ -255,19 +252,6 @@ public class ViewProfileFragment extends Fragment {
                 profileBitmap = createInitialsImage(getInitials(attendee.getName()));
             }
             imgProfilePicture.setImageBitmap(profileBitmap);
-            //the idea to get a uri from a bitmap was taken from https://stackoverflow.com/questions/12555420/how-to-get-a-uri-object-from-bitmap Accessed on March 7th, 2024
-            //posted by user Ajay (https://stackoverflow.com/users/840802/ajay) in the post https://stackoverflow.com/a/16167993
-            String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), profileBitmap, "generatedProfilePicture", "the profile picture we generated");
-            if (localFilePath != null) {
-                Uri uri = Uri.parse(localFilePath);
-                String pathName = generatePathName(attendee.getName());
-                FirebaseDB.uploadImage(uri, pathName);
-                this.attendee.setProfilePicturePath(pathName);
-            }
-            else{
-                Log.e("ProfilePicture", "Failed to insert image into MediaStore,localFilePath is null");
-
-            }
         } else{
             FirebaseDB.retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
                 @Override
@@ -280,18 +264,39 @@ public class ViewProfileFragment extends Fragment {
     }
 
     private void updateUserProfile(Attendee attendee){
-        Bitmap profileBitmap = createInitialsImage(getInitials(etFullName.getText().toString()));
-        imgProfilePicture.setImageBitmap(profileBitmap);
-        //we make a local file on the user's device with the new image
-        String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), profileBitmap, "generatedProfilePicture", "the profile picture we generated");
-        Uri uri = Uri.parse(localFilePath);
-        //we generate a unique pathname
-        String pathName = generatePathName(etFullName.getText().toString());
-        //we upload the new profile picture
-        //delete the old image this user had
-        FirebaseDB.deleteImage(attendee.getProfilePicturePath());
-        FirebaseDB.uploadImage(uri, pathName);
-        attendee.setProfilePicturePath(pathName);
+        //if the user has uploaded a new profile picture, we save it to firebase
+        if (newImageUri != null){
+            //if the user has changed their profile picture, we save it
+            String pathname = generatePathName(attendee.getName());
+            FirebaseDB.uploadImage(newImageUri,pathname);
+            //we delete their old profile picture if there was one
+            if (attendee.getProfilePicturePath() != null){
+                FirebaseDB.deleteImage(attendee.getProfilePicturePath());
+            }
+            attendee.setProfilePicturePath(pathname);
+            FirebaseDB.updateUser(attendee);
+            newImageUri = null;
+        } else{
+            //if the user's profile picture path is null, we generate a new bitmap for them
+            //this occurs when the user has no profile picture uploaded, and changes their name
+            if (attendee.getProfilePicturePath() == null){
+                Bitmap profileBitmap = createInitialsImage(getInitials(etFullName.getText().toString()));
+                imgProfilePicture.setImageBitmap(profileBitmap);
+            }
+            //if the user has deleted their previous profile picture, we check if we need to delete it from firebase
+            //we will, unless the user clicked delete on their generated profile picture
+            if (imageDeleted){
+                if (attendee.getProfilePicturePath() != null){
+                    FirebaseDB.deleteImage(attendee.getProfilePicturePath());
+                    attendee.setProfilePicturePath(null);
+                    FirebaseDB.updateUser(attendee);
+                    imageDeleted = false;
+                }
+
+            }
+        }
+        //if the user has not
+
         attendee.setName(etFullName.getText().toString());
         attendee.setGeolocationOn(switchGeolocation.isChecked());
         attendee.setEmail(etEmailAddress.getText().toString());
@@ -318,6 +323,9 @@ public class ViewProfileFragment extends Fragment {
 
         // Hide "Update Profile" button
         btnUpdateProfile.setVisibility(View.GONE);
+
+        //make profile picture changeable
+        imageUpdates = true;
     }
 
     private void saveChanges() {
@@ -346,6 +354,11 @@ public class ViewProfileFragment extends Fragment {
 
         // Show "Update Profile" button
         btnUpdateProfile.setVisibility(View.VISIBLE);
+
+        //make image not changable, clear any updates
+        imageUpdates = false;
+        imageDeleted = false;
+        newImageUri = null;
     }
 
     public static ViewProfileFragment newInstance(Attendee attendee){
@@ -365,6 +378,9 @@ public class ViewProfileFragment extends Fragment {
         btnUpdateProfile.setVisibility(View.GONE);
     }
 
+    /**
+     * This function launches the dialog where the user can interact with their profile picture
+     */
     private void showProfilePictureOptionsDialog() {
         // Inflate the dialog view
         LayoutInflater inflater = getLayoutInflater();
@@ -388,53 +404,24 @@ public class ViewProfileFragment extends Fragment {
     }
 
 
+    /**
+     * This function launches the activity to select an image
+     */
     private void openGalleryForImage() {
         galleryActivityResultLauncher.launch("image/*");
     }
 
 
+    /**
+     * This function updates the state to communicate the user has deleted their profile picture
+     */
     private void deleteProfileImage() {
-        // Set initials image here
-        Bitmap initialsBitmap = createInitialsImage(getInitials(attendee.getName()));
-        imgProfilePicture.setImageBitmap(initialsBitmap);
-        // Remove the reference to the profile picture in Firebase if necessary
-        // Code to delete the image from Firebase Storage
-        attendee.setProfilePicturePath(null);
-        FirebaseDB.updateUser(attendee);
+        //we tell the state that the user has deleted their profile pciture, so it can delete the old one from firebase if needed
+        imageDeleted = true;
+        //we remove the user's uploaded profile pciture, and change it to the geneerated one
+        Bitmap profileBitmap = createInitialsImage(getInitials(etFullName.getText().toString()));
+        imgProfilePicture.setImageBitmap(profileBitmap);
+        //we clear any previously uploaded image (during this edit)
+        newImageUri = null;
     }
-    private void uploadImageToFirebase(Uri imageUri) {
-        if (imageUri != null) {
-            String pathName = generatePathName(attendee.getName());
-            StorageReference profileImageRef = storage.getReference().child(pathName);
-
-            // Upload the file to Firebase Storage
-            profileImageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        // Here we only save the pathName (reference to the image in Firebase Storage) instead of the full download URL.
-                        attendee.setProfilePicturePath(pathName); // Save the reference path
-                        FirebaseDB.updateUser(attendee);
-                        Log.d("ProfilePicture", "Image successfully uploaded and reference saved.");
-                        Toast.makeText(getContext(), "Profile picture updated.", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("ProfilePicture", "Upload failed", e);
-                        Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        } else {
-            Toast.makeText(getContext(), "No image selected.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

@@ -16,8 +16,8 @@ public class EventTest {
     public void setUp() {
         testStartDate = LocalDateTime.of(2024, 3, 7, 12, 0);
         testEndDate = LocalDateTime.of(2024, 3, 8, 12, 0);
-        event = new Event("Test Event", "OrganizerID", "Event Details", "Event Location",
-                testStartDate, testEndDate);
+        event = new Event(null, "Test Event", "OrganizerID", "Event Details", "Event Location",
+                testStartDate, testEndDate, true, null, null, null, null, null, null, null);
     }
     //the testGettersAndSetters are systematically sets each attribute of the Event object using the
 // setters and then asserts that the getters return the correct values.

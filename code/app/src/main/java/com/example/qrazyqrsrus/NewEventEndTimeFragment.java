@@ -4,6 +4,7 @@ package com.example.qrazyqrsrus;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.navigation.Navigation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Allows user to select the end time
@@ -85,6 +87,8 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
             Navigation.findNavController(view).navigate(R.id.action_newEventEndTimeFragment_to_newEventImageFragment, args);
         });
+        Bundle args = getArguments();
+        handleArguments(args, view);
         createToolbar(view);
         return view;
     }
@@ -112,7 +116,9 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.back_button){
-            Navigation.findNavController(getView()).navigate(R.id.action_newEventEndTimeFragment_to_newEventStartTimeFragment);
+            Bundle args = getArguments();
+            args = makeNewBundle(args);
+            Navigation.findNavController(getView()).navigate(R.id.action_newEventEndTimeFragment_to_newEventStartTimeFragment, args);
             return true;
         }  else if (id == R.id.cancel_button){
             //leave entire new event sequence
@@ -135,37 +141,58 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         return LocalDateTime.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
     }
 
-//    private String formatDateAndTime(DatePicker datePicker, TimePicker timePicker){
-//
-//    }
-//    private Event modifyEvent(Event event){
-//        //event.setEndDate(getLocalDateTime(getView().findViewById(R.id.event_date_picker), getView().findViewById(R.id.event_time_picker)));
-//        return event;
-//    }
+    private Bundle makeNewBundle(Bundle args){
+        View view = getView();
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
 
-//    private String getDateString(DatePicker datePicker){
-//        int year = datePicker.getYear();
-//        int month = datePicker.getMonth();
-//        int day = datePicker.getDayOfMonth();
-//
-//        String yearString = Integer.toString(year);
-//        String monthString = Integer.toString(month);
-//        String dayString = Integer.toString(day);
-//
-//        String date = dayString + "/" + monthString + "/" + yearString;
-//        return date;
-//    }
-
-    /**
-     * hold date as bundle
-     * @param bundle
-     * @return Bundle
-     */
-    private Bundle makeNewBundle(Bundle bundle){
         DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
         TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
         LocalDateTime endDate = getLocalDateTime(datePicker, timePicker);
-        bundle.putSerializable("endDate", endDate);
-        return bundle;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        builder.setEndDate(endDate.format(formatter));
+
+
+
+        //we put the updates builder back into the bundle
+        args.putSerializable("builder", builder);
+
+        return args;
+    }
+//    private Bundle makeNewBundle(Bundle bundle){
+//        DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
+//        TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
+//        LocalDateTime startDate = getLocalDateTime(datePicker, timePicker);
+//        bundle.putSerializable("startDate", startDate);
+//        return bundle;
+//    }
+
+    private void handleArguments(Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder.getEndDate() != null){
+            String endDate = builder.getEndDate();
+            //if builder.getEndDate() != null, the user has already been to this screen, so we restore their input
+            DatePicker datePicker = view.findViewById(R.id.event_date_picker);
+            TimePicker timePicker = view.findViewById(R.id.event_time_picker);
+            //MAKE SURE STRING SLICING IS RIGHT
+            String yearString = endDate.substring(0,4);
+            String monthString = endDate.substring(5,7);
+            String dayString = endDate.substring(8,10);
+
+            Log.d("yearString", yearString);
+            Log.d("monthString", monthString);
+            Log.d("dayString", dayString);
+
+            datePicker.updateDate(Integer.valueOf(yearString), Integer.valueOf(monthString), Integer.valueOf(dayString));
+
+            String hourString = endDate.substring(11,13);
+            String minuteString = endDate.substring(14,16);
+
+            Log.d("hourString", hourString);
+            Log.d("minuteString", minuteString);
+
+            timePicker.setHour(Integer.valueOf(hourString));
+            timePicker.setMinute(Integer.valueOf(minuteString));
+        }
     }
 }

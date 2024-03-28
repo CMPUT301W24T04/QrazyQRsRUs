@@ -48,6 +48,9 @@
         <action
             android:id="@+id/action_newEventQrFragment_to_eventList2"
             app:destination="@id/myEventsListFragment" />
+        <action
+            android:id="@+id/action_newEventQrFragment_to_newEventPromoQrFragment"
+            app:destination="@id/newEventPromoQrFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventPromoQrFragment"
@@ -57,6 +60,12 @@
         <action
             android:id="@+id/action_newEventPromoQrFragment_to_newEventQrFragment"
             app:destination="@id/newEventQrFragment" />
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_newEventImageFragment"
+            app:destination="@id/newEventImageFragment" />
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_myEventsListFragment"
+            app:destination="@id/myEventsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventStartTimeFragment"

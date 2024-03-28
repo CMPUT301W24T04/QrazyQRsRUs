@@ -46,10 +46,9 @@ public class QRCodeGenerator {
     /**
      * This function will create an image bitmap out of a provided content field
      * @param content The content field of the QR code to be generated
-     * @param activity The activity that we will create the error dialog if something goes wrong
-     * @return The bitmap of the QR code image that encodes the content parameter.
+     * @return The bitmap of the QR code image that encodes the content parameter. Null if there was an error generating a QR code.
      */
-    public static Bitmap generateBitmap(String content, FragmentActivity activity){
+    public static Bitmap generateBitmap(String content){
         Bitmap qrBitmap = null;
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
         //we try to generate a bitmap that encodes the content field, and catch a possible exception
@@ -57,7 +56,7 @@ public class QRCodeGenerator {
             qrBitmap = barcodeEncoder.encodeBitmap(content, BarcodeFormat.QR_CODE, 400, 400);
         } catch(Exception e) {
             //it would be unexpected that qr generation fails, but for now we will display error bar and prompt user to try again
-            new ErrorDialog(R.string.qr_generation_failed).show(activity.getSupportFragmentManager(), "Error Dialog");
+
         }
         //then we check if the content field is already in use
         return qrBitmap;
