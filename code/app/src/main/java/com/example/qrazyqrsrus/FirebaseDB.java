@@ -566,45 +566,47 @@ public class FirebaseDB {
                         for (DocumentSnapshot documentSnapshot : task.getResult()) {
                             myCheckIns.add((String) documentSnapshot.get("eventDocId"));
                         }
-                        eventsCollection.whereIn("documentId", myCheckIns).get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (DocumentSnapshot document : task.getResult()) {
-                                                String id = document.getId();
-                                                String name = (String) document.getData().get("name");
-                                                String organizerId = (String) document.getData().get("organizerId");
-                                                String details = (String) document.getData().get("details");
-                                                String location = (String) document.getData().get("location");
-                                                String startDate = (String) document.getData().get("startDate");
-                                                String endDate = (String) document.getData().get("endDate");
-                                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                                String posterPath = (String) document.getData().get("posterPath");
-                                                String qrCode = (String) document.getData().get("qrCode");
-                                                String qrCodePromo = (String) document.getData().get("qrCodePromo");
-                                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-                                                if (announcements == null){
-                                                    announcements = new ArrayList<String>();
-                                                }
-                                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
-                                                if (signUps == null){
-                                                    signUps = new ArrayList<String>();
-                                                }
-                                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
-                                                if (checkIns == null){
-                                                    checkIns = new ArrayList<String>();
-                                                }
+                        if (!myCheckIns.isEmpty()) {
+                            eventsCollection.whereIn("documentId", myCheckIns).get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (DocumentSnapshot document : task.getResult()) {
+                                                    String id = document.getId();
+                                                    String name = (String) document.getData().get("name");
+                                                    String organizerId = (String) document.getData().get("organizerId");
+                                                    String details = (String) document.getData().get("details");
+                                                    String location = (String) document.getData().get("location");
+                                                    String startDate = (String) document.getData().get("startDate");
+                                                    String endDate = (String) document.getData().get("endDate");
+                                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                                    String posterPath = (String) document.getData().get("posterPath");
+                                                    String qrCode = (String) document.getData().get("qrCode");
+                                                    String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                                    ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                                    if (announcements == null) {
+                                                        announcements = new ArrayList<String>();
+                                                    }
+                                                    ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                                                    if (signUps == null) {
+                                                        signUps = new ArrayList<String>();
+                                                    }
+                                                    ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                                                    if (checkIns == null) {
+                                                        checkIns = new ArrayList<String>();
+                                                    }
 
-                                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
-                                                eventList.add(event);
+                                                    Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                                    eventList.add(event);
+                                                }
+                                                adapter.notifyDataSetChanged();
+                                            } else {
+                                                Log.d("Firestore", "Error getting documents: ", task.getException());
                                             }
-                                            adapter.notifyDataSetChanged();
-                                        } else {
-                                            Log.d("Firestore", "Error getting documents: ", task.getException());
                                         }
-                                    }
-                                });
+                                    });
+                        }
                     }
                 });
 
