@@ -29,8 +29,11 @@ import com.mapbox.maps.ImageHolder;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.Style;
 import com.mapbox.maps.plugin.LocationPuck2D;
+import com.mapbox.maps.plugin.annotation.AnnotationConfig;
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
+import com.mapbox.maps.plugin.delegates.MapDelegateProvider;
 import com.mapbox.maps.plugin.gestures.OnMoveListener;
 import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
@@ -45,6 +48,8 @@ public class GeoLocation extends Fragment {
     private  ImageHolder image;
     private PointAnnotationManager point;
     private Point attendee_location;
+    MapDelegateProvider mapDelegateProvider;
+    AnnotationConfig annotationConfig;
 //    private Marker
 
     /**
@@ -82,6 +87,8 @@ public class GeoLocation extends Fragment {
         View mapLayout = inflater.inflate(R.layout.fragment_geo_location, container, false);
 
         mapView = mapLayout.findViewById(R.id.mapView);
+//        mapDelegateProvider = mapLayout.findViewById(R.id.mapView);
+
         floatingActionButton = mapLayout.findViewById(R.id.focusLocation);
         floatingActionButton.hide();
 
@@ -98,11 +105,21 @@ public class GeoLocation extends Fragment {
 
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_24); // turn image to bitmap(might be needed)
 
-
                 //*************************************************************
-                // get the lat-longs of an attendee location
+//                AnnotationPlugin annotationPlugin = mapView.getViewAnnotationManager();
+//               point = new PointAnnotationManager(mapDelegateProvider, annotationConfig);
+//               point = mapView.getPointAnnotationManager();
+//                // get the lat-longs of an attendee location
                 attendee_location = Point.fromLngLat(53.5281, -113.5265);
+                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+                        .withPoint(attendee_location)
+                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).getBitmap());
+                point.create(pointAnnotationOptions);
                 //*************************************************************
+//                SymbolManager symbolManager;
+//                symbolManager.create(new SymbolOptions()
+//                        .withLatLng(LatLng(53.5281, -113.5265))
+//                                .withIconImage)
 
 
             }
