@@ -41,8 +41,11 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 
 import android.Manifest;
 
+import java.util.ArrayList;
+
 public class GeoLocation extends Fragment {
     private MapView mapView;
+    ArrayList<Attendee> attendeeDataList;
     private  FloatingActionButton floatingActionButton;
     // Initialize the image
     private  ImageHolder image;
@@ -109,12 +112,27 @@ public class GeoLocation extends Fragment {
 //                AnnotationPlugin annotationPlugin = mapView.getViewAnnotationManager();
 //               point = new PointAnnotationManager(mapDelegateProvider, annotationConfig);
 //               point = mapView.getPointAnnotationManager();
+                AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
+                point = AnnotationPlugin.createPointAnnotationManager(mapView, annotationConfig);
+
 //                // get the lat-longs of an attendee location
-                attendee_location = Point.fromLngLat(53.5281, -113.5265);
-                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-                        .withPoint(attendee_location)
-                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).getBitmap());
-                point.create(pointAnnotationOptions);
+                Bundle bundle = getArguments();
+                Event event = (Event) bundle.getSerializable("event");
+                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
+
+                for(Integer i = 0; i < attendeeDataList.size(); i++)
+                {
+                    attendee_location = Point.fromLngLat( attendeeDataList.get(i).getLongitude(), attendeeDataList.get(i).getLatitude());
+                    PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+                            .withPoint(attendee_location)
+                            .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).getBitmap());
+                    point.create(pointAnnotationOptions);
+                }
+//                attendee_location = Point.fromLngLat( 53.5281, -113.5265);
+//                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+//                        .withPoint(attendee_location)
+//                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).getBitmap());
+//                point.create(pointAnnotationOptions);
                 //*************************************************************
 //                SymbolManager symbolManager;
 //                symbolManager.create(new SymbolOptions()
