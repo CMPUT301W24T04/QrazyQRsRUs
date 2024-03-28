@@ -294,22 +294,29 @@ public class Event implements Serializable {
      * @return
      */
     public void addSignUp(String signUp) {
-        this.signUps.add(signUp);
-        // Change this to notification when we've implemented notification
-        if (signUps.size() == 1) {
-            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st signup!");
-        } else if (signUps.size() == 10) {
-            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th signup!");
-        } else if (signUps.size() == 100) {
-            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th signup!");
+        if (this.maxAttendees == null || (this.getAttendeeCount() < this.maxAttendees)){
+            this.signUps.add(signUp);
+            // Change this to notification when we've implemented notification
+            if (signUps.size() == 1) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st signup!");
+            } else if (signUps.size() == 10) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th signup!");
+            } else if (signUps.size() == 100) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th signup!");
+            }
         }
     }
+
     /** removes user
      *
      * @return
      */
-    public void deleteSignUp(String userId) {
-        this.signUps.remove(userId);
+    public boolean deleteSignUp(String userId) {
+        if (signUps.contains(userId)){
+            this.signUps.remove(userId);
+            return true;
+        }
+        return false;
     }
     /** get
      *
@@ -330,17 +337,20 @@ public class Event implements Serializable {
      * @return
      */
     public void addCheckIn(String checkIn) {
-        this.checkIns.add(checkIn);
+        if (this.maxAttendees == null || this.getAttendeeCount() < this.maxAttendees) {
+            this.checkIns.add(checkIn);
 
-        // Change this to notification when we've implemented notification
-        if (checkIns.size() == 1) {
-            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st check-in!");
-        } else if (checkIns.size() == 10) {
-            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th check-in!");
-        } else if (checkIns.size() == 100) {
-            NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th check-in!");
+            // Change this to notification when we've implemented notification
+            if (checkIns.size() == 1) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st check-in!");
+            } else if (checkIns.size() == 10) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th check-in!");
+            } else if (checkIns.size() == 100) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th check-in!");
+            }
         }
     }
+
     /** removes checkin
      *
      * @return
@@ -353,24 +363,26 @@ public class Event implements Serializable {
      *
      * @return integer of maximum number of attendees this event can have
      */
-    public Integer getMaxAttendees() {
-        return maxAttendees;
+
+    public Integer getMaxAttendees(){
+        return this.maxAttendees;
     }
 
-    /**
-     * sets maximum number of attendees
-     * @param maxAttendees
-     */
-    public void setMaxAttendees(Integer maxAttendees) {
+    public void setMaxAttendees(Integer maxAttendees){
         this.maxAttendees = maxAttendees;
     }
 
-    //    /**
-//     * checkes if user is checked in or signed up
-//     * @param userDocumentId
-//     * @param event
-//     * @return Boolean
-//     */
+    public Integer getAttendeeCount(){
+        return this.signUps.size() + this.checkIns.size();
+    }
+    /**
+     * checkes if user is checked in or signed up
+     * @param userDocumentId
+     * @param event
+     * @return Boolean
+     */
+
+
 //    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
 //        if (event.getSignUps().contains(userDocumentId)) {
 //            return true;

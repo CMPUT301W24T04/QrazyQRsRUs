@@ -115,6 +115,7 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintWidth_percent="0.45"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:visibility="gone"
         android:layout_marginEnd="8dp" />
 
     <com.google.android.material.button.MaterialButton
@@ -143,6 +144,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.9"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:visibility="gone"
         android:layout_marginTop="16dp" />
 
 

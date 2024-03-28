@@ -102,6 +102,7 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 Bundle args = new Bundle();
                 args.putSerializable("event", checkedInEvents.get(i));
                 args.putSerializable("attendee", attendee);
+                args.putSerializable("isCheckedIn", true);
                 Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
             }
         });
@@ -112,8 +113,7 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 Bundle args = new Bundle();
                 args.putSerializable("event", signedUpEvents.get(i));
                 args.putSerializable("attendee", attendee);
-//                NavHostFragment navHost = (NavHostgetView().findViewById(R.id.nav_graph_nav_host);
-//                Navigation.findNavController(getView()).navigate(R.id.action_mainMenu_to_eventDetailsFragment, args);
+                args.putSerializable("isCheckedIn", false);
                 Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
             }
         });

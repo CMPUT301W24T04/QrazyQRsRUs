@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -49,6 +50,7 @@ public class EventDetailsFragment extends Fragment {
 
     private Bitmap promoBitmap;
     private Bitmap checkInBitmap;
+    private Boolean isCheckedIn;
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -79,7 +81,6 @@ public class EventDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = rootView.findViewById(R.id.event_detail_name);
-        //TextView organizerView = rootView.findViewById(R.id.event_detail_organizer);
         TextView locationView = rootView.findViewById(R.id.event_detail_location);
         TextView descriptionView = rootView.findViewById(R.id.event_detail_details);
         TextView startDateView = rootView.findViewById(R.id.event_detail_start_date);
@@ -95,13 +96,14 @@ public class EventDetailsFragment extends Fragment {
         Button checkInQRShare = rootView.findViewById(R.id.check_in_share_button);
 
         //try to get event and attendee from bundle
-        //if attendee is not there, thats fine, if event not there, very bad.
+        //if attendee is not there, that's fine, if event not there, very bad.
         if (getArguments() == null){
             System.out.println("No Arguments provided");
             return null;
         } else{
             this.event = (Event) getArguments().get("event");
             this.attendee = (Attendee) getArguments().get("attendee");
+            this.isCheckedIn = (Boolean) getArguments().get("isCheckedIn");
 
         }
 
@@ -114,12 +116,12 @@ public class EventDetailsFragment extends Fragment {
                 public void onResult(Attendee attendee) {
                     setAttendee(attendee);
                     setImages(posterView, promoQRView, checkInQRView);
-                    setButtonVisibility(signUpEvent);
+                    setButtonVisibility(signUpEvent, viewAttendeesButton, EventDetailsFragment.this.event);
                 }
             });
         } else{
             setImages(posterView, promoQRView, checkInQRView);
-            setButtonVisibility(signUpEvent);
+            setButtonVisibility(signUpEvent, viewAttendeesButton, this.event);
         }
 
         //Change view to attendee list when click on view attendees button
@@ -143,7 +145,7 @@ public class EventDetailsFragment extends Fragment {
                 try{
                     Navigation.findNavController(rootView).popBackStack();
                 } catch (Exception e){
-
+                    backButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -154,6 +156,7 @@ public class EventDetailsFragment extends Fragment {
                 event.addSignUp(attendee.getDocumentId());
                 FirebaseDB.updateEvent(event);
                 FirebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
+                signUpEvent.setVisibility(View.GONE);
             }
         });
 
@@ -215,7 +218,6 @@ public class EventDetailsFragment extends Fragment {
 
 
         nameView.setText(nameString);
-        //organizerView.setText(organizerString);
         locationView.setText(locationString);
         descriptionView.setText(descriptionString);
         startDateView.setText(startDateString);
@@ -250,10 +252,27 @@ public class EventDetailsFragment extends Fragment {
      * This function hides the signup button if the user is the organizer of the event, or has already signed up for the event
      * @param signUpButton The button to hide
      */
-    private void setButtonVisibility(Button signUpButton){
-        if (event.getSignUps().contains(this.attendee.getDocumentId()) || Objects.equals(event.getOrganizerId(), this.attendee.getDocumentId())){
-            signUpButton.setVisibility(View.GONE);
+    private void setButtonVisibility(Button signUpButton, Button viewAttendees, Event event){
+        if (Objects.equals(this.attendee.getDocumentId(), event.getOrganizerId())) {
+            viewAttendees.setVisibility(View.VISIBLE);
         }
+        FirebaseDB.userCheckedIntoEvent(this.attendee, this.event, new FirebaseDB.UniqueCheckCallBack() {
+            @Override
+            public void onResult(boolean isUnique) {
+                if (isUnique) {
+                    return;
+                }
+                else if (event.getSignUps().contains(EventDetailsFragment.this.attendee.getDocumentId())){
+                    return;
+                } else if (Objects.equals(event.getOrganizerId(), EventDetailsFragment.this.attendee.getDocumentId())) {
+                    return;
+                }
+                else {
+                    signUpButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
     }
 
     /**
