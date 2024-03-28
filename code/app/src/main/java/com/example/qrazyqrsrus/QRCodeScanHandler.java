@@ -108,8 +108,19 @@ public class QRCodeScanHandler{
                                             //if so, they can check in normally
                                             callback.onCheckInResult(matchingEvent);
                                         } else{
-                                            //otherwise, they should be brought to the event details screen, but shown a dialog saying they cannot check-in without signing up first
-                                            callback.onNoResult(matchingEvent, 5);
+                                            FirebaseDB.userCheckedIntoEvent(user, matchingEvent, new FirebaseDB.UniqueCheckCallBack() {
+                                                @Override
+                                                public void onResult(boolean isUnique) {
+                                                    if (isUnique) {
+                                                        callback.onCheckInResult(matchingEvent);
+                                                    }
+                                                    else {
+                                                        //otherwise, they should be brought to the event details screen, but shown a dialog saying they cannot check-in without signing up first
+                                                        callback.onNoResult(matchingEvent, 5);
+                                                    }
+                                                }
+                                            });
+
                                         }
 
                                     }
