@@ -336,7 +336,6 @@ public class Event implements Serializable {
 
     public void setMaxAttendees(Integer maxAttendees){
         this.maxAttendees = maxAttendees;
-        this.checkIns.add(checkIn);
 
         // Change this to notification when we've implemented notification
         if (checkIns.size() == 1) {
