@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 /**
@@ -87,8 +89,13 @@ public class FirebaseDB {
         void onResult(ArrayList<String> array);
     }
 
+    public interface GetTokenCallback{
+        void onResult(String token);
+    }
+
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
+    final static FirebaseMessaging messaging = FirebaseMessaging.getInstance();
     final static CollectionReference usersCollection = db.collection("Users");
     final static CollectionReference eventsCollection = db.collection("Events");
     final static CollectionReference checkInsCollection = db.collection("CheckIns");
@@ -98,6 +105,9 @@ public class FirebaseDB {
     final static String eventsTAG = "Events";
     final static String imagesTAG = "Images";
 
+    //dependency injection doesn't work, because db is a static variable
+    //consider refactoring FirebaseDB into a singleton with dependency injection
+    //we don't want to mock FirebaseDB, we want to mock FirebaseFirestore.getInstance()
     public FirebaseDB(FirebaseFirestore firestoreInstance){
         db = firestoreInstance;
     }
@@ -222,7 +232,8 @@ public class FirebaseDB {
                 .update("announcements", event.getAnnouncements(),
                         "checkIns", event.getCheckIns(), "signUps",
                         event.getSignUps(), "posterPath", event.getPosterPath(),
-                        "qrCode", event.getQrCode(), "documentId", event.getDocumentId())
+                        "qrCode", event.getQrCode(), "documentId", event.getDocumentId(),
+                        "organizerToken", event.getOrganizerToken())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -321,6 +332,27 @@ public class FirebaseDB {
         }
     }
 
+    public static void retrieveImage(String path, GetBitmapCallBack callBack) {
+        try {
+            StorageReference storageRef = storage.getReference(path + ".jpg");
+            File localFile = File.createTempFile(path.split("/")[1], "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                    Log.d(imagesTAG, "Successfully retrieved image");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
+                }
+            });
+        } catch (IOException exception) {
+            Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
+        }
+    }
+
     /**
      * Deletes an image from the database
      *
@@ -369,6 +401,7 @@ public class FirebaseDB {
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                String organizerToken = (String) document.getData().get("organizerToken");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
@@ -382,7 +415,7 @@ public class FirebaseDB {
                                     checkIns = new ArrayList<String>();
                                 }
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
                                 eventList.add(event);
                             }
                             eventArrayAdapter.notifyDataSetChanged();
@@ -414,6 +447,7 @@ public class FirebaseDB {
                                 String posterPath = (String) document.getData().get("posterPath");
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                String organizerToken = (String) document.getData().get("organizerToken");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
@@ -427,7 +461,7 @@ public class FirebaseDB {
                                     checkIns = new ArrayList<String>();
                                 }
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
                                 eventList.add(event);
                             }
                             callBack.onResult(eventList);
@@ -584,6 +618,7 @@ public class FirebaseDB {
                                                     String posterPath = (String) document.getData().get("posterPath");
                                                     String qrCode = (String) document.getData().get("qrCode");
                                                     String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                                    String organizerToken = (String) document.getData().get("organizerToken");
                                                     ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                                     if (announcements == null) {
                                                         announcements = new ArrayList<String>();
@@ -597,7 +632,7 @@ public class FirebaseDB {
                                                         checkIns = new ArrayList<String>();
                                                     }
 
-                                                    Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, announcements, signUps, checkIns);
+                                                    Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
                                                     eventList.add(event);
                                                 }
                                                 adapter.notifyDataSetChanged();
@@ -841,8 +876,8 @@ public class FirebaseDB {
                 .document(checkIn.getDocumentId())
                 .update("attendeeDocId", checkIn.getAttendeeDocId(),
                         "documentId", checkIn.getDocumentId(),
-                        "eventDocId", checkIn.getEventDocId(), "location", checkIn.getLocation(),
-                        "numberOfCheckIns", checkIn.getNumberOfCheckIns())
+                        "eventDocId", checkIn.getEventDocId(), "longitude", checkIn.getLongitude(),
+                        "latitude",checkIn.getLatitude() ,"numberOfCheckIns", checkIn.getNumberOfCheckIns())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -1273,6 +1308,7 @@ public class FirebaseDB {
                     }
                 });
     }
+
     public static void getEventCheckedInUsersGeoLocation(Event event, ArrayList<Attendee> attendeeDataList) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
@@ -1300,13 +1336,54 @@ public class FirebaseDB {
                                 }
                             }
                         }
+
+
+    public static void getToken(GetTokenCallback callback){
+        messaging
+                .getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        callback.onResult(task.getResult());
+                        Log.d("token", task.getResult());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        Log.d("token", "failed to get token");
+                    }
+                });
+    }
+
+    /**
+     * This function subscribes a user to the topic that FCM will send new announcements to as push notifications
+     * @param topicName The name of the topic in FCM that the user is subscribing to
+     */
+    public static void subscribeAttendeeToEventTopic(String topicName){
+        messaging
+                .subscribeToTopic(topicName)
+                .addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        Log.d("topic", "successfully subscribed user to event topic");
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
                         Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
                     }
                 });
     }
+
+                        Log.d("topic", "failed to subscribe user to event topic");
+                    }
+                });
+    }
+
+
+
 }

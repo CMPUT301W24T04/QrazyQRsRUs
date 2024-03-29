@@ -23,5 +23,9 @@
     <string name="signed_up_text">Signed up</string>
     <string name="placeholder">Placeholder</string>
     <string name="checked_in_text">Checked In</string>
+
     <string name="mapbox_access_token">pk.eyJ1IjoiYXJiZXItIiwiYSI6ImNsdTk3dTJ5cjA3bzMya241cDczeHppMGcifQ.4tF7hDp2WS44iJn_g-nxqQ</string>
+
+    <string name="no_qr_code">Error: You must use a QR code</string>
+
 </resources>

@@ -3,6 +3,7 @@ package com.example.qrazyqrsrus;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
@@ -19,6 +22,7 @@ import androidx.navigation.Navigation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -85,6 +89,8 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 
             Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
         });
+        Bundle args = getArguments();
+        handleArguments(args, view);
         createToolbar(view);
         return view;
     }
@@ -107,7 +113,9 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.back_button){
-            Navigation.findNavController(getView()).navigate(R.id.action_newEventStartTimeFragment_to_newEventTextFragment);
+            Bundle args = getArguments();
+            args = makeNewBundle(args);
+            Navigation.findNavController(getView()).navigate(R.id.action_newEventStartTimeFragment_to_newEventTextFragment, args);
             return true;
         }  else if (id == R.id.cancel_button){
             //leave entire new event sequence
@@ -137,11 +145,58 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 //        return date;
 //    }
 
-    private Bundle makeNewBundle(Bundle bundle){
+    private Bundle makeNewBundle(Bundle args){
+        View view = getView();
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+
         DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
         TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
         LocalDateTime startDate = getLocalDateTime(datePicker, timePicker);
-        bundle.putSerializable("startDate", startDate);
-        return bundle;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        builder.setStartDate(startDate.format(formatter));
+
+
+
+        //we put the updates builder back into the bundle
+        args.putSerializable("builder", builder);
+
+        return args;
+    }
+//    private Bundle makeNewBundle(Bundle bundle){
+//        DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
+//        TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
+//        LocalDateTime startDate = getLocalDateTime(datePicker, timePicker);
+//        bundle.putSerializable("startDate", startDate);
+//        return bundle;
+//    }
+
+    private void handleArguments(Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder.getStartDate() != null){
+            String startDate = builder.getStartDate();
+            //if builder.getStartDate() != null, the user has already been to this screen, so we restore their input
+            DatePicker datePicker = view.findViewById(R.id.event_date_picker);
+            TimePicker timePicker = view.findViewById(R.id.event_time_picker);
+            //MAKE SURE STRING SLICING IS RIGHT
+            String yearString = startDate.substring(0,4);
+            String monthString = startDate.substring(5,7);
+            String dayString = startDate.substring(8,10);
+
+            Log.d("yearString", yearString);
+            Log.d("monthString", monthString);
+            Log.d("dayString", dayString);
+
+            datePicker.updateDate(Integer.valueOf(yearString), Integer.valueOf(monthString), Integer.valueOf(dayString));
+
+            String hourString = startDate.substring(11,13);
+            String minuteString = startDate.substring(14,16);
+
+            Log.d("hourString", hourString);
+            Log.d("minuteString", minuteString);
+
+            timePicker.setHour(Integer.valueOf(hourString));
+            timePicker.setMinute(Integer.valueOf(minuteString));
+        }
     }
 }
