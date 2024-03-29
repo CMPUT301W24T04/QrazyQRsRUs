@@ -11,7 +11,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class NotificationSender implements Callback<MessageSentResponse> {
     private FcmApi api = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
+            .baseUrl("http://10.0.2.2:8080")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(FcmApi.class);

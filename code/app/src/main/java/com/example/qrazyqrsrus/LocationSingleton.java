@@ -61,7 +61,10 @@ public class LocationSingleton {
         //it was poster by the user David Webb (https://stackoverflow.com/users/3171/david-webb)
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
+
         //we check if we have permissions to access the user's location
+        //this implementation fo checking for permissions is from Stack Overflow (https://stackoverflow.com/a/33070595), Accessed Mar. 28th, 2024
+        //the post was made by the user keshav.bahadoor (https://stackoverflow.com/users/1535115/keshav-bahadoor)
         if (ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
             //if not, we launch a dialog in main activity that asks the user to grant permissions
             ActivityCompat.requestPermissions( activity, new String[] {  Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION  },
