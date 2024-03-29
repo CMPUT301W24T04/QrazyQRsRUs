@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.gestures.MoveGestureDetector;
+import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.ImageHolder;
@@ -31,9 +32,11 @@ import com.mapbox.maps.Style;
 import com.mapbox.maps.ViewAnnotationOptions;
 import com.mapbox.maps.plugin.LocationPuck2D;
 import com.mapbox.maps.plugin.annotation.AnnotationConfig;
+import com.mapbox.maps.plugin.annotation.AnnotationManager;
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationManagerKt;
+import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.mapbox.maps.plugin.delegates.MapDelegateProvider;
@@ -44,6 +47,7 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.annotation.Annotation;
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
 import com.mapbox.maps.viewannotation.ViewAnnotationManager;
+import com.mapbox.maps.viewannotation.ViewAnnotationOptionsKtxKt;
 
 import android.Manifest;
 
@@ -116,35 +120,19 @@ public class GeoLocation extends Fragment {
             public void onStyleLoaded(@NonNull Style style) {
                 mapView.getMapboxMap().setCamera(new CameraOptions.Builder().pitch(0.00).build());
 
-                // 2 ways to get the vector asset image
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_24); // turn image to bitmap(might be needed)
                 image.Companion.from(R.drawable.baseline_location_on_24).getBitmap();
                 image.Companion.from(R.drawable.baseline_location_on_24).toString();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 //**************************************************************************************************************************************
-//                AnnotationPlugin annotationPlugin = mapView.getViewAnnotationManager();
-//               point = new PointAnnotationManager(mapDelegateProvider, annotationConfig);
-//               point = mapView.getPointAnnotationManager();
-//                AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
-//                point = AnnotationPlugin.createPointAnnotationManager(mapView, annotationConfig);
 
 //                // get the lat-longs of an attendee location
-//                Bundle bundle = getArguments();
-//                Event event = (Event) bundle.getSerializable("event");
+                Bundle bundle = getArguments();
+                Event event = (Event) bundle.getSerializable("event");
                 // get all checked-in attendees in a list with their geolocation on
 //                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
+                attendee_location = Point.fromLngLat( 53.5281, -90.0000);
+                ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
+                mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);
 
                 // Add a pin to all locations of attendees
 //                for(Integer i = 0; i < attendeeDataList.size(); i++)
@@ -155,37 +143,41 @@ public class GeoLocation extends Fragment {
 //                            .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString()); //image.Companion.from(R.drawable.baseline_location_on_24).getBitmap()
 //                    point.create(pointAnnotationOptions);
 //                }
-                // TEST code for adding a marker
-//                PointAnnotationManager pointAnnotationManager = mapView.getAnnotationPlugin().createPointAnnnotationManager(mapView);
-////
-//                PointAnnotationManager pointAnnotationManager = new PointAnnotationManager(mapView,mapView.getMapboxMap());
-                //TODO get the correct MapDelegateProvider interface and AnnotationConfig to pass into PointAnnotationManager
-//
-//                AnnotationPlugin annotationApi = AnnotationPluginImpl.getAnnotations(mapView);
+
+
+
+//                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+//                        .withPoint(attendee_location)
+//                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString());
+
+                //ViewAnnotationOptions viewAnnotationOptions1;
+                //viewAnnotationOptions1 = ViewAnnotationOptions.Builder().
+                //viewAnnotationOptions1 = ViewAnnotationOptionsKtxKt.geometry(viewAnnotationOptions1.toBuilder(), attendee_location).build();
+
+//                viewAnnotationOptions = ViewAnnotationOptions.Builder
+//                        .geometry(attendee_location)
+//                        .build();
+
+
+//                point.create(pointAnnotationOptions);
+
+//                AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
 //                CircleAnnotationManager circleAnnotationManager = CircleAnnotationManagerKt.createCircleAnnotationManager(annotationApi, new AnnotationConfig());
-//
+//                // circle annotations options
+//                CircleAnnotationOptions circleAnnotationOptions = new CircleAnnotationOptions()
+//                        .withPoint(attendee_location)
+//                                .withCircleRadius(8.0)
+//                        .withCircleColor("#ee4e8b")
+//                        .withCircleBlur(0.5)
+//                        .withCircleStrokeWidth(2.0)
+//                        .withCircleStrokeColor("#ffffff");
+//                circleAnnotationManager.create(circleAnnotationOptions);
+
 //                attendee_location = Point.fromLngLat( 53.5281, -113.5265);
 //                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
 //                        .withPoint(attendee_location)
 //                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString());
 //                point.create(pointAnnotationOptions);
-
-                // Define the view annotation
-//                ViewAnnotationOptions viewAnnotation = viewAnnotationManager.addViewAnnotation(
-//                        // Specify the layout resource id
-//                        image.Companion.from(R.drawable.baseline_location_on_24)),
-//                        // Set any view annotation options
-//                        options = viewAnnotationOptions {
-//                    // View annotation is placed at the specific geo coordinate
-//                    geometry(point)
-//                }
-
-                //************************************************************
-//                SymbolManager symbolManager;
-//                symbolManager.create(new SymbolOptions()
-//                        .withLatLng(LatLng(53.5281, -113.5265))
-//                                .withIconImage)
-
 
             }
         });
