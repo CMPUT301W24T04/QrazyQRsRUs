@@ -1295,9 +1295,9 @@ public class FirebaseDB {
                                 // long
                                 long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
                                 Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
-//                                if(attendee.getGeolocationOn() == true) {
+                                if(attendee.getGeolocationOn() == true) {
                                     attendeeDataList.add(attendee);
-//                                }
+                                }
                             }
                         }
                     }
