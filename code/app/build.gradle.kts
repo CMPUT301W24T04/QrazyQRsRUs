@@ -86,7 +86,15 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
+
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
+    // MAPBOX
+    implementation("com.mapbox.maps:android:11.2.1")
+
     //for converting objects to json
     implementation("com.google.code.gson:gson:2.10.1")
+
 }
 

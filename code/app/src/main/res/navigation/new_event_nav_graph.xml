@@ -111,6 +111,9 @@
         <action
             android:id="@+id/action_eventDetailsFragment_to_attendeeList2"
             app:destination="@id/attendeeList2" />
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_geoLocation"
+            app:destination="@id/geoLocation" />
     </fragment>
     <fragment
         android:id="@+id/AnnouncementEditFragment"
@@ -170,5 +173,13 @@
         <action
             android:id="@+id/action_viewProfileFragment_to_attendeeList2"
             app:destination="@id/attendeeList2" />
+    </fragment>
+    <fragment
+        android:id="@+id/geoLocation"
+        android:name="com.example.qrazyqrsrus.GeoLocation"
+        android:label="GeoLocation" >
+        <action
+            android:id="@+id/action_geoLocation_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
     </fragment>
 </navigation>

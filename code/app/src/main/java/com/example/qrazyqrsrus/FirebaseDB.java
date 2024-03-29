@@ -1309,6 +1309,35 @@ public class FirebaseDB {
                 });
     }
 
+    public static void getEventCheckedInUsersGeoLocation(Event event, ArrayList<Attendee> attendeeDataList) {
+        checkInsCollection
+                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // check if the checked in user has a name that exists
+
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("id");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                // Add locations
+                                // lat
+                                // long
+                                long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
+                                if(attendee.getGeolocationOn() == true) {
+                                    attendeeDataList.add(attendee);
+                                }
+                            }
+                        }
+
+
     public static void getToken(GetTokenCallback callback){
         messaging
                 .getToken()
@@ -1338,15 +1367,23 @@ public class FirebaseDB {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         Log.d("topic", "successfully subscribed user to event topic");
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+
+                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
+                    }
+                });
+    }
+
                         Log.d("topic", "failed to subscribe user to event topic");
                     }
                 });
     }
+
 
 
 }
