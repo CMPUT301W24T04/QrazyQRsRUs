@@ -81,9 +81,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             } else{
                 new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
             }
+        }
 
-
-
+        //if the user scanned the admin qr
+        public void onSpecialResult(){
+            ChangeFragment(AdminHomeFragment.newInstance());
         }
 
     });
