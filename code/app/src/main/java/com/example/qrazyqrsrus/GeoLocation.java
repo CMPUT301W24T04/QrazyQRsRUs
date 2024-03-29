@@ -61,10 +61,7 @@ public class GeoLocation extends Fragment {
     private  FloatingActionButton floatingActionButton;
     // Initialize the image
     private  ImageHolder image;
-    private PointAnnotationManager point;
     private Point attendee_location;
-    MapDelegateProvider mapDelegateProvider;
-    AnnotationConfig annotationConfig;
 
     ViewAnnotationManager viewAnnotationManager;
 //    private Marker
@@ -118,9 +115,10 @@ public class GeoLocation extends Fragment {
         mapView.getMapboxMap().loadStyle(Style.STANDARD, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
+                //https://docs.mapbox.com/android/maps/guides/styles/set-a-style/
                 mapView.getMapboxMap().setCamera(new CameraOptions.Builder().pitch(0.00).build());
 
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_24); // turn image to bitmap(might be needed)
+                //https://docs.mapbox.com/android/maps/api/11.2.1/mapbox-maps-android/com.mapbox.maps/-image-holder/
                 image.Companion.from(R.drawable.baseline_location_on_24).getBitmap();
                 image.Companion.from(R.drawable.baseline_location_on_24).toString();
                 //**************************************************************************************************************************************
@@ -131,6 +129,7 @@ public class GeoLocation extends Fragment {
                 // get all checked-in attendees in a list with their geolocation on
 //                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
                 attendee_location = Point.fromLngLat( 53.5281, -90.0000);
+                // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
                 ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
                 mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);
 
