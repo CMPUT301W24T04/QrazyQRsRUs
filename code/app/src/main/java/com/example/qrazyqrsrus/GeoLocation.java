@@ -43,6 +43,8 @@ import android.Manifest;
 
 import java.util.ArrayList;
 
+import kotlin.DslMarker;
+
 public class GeoLocation extends Fragment {
     private MapView mapView;
     ArrayList<Attendee> attendeeDataList;
@@ -108,32 +110,40 @@ public class GeoLocation extends Fragment {
 
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_24); // turn image to bitmap(might be needed)
 
-                //*************************************************************
+                //**************************************************************************************************************************************
 //                AnnotationPlugin annotationPlugin = mapView.getViewAnnotationManager();
 //               point = new PointAnnotationManager(mapDelegateProvider, annotationConfig);
 //               point = mapView.getPointAnnotationManager();
-                AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
-                point = AnnotationPlugin.createPointAnnotationManager(mapView, annotationConfig);
+//                AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
+//                point = AnnotationPlugin.createPointAnnotationManager(mapView, annotationConfig);
 
 //                // get the lat-longs of an attendee location
                 Bundle bundle = getArguments();
                 Event event = (Event) bundle.getSerializable("event");
+                // get all checked-in attendees in a list with their geolocation on
                 FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
+                // Add a pin to all locations of attendees
+//                for(Integer i = 0; i < attendeeDataList.size(); i++)
+//                {
+//                    attendee_location = Point.fromLngLat( attendeeDataList.get(i).getLongitude(), attendeeDataList.get(i).getLongitude());
+//                    PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+//                            .withPoint(attendee_location)
+//                            .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString()); //image.Companion.from(R.drawable.baseline_location_on_24).getBitmap()
+//                    point.create(pointAnnotationOptions);
+//                }
+                // TEST code for adding a marker
+//                PointAnnotationManager pointAnnotationManager = mapView.getAnnotationPlugin().createPointAnnnotationManager(mapView);
+////
+//                PointAnnotationManager pointAnnotationManager = new PointAnnotationManager(mapView,mapView.getMapboxMap());
+                //TODO get the correct MapDelegateProvider interface and AnnotationConfig to pass into PointAnnotationManager
+                PointAnnotationManager pointAnnotationManager = new PointAnnotationManager()
 
-                for(Integer i = 0; i < attendeeDataList.size(); i++)
-                {
-                    attendee_location = Point.fromLngLat( attendeeDataList.get(i).getLongitude(), attendeeDataList.get(i).getLatitude());
-                    PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-                            .withPoint(attendee_location)
-                            .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).getBitmap());
-                    point.create(pointAnnotationOptions);
-                }
-//                attendee_location = Point.fromLngLat( 53.5281, -113.5265);
-//                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-//                        .withPoint(attendee_location)
-//                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).getBitmap());
-//                point.create(pointAnnotationOptions);
-                //*************************************************************
+                attendee_location = Point.fromLngLat( 53.5281, -113.5265);
+                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+                        .withPoint(attendee_location)
+                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString());
+                point.create(pointAnnotationOptions);
+                //************************************************************
 //                SymbolManager symbolManager;
 //                symbolManager.create(new SymbolOptions()
 //                        .withLatLng(LatLng(53.5281, -113.5265))
