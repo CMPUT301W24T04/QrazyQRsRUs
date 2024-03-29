@@ -121,6 +121,7 @@ public class GeoLocation extends Fragment {
                 //https://docs.mapbox.com/android/maps/api/11.2.1/mapbox-maps-android/com.mapbox.maps/-image-holder/
                 image.Companion.from(R.drawable.baseline_location_on_24).getBitmap();
                 image.Companion.from(R.drawable.baseline_location_on_24).toString();
+                //
                 //**************************************************************************************************************************************
 
 //                // get the lat-longs of an attendee location
