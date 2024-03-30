@@ -1,7 +1,15 @@
 package com.example.qrazyqrsrus;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +21,36 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.compose.ui.text.AnnotatedString;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.HttpException;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.moshi.MoshiConverterFactory;
+
+import android.Manifest;
 
 /**
  * Fragment to display the Announcement Edit section which
@@ -35,14 +60,37 @@ import java.util.List;
  * @see AnnouncementsFragment
  * @version 1
  */
-public class AnnouncementEditFragment extends Fragment {
+public class AnnouncementEditFragment extends Fragment{
 
     private EditText announcementEditText;
     private Button addButton;
     private ListView announcementListView;
     private Button backButton;
+    private Button setTokenButton;
+    private Button broadcastButton;
+    private Button copyTokenButton;
+    private EditText setTokenEditText;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> announcements;
+    private String messageText;
+    private String tokenToSendTo;
+    private Event event;
+    //we use Retrofit to create our Java interface out of the HTTP Api defined on the backend
+    //this definition was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
+    //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
+    private FcmApi api = new Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:8080/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(FcmApi.class);
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Log.d("Notification Permissions", "user accepted notification permissions");
+                } else {
+                    Log.e("Notification Permissions", "user denied notification permissions");
+                }
+            });
 
     public AnnouncementEditFragment() {
         // Constructor
@@ -63,9 +111,17 @@ public class AnnouncementEditFragment extends Fragment {
             return null;
         }
 
-        Event event = (Event) getArguments().get("event");
+        event = (Event) getArguments().get("event");
         assert event != null;
 
+        //we should be subscribing the person whenever they sign up/checkin, not here
+        //we should also be creating a unique topic for each event
+        FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
+        //we amke the notification channel to send notifications to
+        //this can be done in MainActivity, it doesn't really matter
+        createNotificationChannel();
+        //we ask for permission to send notifcations if they are not yet granted
+        requestNotificationPermission();
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
         addButton = rootView.findViewById(R.id.button_add);
         backButton = rootView.findViewById(R.id.button_back);
@@ -78,6 +134,7 @@ public class AnnouncementEditFragment extends Fragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString());
                 addAnnouncement(event);
                 FirebaseDB.updateEvent(event); // Updates the database with new event
             }
@@ -99,8 +156,20 @@ public class AnnouncementEditFragment extends Fragment {
             }
         });
 
-
         return rootView;
+    }
+
+    /**
+     * This function launches a new activity where Android can request notification permissions if they have not yet been granted.
+     */
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (!notificationManager.areNotificationsEnabled()){
+                //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
     }
 
     /**
@@ -176,5 +245,26 @@ public class AnnouncementEditFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    /**
+     * This function registers a new Android Notification Channel where event announcements will be send to.
+     * If the channel already exists, this does nothing.
+     */
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is not in the Support Library.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Event Announcements";
+            String description = "Receive push notifications from event organizers";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system. You can't change the importance
+            // or other notification behaviors after this.
+            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 }
 

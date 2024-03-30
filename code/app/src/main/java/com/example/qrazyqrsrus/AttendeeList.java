@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -41,56 +42,6 @@ public class AttendeeList extends Fragment {
     ListView attendeeList;
     ArrayList<Attendee> attendeeDataList;
     AttendeeListAdapter attendeeListAdapter;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    /**
-     * Gets attendees from a specific database based on its collection reference called
-     * @param collectionReference
-     */
-    private void getData(CollectionReference collectionReference){
-        // get attendee information and add it to a list of attendees for viewing
-        collectionReference
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("Attendees", "Retrieved all Attendees");
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                //
-                                if(document.getData().size()==0){
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    Attendee attendee = new Attendee("No Name", documentId, id);
-                                    attendeeDataList.add(attendee);
-                                    attendeeListAdapter.notifyDataSetChanged();
-                                }
-                                if(document.getData().size()==1){
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    Attendee attendee = new Attendee("No Name", documentId, id);
-                                    attendeeDataList.add(attendee);
-                                    attendeeListAdapter.notifyDataSetChanged();
-                                }
-                                else{
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    String name = (String) document.getData().get("name");
-                                    String email = (String) document.getData().get("email");
-                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);  //(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                    attendeeDataList.add(attendee);
-                                    attendeeListAdapter.notifyDataSetChanged();
-                                }
-
-                            }
-                        } else {
-                            Log.d("Attendees", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
 
     /**
      * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
@@ -112,17 +63,22 @@ public class AttendeeList extends Fragment {
         //**************************************************************************************************************
         //INITIAL LIST FOR TESTING
         attendeeDataList = new ArrayList<>();
-        final CollectionReference collectionReference = db.collection("Attendees");
-        final String TAG = "Sample";
 
         // call getData from the firestore to populate the list
-        getData(collectionReference);
-
-
+//        getData(collectionReference);
 
         // update attendee list and shows it on the listview
         attendeeList = attendeeListLayout.findViewById(R.id.attendee_list_view);
         attendeeListAdapter = new AttendeeListAdapter(getActivity(), attendeeDataList);
+
+        //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
+        Bundle bundle = getArguments();
+        Event event = (Event) bundle.getSerializable("event");
+        FirebaseDB.getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
+        //FirebaseDB.getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
+
+        // populate the attendees list
+        //FirebaseDB.getAllUsers(attendeeDataList, attendeeListAdapter);
         attendeeList.setAdapter(attendeeListAdapter);
 
         // When the list is clicked, reveal the attendee profile information
@@ -133,24 +89,35 @@ public class AttendeeList extends Fragment {
                 //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
                 Bundle bundle = new Bundle();
                 Attendee current_attendee = attendeeListAdapter.getItem(i);
-                bundle.putSerializable("current_attendee", current_attendee);
+                bundle.putSerializable("attendee", current_attendee);
 //                attendee_info.setArguments(bundle);
 
 //                startActivity(i);
 //
 //                //turn the textviews into the desired names based on the name lists
 //                Name.setText(attendee_value);
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_attendeeInfoView,bundle);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_viewProfileFragment,bundle);
             }
         });
 
         // go back when back button is pressed
-        attendeeListLayout.findViewById(R.id.button_back).setOnClickListener(new View.OnClickListener() {
+        attendeeListLayout.findViewById(R.id.button_back_checkin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList_to_mainMenu);
+                Bundle bundle = getArguments();
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_eventDetailsFragment, bundle);
             }
         });
+
+        attendeeListLayout.findViewById(R.id.button_view_signups).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_attendeeSignupsList,args);
+            }
+        });
+
         return attendeeListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
 
 

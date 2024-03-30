@@ -1,7 +1,9 @@
 package com.example.qrazyqrsrus;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -43,6 +47,10 @@ public class EventDetailsFragment extends Fragment {
 
     private Attendee attendee;
     private Event event;
+
+    private Bitmap promoBitmap;
+    private Bitmap checkInBitmap;
+    private Boolean isCheckedIn;
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -73,7 +81,6 @@ public class EventDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_event_details, container, false);
 
         TextView nameView = rootView.findViewById(R.id.event_detail_name);
-        //TextView organizerView = rootView.findViewById(R.id.event_detail_organizer);
         TextView locationView = rootView.findViewById(R.id.event_detail_location);
         TextView descriptionView = rootView.findViewById(R.id.event_detail_details);
         TextView startDateView = rootView.findViewById(R.id.event_detail_start_date);
@@ -82,18 +89,22 @@ public class EventDetailsFragment extends Fragment {
         Button signUpEvent = rootView.findViewById(R.id.sign_up_button);
         Button viewAttendeesButton = rootView.findViewById(R.id.attendee_list_button);
         Button viewAnnouncementsButton = rootView.findViewById(R.id.view_announcements_button);
+        Button viewLocations = rootView.findViewById(R.id.button_geolocation);
         FloatingActionButton backButton = rootView.findViewById(R.id.back_button);
         ImageView promoQRView = rootView.findViewById(R.id.promo_qr_view);
         ImageView checkInQRView = rootView.findViewById(R.id.check_in_qr_view);
+        Button promoQRShare = rootView.findViewById(R.id.promo_share_button);
+        Button checkInQRShare = rootView.findViewById(R.id.check_in_share_button);
 
         //try to get event and attendee from bundle
-        //if attendee is not there, thats fine, if event not there, very bad.
+        //if attendee is not there, that's fine, if event not there, very bad.
         if (getArguments() == null){
             System.out.println("No Arguments provided");
             return null;
         } else{
             this.event = (Event) getArguments().get("event");
             this.attendee = (Attendee) getArguments().get("attendee");
+            this.isCheckedIn = (Boolean) getArguments().get("isCheckedIn");
 
         }
 
@@ -106,13 +117,36 @@ public class EventDetailsFragment extends Fragment {
                 public void onResult(Attendee attendee) {
                     setAttendee(attendee);
                     setImages(posterView, promoQRView, checkInQRView);
-                    setButtonVisibility(signUpEvent);
+                    setButtonVisibility(signUpEvent, viewAttendeesButton, EventDetailsFragment.this.event);
                 }
             });
         } else{
             setImages(posterView, promoQRView, checkInQRView);
-            setButtonVisibility(signUpEvent);
+            setButtonVisibility(signUpEvent, viewAttendeesButton, this.event);
         }
+
+        //Change view to attendee list when click on view attendees button
+        viewAttendeesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // pass the event as a bundle to the attendeeList so we know which event to get from
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2,args);
+            }
+        });
+
+        //Change view to locations when click on view geolocation button
+        viewLocations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // pass the event as a bundle to the attendeeList so we know which event to get from
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_geoLocation,args);
+            }
+        });
+
 
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +158,7 @@ public class EventDetailsFragment extends Fragment {
                 try{
                     Navigation.findNavController(rootView).popBackStack();
                 } catch (Exception e){
-
+                    backButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -134,6 +168,8 @@ public class EventDetailsFragment extends Fragment {
             public void onClick(View view) {
                 event.addSignUp(attendee.getDocumentId());
                 FirebaseDB.updateEvent(event);
+                FirebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
+                signUpEvent.setVisibility(View.GONE);
             }
         });
 
@@ -147,6 +183,36 @@ public class EventDetailsFragment extends Fragment {
                 } else {
                     Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementsFragment, args);
                 }
+            }
+        });
+
+        promoQRShare.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //we start by creating new intent with binary content that contains the image of the QR code we would like to share
+                //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                Uri uriToImage = getUriToShare(promoBitmap);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                shareIntent.setType("image/jpeg");
+                startActivity(Intent.createChooser(shareIntent, null));
+            }
+        });
+
+        checkInQRShare.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //we start by creating new intent with binary content that contains the image of the QR code we would like to share
+                //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                Uri uriToImage = getUriToShare(checkInBitmap);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                shareIntent.setType("image/jpeg");
+                startActivity(Intent.createChooser(shareIntent, null));
             }
         });
 
@@ -165,7 +231,6 @@ public class EventDetailsFragment extends Fragment {
 
 
         nameView.setText(nameString);
-        //organizerView.setText(organizerString);
         locationView.setText(locationString);
         descriptionView.setText(descriptionString);
         startDateView.setText(startDateString);
@@ -200,10 +265,27 @@ public class EventDetailsFragment extends Fragment {
      * This function hides the signup button if the user is the organizer of the event, or has already signed up for the event
      * @param signUpButton The button to hide
      */
-    private void setButtonVisibility(Button signUpButton){
-        if (event.getSignUps().contains(this.attendee.getDocumentId()) || Objects.equals(event.getOrganizerId(), this.attendee.getDocumentId())){
-            signUpButton.setVisibility(View.GONE);
+    private void setButtonVisibility(Button signUpButton, Button viewAttendees, Event event){
+        if (Objects.equals(this.attendee.getDocumentId(), event.getOrganizerId())) {
+            viewAttendees.setVisibility(View.VISIBLE);
         }
+        FirebaseDB.userCheckedIntoEvent(this.attendee, this.event, new FirebaseDB.UniqueCheckCallBack() {
+            @Override
+            public void onResult(boolean isUnique) {
+                if (isUnique) {
+                    return;
+                }
+                else if (event.getSignUps().contains(EventDetailsFragment.this.attendee.getDocumentId())){
+                    return;
+                } else if (Objects.equals(event.getOrganizerId(), EventDetailsFragment.this.attendee.getDocumentId())) {
+                    return;
+                }
+                else {
+                    signUpButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
     }
 
     /**
@@ -223,8 +305,34 @@ public class EventDetailsFragment extends Fragment {
         }
         Log.d("setImages", this.event.getQrCodePromo());
         Log.d("setImages", this.event.getQrCode());
-        promoQRView.setImageBitmap(QRCodeGenerator.generateBitmap(this.event.getQrCodePromo(), getActivity()));
-        checkInQRView.setImageBitmap(QRCodeGenerator.generateBitmap(this.event.getQrCode(), getActivity()));
+        this.promoBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCodePromo());
+        if (this.promoBitmap == null){
+            Log.d("promoBitmap", "failure");
+            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+        } else{
+            promoQRView.setImageBitmap(this.promoBitmap);
+        }
+
+        this.checkInBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCode());
+        if (this.checkInBitmap == null){
+            Log.d("checkInBitmap", "failure");
+            new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+        } else{
+            checkInQRView.setImageBitmap(this.checkInBitmap);
+        }
+
+    }
+
+    private Uri getUriToShare(Bitmap bitmap){
+        Uri uri = null;
+        String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, "QrToBeShared", "the qr we are sharing");
+        if (localFilePath != null) {
+            uri = Uri.parse(localFilePath);
+        }
+        else{
+            Log.e("ShareQRCode", "Failed to create Uri from bitmap");
+        }
+        return uri;
     }
 
 }

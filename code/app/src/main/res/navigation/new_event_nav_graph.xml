@@ -48,6 +48,9 @@
         <action
             android:id="@+id/action_newEventQrFragment_to_eventList2"
             app:destination="@id/myEventsListFragment" />
+        <action
+            android:id="@+id/action_newEventQrFragment_to_newEventPromoQrFragment"
+            app:destination="@id/newEventPromoQrFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventPromoQrFragment"
@@ -57,6 +60,12 @@
         <action
             android:id="@+id/action_newEventPromoQrFragment_to_newEventQrFragment"
             app:destination="@id/newEventQrFragment" />
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_newEventImageFragment"
+            app:destination="@id/newEventImageFragment" />
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_myEventsListFragment"
+            app:destination="@id/myEventsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventStartTimeFragment"
@@ -99,6 +108,12 @@
         <action
             android:id="@+id/action_eventDetailsFragment_to_AnnouncementsFragment"
             app:destination="@+id/AnnouncementsFragment"/>
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_geoLocation"
+            app:destination="@id/geoLocation" />
     </fragment>
     <fragment
         android:id="@+id/AnnouncementEditFragment"
@@ -121,6 +136,50 @@
             app:destination="@id/newEventTextFragment" />
         <action
             android:id="@+id/action_myEventsListFragment_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeList2"
+        android:name="com.example.qrazyqrsrus.AttendeeList"
+        android:label="AttendeeList" >
+        <action
+            android:id="@+id/action_attendeeList2_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+        <action
+            android:id="@+id/action_attendeeList2_to_attendeeSignupsList"
+            app:destination="@id/attendeeSignupsList" />
+        <action
+            android:id="@+id/action_attendeeList2_to_viewProfileFragment"
+            app:destination="@id/viewProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeSignupsList"
+        android:name="com.example.qrazyqrsrus.AttendeeSignupsList"
+        android:label="AttendeeSignupsList" >
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_viewProfileFragment2"
+            app:destination="@id/viewProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewProfileFragment"
+        android:name="com.example.qrazyqrsrus.ViewProfileFragment"
+        android:label="ViewProfileFragment" >
+        <action
+            android:id="@+id/action_viewProfileFragment_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+    </fragment>
+    <fragment
+        android:id="@+id/geoLocation"
+        android:name="com.example.qrazyqrsrus.GeoLocation"
+        android:label="GeoLocation" >
+        <action
+            android:id="@+id/action_geoLocation_to_eventDetailsFragment"
             app:destination="@id/eventDetailsFragment" />
     </fragment>
 </navigation>

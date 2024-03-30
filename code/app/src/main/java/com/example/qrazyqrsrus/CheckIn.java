@@ -6,23 +6,27 @@ public class CheckIn {
     private String attendeeDocId;
     private String documentId;
     private String eventDocId;
-    private Map<String, Object> location;
+    private double longitude;
+    private double latitude;
     private Integer numberOfCheckIns;
 
     public CheckIn() {
 
     }
-    public CheckIn(String attendeeDocId, String eventDocId) {
+    public CheckIn(String attendeeDocId, String eventDocId, double longitude, double latitude) {
         this.attendeeDocId = attendeeDocId;
         this.eventDocId = eventDocId;
+        this.longitude = longitude;
+        this.latitude = latitude;
         this.numberOfCheckIns = 1;
     }
 
-    public CheckIn(String attendeeDocId, String documentId, String eventDocId, Map<String, Object> location, Integer numberOfCheckIns) {
+    public CheckIn(String attendeeDocId, String documentId, String eventDocId, double longitude, double latidude, Integer numberOfCheckIns) {
         this.attendeeDocId = attendeeDocId;
         this.documentId = documentId;
         this.eventDocId = eventDocId;
-        this.location = location;
+        this.longitude = longitude;
+        this.latitude = latidude;
         this.numberOfCheckIns = numberOfCheckIns;
     }
 
@@ -30,8 +34,20 @@ public class CheckIn {
         return attendeeDocId;
     }
 
-    public Map<String, Object> getLocation() {
-        return location;
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
     public Integer getNumberOfCheckIns() {
@@ -62,15 +78,7 @@ public class CheckIn {
         this.eventDocId = eventDocId;
     }
 
-    public void setLocation(Map<String, Object> location) {
-        this.location = location;
-    }
-
     public void setNumberOfCheckIns(Integer numberOfCheckIns) {
         this.numberOfCheckIns = numberOfCheckIns;
-    }
-
-    public void incrementCheckIns(){
-        this.numberOfCheckIns += 1;
     }
 }

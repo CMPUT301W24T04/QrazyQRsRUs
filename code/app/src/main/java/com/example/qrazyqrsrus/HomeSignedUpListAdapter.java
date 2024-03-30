@@ -53,8 +53,17 @@ public class HomeSignedUpListAdapter extends ArrayAdapter<Event> {
 
 
         // set values of textviews based on the object attributes
+
         Name.setText(event.getName()); //.getEventName());
         Location.setText(event.getLocation());
+
+        String tempName = event.getName();
+        if (tempName.length() > 20) {
+            String newText = tempName.substring(0, 20) + "...";
+            Name.setText(newText);
+        } else {
+            Name.setText(tempName);
+        }
 
         return view;
     }

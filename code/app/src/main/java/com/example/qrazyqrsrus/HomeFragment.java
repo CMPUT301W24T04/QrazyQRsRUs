@@ -83,13 +83,13 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             FirebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getAttendeeCheckedInEvents(attendee, checkedInEvents, homeCheckedInListAdapter);
+                    FirebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
                     FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("user");
-            FirebaseDB.getAttendeeCheckedInEvents(attendee, checkedInEvents, homeCheckedInListAdapter);
+            FirebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
             FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
         }
 
@@ -102,6 +102,7 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 Bundle args = new Bundle();
                 args.putSerializable("event", checkedInEvents.get(i));
                 args.putSerializable("attendee", attendee);
+                args.putSerializable("isCheckedIn", true);
                 Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
             }
         });
@@ -112,8 +113,7 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 Bundle args = new Bundle();
                 args.putSerializable("event", signedUpEvents.get(i));
                 args.putSerializable("attendee", attendee);
-//                NavHostFragment navHost = (NavHostgetView().findViewById(R.id.nav_graph_nav_host);
-//                Navigation.findNavController(getView()).navigate(R.id.action_mainMenu_to_eventDetailsFragment, args);
+                args.putSerializable("isCheckedIn", false);
                 Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
             }
         });

@@ -4,6 +4,7 @@ package com.example.qrazyqrsrus;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -68,8 +70,14 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            Bundle bundle = makeNewBundle();
-            Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
+            FirebaseDB.getToken(new FirebaseDB.GetTokenCallback() {
+                @Override
+                public void onResult(String token) {
+                    Log.d("newEventTextFragment", token);
+                    Bundle bundle = makeNewBundle(token);
+                    Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
+                }
+            });
         });
 
         SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
@@ -84,6 +92,8 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
             }
         });
 
+        Bundle args = getArguments();
+        handleArguments(args, view);
         createToolbar(view);
 
         return view;
@@ -113,13 +123,16 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
      *
      * @return  a Bundle containing all of the user input, and the userID of the organizer
      */
-    private Bundle makeNewBundle(){
+    private Bundle makeNewBundle(String organizerToken){
         Bundle bundle = getArguments();
         View view = getView();
-        bundle.putSerializable("name", ((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString());
-        bundle.putSerializable("organizerId", ( (Attendee) bundle.getSerializable("attendee")).getDocumentId());
-        bundle.putSerializable("location", ((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
-        bundle.putSerializable("details", ((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
+        builder.setName(((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString());
+        builder.setLocation(((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
+        builder.setDetails(((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
+        builder.setOrganizerId(((Attendee) bundle.getSerializable("attendee")).getDocumentId());
+        builder.setOrganizerToken(organizerToken);
+
         String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
 
         Integer maxAttendees = null;
@@ -131,9 +144,26 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
             }
         }
 
-        bundle.putSerializable("max_attendees", maxAttendees);
+        builder.setMaxAttendees(maxAttendees);
+        //we put the updates builder back into the bundle
+        bundle.putSerializable("builder", builder);
 
         return bundle;
+    }
+
+    private void handleArguments(Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder.getName() != null){
+            //if builder.getName() != null, the user has already been to this screen, so we restore their input
+            ((EditText) view.findViewById(R.id.event_name_edit_text)).setText(builder.getName());
+            ((EditText) view.findViewById(R.id.event_location_edit_text)).setText(builder.getLocation());
+            ((EditText) view.findViewById(R.id.event_details_edit_text)).setText(builder.getDetails());
+            //we check if user set maxAttendees
+            if (builder.getMaxAttendees() != null){
+                ((SwitchCompat) view.findViewById(R.id.limit_attendees_toggle)).setChecked(true);
+                ((EditText) view.findViewById(R.id.max_attendees_edit_text)).setText(builder.getMaxAttendees().toString());
+            }
+        }
     }
 
 }

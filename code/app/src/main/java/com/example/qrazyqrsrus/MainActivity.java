@@ -1,9 +1,12 @@
 package com.example.qrazyqrsrus;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,6 +15,12 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -21,13 +30,10 @@ import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private ActivityMainBinding binding;
-
-    private NavController navController;
-    private ArrayList<Event> eventList = new ArrayList<Event>();
-
     private String deviceId;
+    private Activity activity = this;
 
     Attendee[] user = new Attendee[1];
     private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
@@ -44,15 +50,23 @@ public class MainActivity extends AppCompatActivity{
             FirebaseDB.checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                 @Override
                 public void onResult(boolean isUnique, CheckIn checkIn) {
-                    if (isUnique) {
-                        //if there is no existing checkIn with the attendee's document ID and the event's document ID we make a new one
-                        CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId());
-                        FirebaseDB.addCheckInToEvent(newCheckIn, event.getDocumentId());
-                    } else{
-                        //in this case the event should already have the checkIn in it's checkIn list
-                        checkIn.incrementCheckIns();
-                        FirebaseDB.updateCheckIn(checkIn);
-                    }
+                    LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
+                        @Override
+                        public void onResult(double longitude, double latitude) {
+                            if (isUnique){
+                                //if the user has not yet chcked into the event, we make a new one
+                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                FirebaseDB.addCheckInToEvent(newCheckIn, event);
+                            } else{
+                                //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
+                                checkIn.setLongitude(longitude);
+                                checkIn.setLatitude(latitude);
+                                checkIn.incrementCheckIn();
+                                FirebaseDB.updateCheckIn(checkIn);
+                            }
+
+                        }
+                    });
                 }
             });
             ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
@@ -74,6 +88,15 @@ public class MainActivity extends AppCompatActivity{
 
     });
 
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Log.d("Notification Permissions", "user accepted notification permissions");
+                } else {
+                    Log.e("Notification Permissions", "user denied notification permissions");
+                }
+            });
+
 //    qrHandler =
 
     @Override
@@ -87,7 +110,21 @@ public class MainActivity extends AppCompatActivity{
 
         Log.d("test", deviceId);
 
-
+        //we don't need to getToken, this is just for testing
+        //FirebaseDB.getToken();
+        //we shouldn't subscribe the user here, this is just for testing
+        //FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Event Announcements";
+            String description = "Receive push notifications from event organizers";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system. You can't change the importance
+            // or other notification behaviors after this.
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
         //CurrentUser.getInstance().initializeUser(deviceId);
 
         //Attendee[] user = new Attendee[1];
@@ -99,6 +136,14 @@ public class MainActivity extends AppCompatActivity{
                 ChangeFragment(new HomeEventsFragment());
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (!notificationManager.areNotificationsEnabled()){
+                //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
 
 
 
@@ -138,8 +183,6 @@ public class MainActivity extends AppCompatActivity{
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
-        //was getting java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState when using .commit()
-        //fragmentTransaction.commitAllowingStateLoss();
     }
 
 

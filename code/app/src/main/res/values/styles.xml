@@ -6,7 +6,6 @@
     <!-- Your existing customization, like textColor, can go here. -->
     <!-- Example color customization -->
     <!-- Since textColor was empty in your default_style, add it if needed -->
-    <item name="android:textColor"></item>
 </style>
 
 <!-- You might want to define other styles here. -->

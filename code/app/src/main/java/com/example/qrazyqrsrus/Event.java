@@ -1,5 +1,9 @@
 package com.example.qrazyqrsrus;
 
+import android.net.Uri;
+
+import android.util.Log;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +29,8 @@ public class Event implements Serializable {
     private ArrayList<String> announcements = new ArrayList<String>();
     private ArrayList<String> signUps= new ArrayList<String>();
     private ArrayList<String> checkIns= new ArrayList<String>();
+    private String organizerToken;
+
 
     /**
      * Represents the event
@@ -52,7 +58,7 @@ public class Event implements Serializable {
     public Event(String documentId, String name, String organizerId, String details,
                  String location, LocalDateTime startDate, LocalDateTime endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
-                 String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
+                 String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns, Integer maxAttendees) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.documentId = documentId;
@@ -67,6 +73,7 @@ public class Event implements Serializable {
         this.posterPath = posterPath;
         this.qrCode = qrCode;
         this.qrCodePromo = qrCodePromo;
+        this.organizerToken = organizerToken;
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
@@ -75,7 +82,7 @@ public class Event implements Serializable {
     public Event(String documentId, String name, String organizerId, String details,
                  String location, String startDate, String endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
-                 String qrCodePromo, ArrayList<String> announcements, ArrayList<String> signUps,
+                 String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
         this.documentId = documentId;
         this.name = name;
@@ -88,6 +95,7 @@ public class Event implements Serializable {
         this.posterPath = posterPath;
         this.qrCode = qrCode;
         this.qrCodePromo = qrCodePromo;
+        this.organizerToken = organizerToken;
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
@@ -286,14 +294,29 @@ public class Event implements Serializable {
      * @return
      */
     public void addSignUp(String signUp) {
-        this.signUps.add(signUp);
+        if (this.maxAttendees == null || (this.getAttendeeCount() < this.maxAttendees)){
+            this.signUps.add(signUp);
+            // Change this to notification when we've implemented notification
+            if (signUps.size() == 1) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st signup!");
+            } else if (signUps.size() == 10) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th signup!");
+            } else if (signUps.size() == 100) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th signup!");
+            }
+        }
     }
+
     /** removes user
      *
      * @return
      */
-    public void deleteSignUp(String userId) {
-        this.signUps.remove(userId);
+    public boolean deleteSignUp(String userId) {
+        if (signUps.contains(userId)){
+            this.signUps.remove(userId);
+            return true;
+        }
+        return false;
     }
     /** get
      *
@@ -314,29 +337,230 @@ public class Event implements Serializable {
      * @return
      */
     public void addCheckIn(String checkIn) {
-        this.checkIns.add(checkIn);
+        if (this.maxAttendees == null || this.getAttendeeCount() < this.maxAttendees) {
+            this.checkIns.add(checkIn);
+
+            // Change this to notification when we've implemented notification
+            if (checkIns.size() == 1) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st check-in!");
+            } else if (checkIns.size() == 10) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th check-in!");
+            } else if (checkIns.size() == 100) {
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th check-in!");
+            }
+        }
     }
 
+    /** removes checkin
+     *
+     * @return
+     */
+    public void deleteCheckIn(String checkIn) {
+        this.checkIns.remove(checkIn);
+    }
+
+    /** get
+     *
+     * @return integer of maximum number of attendees this event can have
+     */
+
+    public Integer getMaxAttendees(){
+        return this.maxAttendees;
+    }
+
+    public void setMaxAttendees(Integer maxAttendees){
+        this.maxAttendees = maxAttendees;
+    }
+
+    public Integer getAttendeeCount(){
+        return this.signUps.size() + this.checkIns.size();
+    }
     /**
      * checkes if user is checked in or signed up
      * @param userDocumentId
      * @param event
      * @return Boolean
      */
-    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
-        if (event.getSignUps().contains(userDocumentId)) {
-            return true;
-        }
-        ArrayList<Attendee> tempList = new ArrayList<>();
-        ArrayList<String> tempList2 = new ArrayList<>();
-        FirebaseDB.getEventCheckedIn(event, tempList);
-        for (Attendee attendee : tempList) {
-            tempList2.add(attendee.getDocumentId());
-        }
-        if (tempList2.contains(userDocumentId)) {
-            return true;
-        }
-        return false;
 
+
+//    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
+//        if (event.getSignUps().contains(userDocumentId)) {
+//            return true;
+//        }
+//        ArrayList<Attendee> tempList = new ArrayList<>();
+//        ArrayList<String> tempList2 = new ArrayList<>();
+//        FirebaseDB.getEventCheckedIn(event, tempList, attendeeListAdapter);
+//        for (Attendee attendee : tempList) {
+//            tempList2.add(attendee.getDocumentId());
+//        }
+//        if (tempList2.contains(userDocumentId)) {
+//            return true;
+//        }
+//        return false;
+//    }
+
+    /** get
+     *
+     * @return string of the organizers FCM token
+     */
+    public String getOrganizerToken() {
+        return organizerToken;
     }
+
+    /** set
+     *
+     *
+     */
+    public void setOrganizerToken(String organizerToken) {
+        this.organizerToken = organizerToken;
+    }
+
+    /**
+     * This constructor creates a new event using the Event Builder
+     * @param builder the event builder we are building from
+     */
+    private Event(EventBuilder builder){
+        this.documentId = null;
+        this.name = builder.name;
+        this.organizerId = builder.organizerId;
+        this.details = builder.details;
+        this.maxAttendees = builder.maxAttendees;
+        this.location = builder.location;
+        this.startDate = builder.startDate; //.format(formatter);
+        this.endDate = builder.endDate; //.format(formatter);
+        this.geolocationOn = builder.geolocationOn;
+        this.posterPath = builder.posterPath;
+        this.qrCode = builder.qrCode;
+        this.qrCodePromo = builder.qrCodePromo;
+        this.organizerToken = builder.organizerToken;
+        this.announcements = new ArrayList<String>();
+        this.signUps = new ArrayList<String>();
+        this.checkIns = new ArrayList<String>();
+    }
+
+    public static class EventBuilder implements Serializable{
+        private String name = null;
+        private String organizerId = null;
+        private String location = null;
+        private String details = null;
+        private Integer maxAttendees = null;
+        private String startDate = null;
+        private String endDate = null;
+        private Boolean geolocationOn = null;
+        private String posterPath = null;
+        private String qrCode = null;
+        private String qrCodePromo = null;
+        private Uri uri = null;
+        private String organizerToken = null;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getOrganizerId() {
+            return organizerId;
+        }
+
+        public void setOrganizerId(String organizerId) {
+            this.organizerId = organizerId;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
+
+        public String getDetails() {
+            return details;
+        }
+
+        public void setDetails(String details) {
+            this.details = details;
+        }
+
+        public Integer getMaxAttendees() {
+            return maxAttendees;
+        }
+
+        public void setMaxAttendees(Integer maxAttendees) {
+            this.maxAttendees = maxAttendees;
+        }
+
+        public String getStartDate() {
+            return startDate;
+        }
+
+        public void setStartDate(String startDate) {
+            this.startDate = startDate;
+        }
+
+        public String getEndDate() {
+            return endDate;
+        }
+
+        public void setEndDate(String endDate) {
+            this.endDate = endDate;
+        }
+
+        public Boolean getGeolocationOn() {
+            return geolocationOn;
+        }
+
+        public void setGeolocationOn(Boolean geolocationOn) {
+            this.geolocationOn = geolocationOn;
+        }
+
+        public String getPosterPath() {
+            return posterPath;
+        }
+
+        public void setPosterPath(String posterPath) {
+            this.posterPath = posterPath;
+        }
+
+        public String getQrCode() {
+            return qrCode;
+        }
+
+        public void setQrCode(String qrCode) {
+            this.qrCode = qrCode;
+        }
+
+        public String getQrCodePromo() {
+            return qrCodePromo;
+        }
+
+        public void setQrCodePromo(String qrCodePromo) {
+            this.qrCodePromo = qrCodePromo;
+        }
+
+        public Uri getUri() {
+            return uri;
+        }
+
+        public void setUri(Uri uri) {
+            this.uri = uri;
+        }
+
+        public String getOrganizerToken() {
+            return organizerToken;
+        }
+
+        public void setOrganizerToken(String organizerToken) {
+            this.organizerToken = organizerToken;
+        }
+
+        public Event build(){
+            //return a new Event using the builder constructor
+            return new Event(this);
+        }
+    }
+
 }

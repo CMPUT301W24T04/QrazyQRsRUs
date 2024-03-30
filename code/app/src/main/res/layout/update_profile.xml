@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:hint="Full name"
             android:inputType="textPersonName"
-            android:textColor="#131313"
+            android:textColor="@color/white"
             android:textColorHint="#808080"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:hint="Email address"
             android:inputType="textEmailAddress"
-            android:textColor="#131313"
+            android:textColor="@color/white"
             android:textColorHint="#808080"/>
     </com.google.android.material.textfield.TextInputLayout>
 
