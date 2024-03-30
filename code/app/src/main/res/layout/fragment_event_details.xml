@@ -197,9 +197,10 @@
         android:layout_marginTop="8dp"
         android:src="@drawable/no_image_source"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/check_in_qr_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5" />
 
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"/>
 
     <Button
         android:id="@+id/check_in_share_button"
