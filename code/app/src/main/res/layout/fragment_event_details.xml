@@ -6,11 +6,23 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context=".EventDetailsFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp">
+
+
 
     <ImageView
         android:id="@+id/posterView"
         android:layout_width="0dp"
-        android:layout_height="170dp"
+        android:layout_height="200dp"
         android:src="@drawable/no_image_source"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,31 +32,48 @@
 
     <TextView
         android:id="@+id/event_detail_name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Name: "
-        android:paddingTop="10dp"
-        android:paddingStart="10dp"
-        android:textSize="17sp"
-        app:layout_constraintTop_toBottomOf="@id/posterView"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/posterView"
+        android:padding="16dp" />
+            <View
+                android:id="@+id/start_date_separator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/event_detail_name"
+                android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/event_detail_start_date"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:textColor="@color/white"
         android:text="Start Date: "
-        android:paddingStart="10dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="4dp"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@id/event_detail_name"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        android:textSize="17sp"
+        app:layout_constraintTop_toBottomOf="@id/start_date_separator"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/event_detail_end_date"
-        app:layout_constraintHorizontal_chainStyle="packed" />
+        app:layout_constraintEnd_toEndOf="parent"  />
+
+            <View
+                android:id="@+id/end_date_separator"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/event_detail_start_date" />
 
     <TextView
         android:id="@+id/event_detail_end_date"
@@ -52,13 +81,22 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="End Date: "
-        android:paddingStart="5dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="4dp"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@id/event_detail_name"
-        app:layout_constraintStart_toEndOf="@id/event_detail_start_date"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:textSize="17sp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/event_detail_start_date"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/event_detail_end_date"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/event_detail_location"
@@ -66,13 +104,22 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Location: "
-        android:padding="5dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@id/event_detail_start_date"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:textSize="17sp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/event_detail_end_date"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"  />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/event_detail_location"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/event_detail_organizer"
@@ -80,27 +127,36 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Organized by: "
-        android:padding="5dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:textSize="15sp"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:textSize="17sp"
+        android:paddingBottom="16dp"
         app:layout_constraintTop_toBottomOf="@id/event_detail_location"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+        app:layout_constraintEnd_toEndOf="parent"  />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/event_detail_organizer"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
     <TextView
         android:id="@+id/event_detail_details"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Details: "
-        android:padding="5dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:textSize="15sp"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:textSize="17sp"
+        android:paddingBottom="16dp"
         app:layout_constraintTop_toBottomOf="@id/event_detail_organizer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/view_announcements_button"
@@ -170,16 +226,19 @@
         app:layout_constraintTop_toBottomOf="@id/promo_qr_text" />
 
 
-    <Button
-        android:id="@+id/promo_share_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/share_symbol"
-        app:layout_constraintLeft_toRightOf="@id/promo_qr_view"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/promo_qr_text"/>
+            <Button
+                android:id="@+id/promo_share_button"
+                android:layout_width="37dp"
+                android:layout_height="35dp"
 
-    <TextView
+                android:layout_marginTop="8dp"
+                android:background="@drawable/share_symbol"
+                app:layout_constraintHorizontal_bias="0.478"
+                app:layout_constraintLeft_toRightOf="@id/promo_qr_view"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/promo_qr_text" />
+
+            <TextView
         android:id="@+id/check_in_qr_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -202,15 +261,29 @@
         app:layout_constraintHorizontal_bias="0.5" />
 
 
-    <Button
-        android:id="@+id/check_in_share_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/share_symbol"
-        app:layout_constraintLeft_toRightOf="@id/check_in_qr_view"
-        app:layout_constraintRight_toRightOf="parent"
+            <Button
+                android:id="@+id/check_in_share_button"
+                android:layout_width="30dp"
+                android:layout_height="32dp"
+                android:background="@drawable/share_symbol"
+                app:layout_constraintLeft_toRightOf="@id/check_in_qr_view"
+                app:layout_constraintRight_toRightOf="parent"
 
-        app:layout_constraintTop_toBottomOf="@id/check_in_qr_text" />
+                app:layout_constraintTop_toBottomOf="@id/check_in_qr_text" />
+
+            <Button
+                android:id="@+id/button_geolocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View Attendee Locations"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/sign_up_button" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/back_button"
@@ -223,13 +296,5 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteX="3dp"  />
 
-    <Button
-        android:id="@+id/button_geolocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Attendee Locations"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sign_up_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
