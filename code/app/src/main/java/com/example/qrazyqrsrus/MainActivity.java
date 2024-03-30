@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         //if the user scanned the admin qr
         public void onSpecialResult(){
-            ChangeFragment(AdminHomeFragment.newInstance());
+            ChangeFragment(AdminHost.newInstance());
         }
 
     });
