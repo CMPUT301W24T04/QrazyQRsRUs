@@ -30,15 +30,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
-        <ImageButton
-            android:id="@+id/admin_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/settings_button"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/welcome_message_view"
-            app:layout_constraintBottom_toBottomOf="@id/welcome_message_view"/>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -83,3 +74,5 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+

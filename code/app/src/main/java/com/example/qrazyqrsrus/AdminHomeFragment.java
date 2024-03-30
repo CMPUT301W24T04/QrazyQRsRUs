@@ -48,4 +48,9 @@ public class AdminHomeFragment extends Fragment {
 
         return view;
     }
+
+    public static AdminHomeFragment newInstance(){
+        AdminHomeFragment fragment = new AdminHomeFragment();
+        return fragment;
+    }
 }
