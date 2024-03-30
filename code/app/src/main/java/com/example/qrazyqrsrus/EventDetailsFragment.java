@@ -213,8 +213,8 @@ public class EventDetailsFragment extends Fragment {
         });
         String locationString = "Location:     "+event.getLocation();
         String descriptionString = "Description:     "+event.getDetails();
-        String startDateString = "Starts:     "+event.getStartDate();
-        String endDateString = "Ends:     "+event.getEndDate();
+        String startDateString = "Start DateTime:     "+event.getStartDate();
+        String endDateString = "End DateTime    "+event.getEndDate();
 
 
         nameView.setText(nameString);
