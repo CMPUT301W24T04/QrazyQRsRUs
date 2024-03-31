@@ -183,6 +183,26 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         }
         return args;
     }
+    private void handleArguments (Bundle args, View view){
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder != null && builder.getEndDate() != null) {
+            String endDate = builder.getEndDate();
+
+            // Use the custom parsing method
+            LocalDateTime endDateTime = parseDateTimeString(endDate);
+
+            TextView dateButton = view.findViewById(R.id.date_display_textview);
+            TextView timeButton = view.findViewById(R.id.time_display_textview);
+
+            // Format and set the date on the date button
+            String formattedDate = endDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            dateButton.setText(formattedDate);
+
+            // Format and set the time on the time button
+            String formattedTime = endDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+            timeButton.setText(formattedTime);
+        }
+    }
 
 
 
