@@ -33,3 +33,4 @@ google-services.json
 
 # Android Profiling
 *.hprof
+/src/main/res/values/secret_strings.xml
