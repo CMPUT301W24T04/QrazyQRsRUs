@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/new_event_nav_graph"
+    app:startDestination="@id/myEventsListFragment">
+
+
+
+    <fragment
+        android:id="@+id/newEventTextFragment"
+        android:name="com.example.qrazyqrsrus.NewEventTextFragment"
+        android:label="new_event_text_fragment"
+        tools:layout="@layout/new_event_text_fragment" >
+        <action
+            android:id="@+id/action_newEventTextFragment_to_newEventImageFragment2"
+            app:destination="@id/newEventStartTimeFragment" />
+        <action
+            android:id="@+id/action_newEventTextFragment_to_newEventFragment"
+            app:destination="@id/myEventsListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventImageFragment"
+        android:name="com.example.qrazyqrsrus.NewEventImageFragment"
+        android:label="new_event_image_fragment"
+        tools:layout="@layout/new_event_image_fragment" >
+        <action
+            android:id="@+id/action_newEventImageFragment_to_newEventQrFragment"
+            app:destination="@id/newEventPromoQrFragment" />
+        <action
+            android:id="@+id/action_newEventImageFragment_to_newEventTextFragment"
+            app:destination="@id/newEventEndTimeFragment" />
+        <action
+            android:id="@+id/action_newEventImageFragment_to_newEventFragment"
+            app:destination="@id/myEventsListFragment" />
+        <argument
+            android:name="new_event"
+            app:argType="com.example.qrazyqrsrus.Event" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventQrFragment"
+        android:name="com.example.qrazyqrsrus.NewEventQrFragment"
+        android:label="new_event_qr_fragment"
+        tools:layout="@layout/new_event_qr_fragment" >
+        <argument
+            android:name="new_event"
+            app:argType="com.example.qrazyqrsrus.Event" />
+        <action
+            android:id="@+id/action_newEventQrFragment_to_eventList2"
+            app:destination="@id/myEventsListFragment" />
+        <action
+            android:id="@+id/action_newEventQrFragment_to_newEventPromoQrFragment"
+            app:destination="@id/newEventPromoQrFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventPromoQrFragment"
+        android:name="com.example.qrazyqrsrus.NewEventPromoQrFragment"
+        android:label="new_event_promo_qr_fragment"
+        tools:layout="@layout/new_event_promo_qr_fragment" >
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_newEventQrFragment"
+            app:destination="@id/newEventQrFragment" />
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_newEventImageFragment"
+            app:destination="@id/newEventImageFragment" />
+        <action
+            android:id="@+id/action_newEventPromoQrFragment_to_myEventsListFragment"
+            app:destination="@id/myEventsListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventStartTimeFragment"
+        android:name="com.example.qrazyqrsrus.NewEventStartTimeFragment"
+        android:label="new_event_start_time_fragment"
+        tools:layout="@layout/new_event_start_time_fragment" >
+        <action
+            android:id="@+id/action_newEventStartTimeFragment_to_newEventTextFragment"
+            app:destination="@id/newEventTextFragment" />
+        <action
+            android:id="@+id/action_newEventStartTimeFragment_to_newEventFragment"
+            app:destination="@id/myEventsListFragment" />
+        <action
+            android:id="@+id/action_newEventStartTimeFragment_to_newEventEndTimeFragment"
+            app:destination="@id/newEventEndTimeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventEndTimeFragment"
+        android:name="com.example.qrazyqrsrus.NewEventEndTimeFragment"
+        android:label="new_event_end_time_fragment"
+        tools:layout="@layout/new_event_end_time_fragment" >
+        <action
+            android:id="@+id/action_newEventEndTimeFragment_to_newEventStartTimeFragment"
+            app:destination="@id/newEventStartTimeFragment" />
+        <action
+            android:id="@+id/action_newEventEndTimeFragment_to_newEventFragment"
+            app:destination="@id/myEventsListFragment" />
+        <action
+            android:id="@+id/action_newEventEndTimeFragment_to_newEventImageFragment"
+            app:destination="@id/newEventImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.example.qrazyqrsrus.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details">
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementEditFragment"
+            app:destination="@+id/AnnouncementEditFragment"/>
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementsFragment"
+            app:destination="@+id/AnnouncementsFragment"/>
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_geoLocation"
+            app:destination="@id/geoLocation" />
+    </fragment>
+    <fragment
+        android:id="@+id/AnnouncementEditFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementEditFragment"
+        android:label="announcement_edit_fragment"
+        tools:layout="@layout/fragment_announcement_edit"/>
+
+    <fragment
+        android:id="@+id/AnnouncementsFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementsFragment"
+        android:label="announcements_fragment"
+        tools:layout="@layout/layout_announcements"/>
+
+    <fragment
+        android:id="@+id/myEventsListFragment"
+        android:name="com.example.qrazyqrsrus.MyEventsListFragment"
+        android:label="MyEventsListFragment" >
+        <action
+            android:id="@+id/action_myEventsListFragment_to_newEventTextFragment"
+            app:destination="@id/newEventTextFragment" />
+        <action
+            android:id="@+id/action_myEventsListFragment_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeList2"
+        android:name="com.example.qrazyqrsrus.AttendeeList"
+        android:label="AttendeeList" >
+        <action
+            android:id="@+id/action_attendeeList2_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+        <action
+            android:id="@+id/action_attendeeList2_to_attendeeSignupsList"
+            app:destination="@id/attendeeSignupsList" />
+        <action
+            android:id="@+id/action_attendeeList2_to_viewProfileFragment"
+            app:destination="@id/viewProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeSignupsList"
+        android:name="com.example.qrazyqrsrus.AttendeeSignupsList"
+        android:label="AttendeeSignupsList" >
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+        <action
+            android:id="@+id/action_attendeeSignupsList_to_viewProfileFragment2"
+            app:destination="@id/viewProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewProfileFragment"
+        android:name="com.example.qrazyqrsrus.ViewProfileFragment"
+        android:label="ViewProfileFragment" >
+        <action
+            android:id="@+id/action_viewProfileFragment_to_attendeeList2"
+            app:destination="@id/attendeeList2" />
+    </fragment>
+    <fragment
+        android:id="@+id/geoLocation"
+        android:name="com.example.qrazyqrsrus.GeoLocation"
+        android:label="GeoLocation" >
+        <action
+            android:id="@+id/action_geoLocation_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+</navigation>

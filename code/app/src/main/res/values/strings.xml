@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">QrazyQRsRUs</string>
+    <string name="home">Home</string>
+    <string name="scan">Scan</string>
+    <string name="my_events">My Events</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="events_attending">Events Attending:</string>
+    <string name="welcome_name_select_an_event_for_more_details"><![CDATA[Welcome, <NAME>! Select an event for more details]]></string>
+    <string name="profile">Profile</string>
+    <string name="qr_upload_error">The selected image failed to be recognized as a QR code</string>
+    <string name="qr_not_unique">The generated QR code is already in use, try generating a new one</string>
+    <string name="qr_generation_failed">The QR generator failed to generate a QR code. Try again</string>
+    <string name="image_upload_failed">There was an error while selecting your image. Try again</string>
+    <string name="test_error_message">Error: This error is an error!</string>
+    <string name="welcome_to_qrazyqrsrus">Welcome to QrazyQRsRUs!</string>
+    <string name="events">Events</string>
+    <string name="no_args">Error: No arguments provided!</string>
+    <string name="my_events_fragment_header">Your created events:</string>
+    <string name="browse_events_header">Browse events:</string>
+    <string name="not_signed_up_error">Error: You cannot check-in to an event that you have not signed up for</string>
+    <string name="wrong_admin_login_error">Error: Invalid admin credentials</string>
+    <string name="signed_up_text">Signed up</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="checked_in_text">Checked In</string>
+
+    <string name="mapbox_access_token">sk.eyJ1IjoiYXJiZXItIiwiYSI6ImNsdWRiandmODBnMzUyamxud3M4NG9tY3EifQ.7fH-3_CrOaSya8iXnbHVTg</string>
+
+    <string name="no_qr_code">Error: You must use a QR code</string>
+
+</resources>
