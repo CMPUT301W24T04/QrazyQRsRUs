@@ -94,6 +94,7 @@ public class EventDetailsFragment extends Fragment {
         ImageView promoQRView = rootView.findViewById(R.id.promo_qr_view);
         ImageView checkInQRView = rootView.findViewById(R.id.check_in_qr_view);
         Button promoQRShare = rootView.findViewById(R.id.promo_share_button);
+        Button checkInQRShare = rootView.findViewById(R.id.check_in_share_button);
 
 
         //try to get event and attendee from bundle
@@ -200,6 +201,23 @@ public class EventDetailsFragment extends Fragment {
                 startActivity(Intent.createChooser(shareIntent, null));
             }
         });
+
+        checkInQRShare.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //we start by creating new intent with binary content that contains the image of the QR code we would like to share
+                //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                Uri uriToImage = getUriToShare(checkInBitmap);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                shareIntent.setType("image/jpeg");
+                startActivity(Intent.createChooser(shareIntent, null));
+            }
+        });
+
+
 
 
 
