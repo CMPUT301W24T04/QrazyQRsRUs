@@ -274,6 +274,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/check_in_qr_text" />
 
+            <Button
+                android:id="@+id/check_in_share_button"
+                android:layout_width="37dp"
+                android:layout_height="35dp"
+                android:background="@drawable/share_symbol"
+                app:layout_constraintLeft_toRightOf="@id/check_in_qr_view"
+                app:layout_constraintRight_toRightOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/check_in_qr_text" />
+
+
 
             <Button
                 android:id="@+id/button_geolocation"
