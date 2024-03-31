@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -92,10 +93,10 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 
             Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
         });
-        Button dateButton = view.findViewById(R.id.show_date_picker_button);
+        TextView dateButton = view.findViewById(R.id.date_display_textview);
         dateButton.setOnClickListener(v -> showDatePickerDialog());
 
-        Button timeButton = view.findViewById(R.id.show_time_picker_button);
+        TextView timeButton = view.findViewById(R.id.time_display_textview);
         timeButton.setOnClickListener(v -> showTimePickerDialog());
         Bundle args = getArguments();
         handleArguments(args, view);
@@ -158,8 +159,8 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         if (builder != null) {
-            Button dateButton = view.findViewById(R.id.show_date_picker_button);
-            Button timeButton = view.findViewById(R.id.show_time_picker_button);
+            TextView dateButton = view.findViewById(R.id.date_display_textview);
+            TextView timeButton = view.findViewById(R.id.time_display_textview);
 
             // Assuming the date and time are set on the buttons in "yyyy-MM-dd" and "HH:mm" formats respectively
             String dateString = dateButton.getText().toString();
@@ -186,8 +187,8 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
             // Use the custom parsing method
             LocalDateTime startDateTime = parseDateTimeString(startDate);
 
-            Button dateButton = view.findViewById(R.id.show_date_picker_button);
-            Button timeButton = view.findViewById(R.id.show_time_picker_button);
+            TextView dateButton = view.findViewById(R.id.date_display_textview);
+            TextView timeButton = view.findViewById(R.id.time_display_textview);
 
             // Format and set the date on the date button
             String formattedDate = startDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -211,7 +212,7 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
                 (view, year1, monthOfYear, dayOfMonth) -> {
                     // Handle the date chosen by the user
                     // Example: Update the button text
-                    Button dateButton = getView().findViewById(R.id.show_date_picker_button);
+                    TextView dateButton = getView().findViewById(R.id.date_display_textview);
                     dateButton.setText(String.format(Locale.getDefault(), "%d-%d-%d", year1, monthOfYear + 1, dayOfMonth));
                 }, year, month, day);
         datePickerDialog.show();
@@ -226,7 +227,7 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
                 (view, hourOfDay, minute1) -> {
                     // Handle the time chosen by the user
                     // Example: Update the button text
-                    Button timeButton = getView().findViewById(R.id.show_time_picker_button);
+                    TextView timeButton = getView().findViewById(R.id.time_display_textview);
                     timeButton.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute1));
                 }, hour, minute, true);
         timePickerDialog.show();
