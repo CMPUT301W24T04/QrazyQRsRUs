@@ -18,27 +18,50 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <Button
-        android:id="@+id/show_date_picker_button"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/select_event_start_heading"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="select_date"
+        android:text="Select event start date"
+        android:gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/start_time_screen_toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginTop="32dp"/>
+        android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/show_time_picker_button"
+    <!-- Date Display -->
+    <TextView
+        android:id="@+id/date_display_textview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="select_time"
-        app:layout_constraintTop_toBottomOf="@id/show_date_picker_button"
+        android:text="YYYY-MM-DD"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/select_event_start_heading"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginTop="16dp"/>
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <!-- Time Display -->
+    <TextView
+        android:id="@+id/time_display_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="HH:mm"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/date_display_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/next_screen_button"
