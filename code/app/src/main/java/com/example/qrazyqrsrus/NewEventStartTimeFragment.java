@@ -29,6 +29,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.SignStyle;
+import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -130,9 +133,22 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         return false;
     }
 
+    private LocalDateTime parseDateTimeString(String dateTimeStr) {
+        // Create a DateTimeFormatter with optional parts for day and month
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("yyyy")
+                .appendLiteral('-')
+                .appendValue(ChronoField.MONTH_OF_YEAR, 1, 2, SignStyle.NORMAL)
+                .appendLiteral('-')
+                .appendValue(ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NORMAL)
+                .appendLiteral(' ')
+                .appendValue(ChronoField.HOUR_OF_DAY, 1, 2, SignStyle.NORMAL)
+                .appendLiteral(':')
+                .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+                .toFormatter(Locale.US);
 
-    private LocalDateTime getLocalDateTime(DatePicker datePicker, TimePicker timePicker){
-        return LocalDateTime.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
+        // Parse the date and time string
+        return LocalDateTime.parse(dateTimeStr, formatter);
     }
 
 
@@ -151,7 +167,7 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 
             // Combine the date and time strings
             String dateTimeString = dateString + " " + timeString;
-            LocalDateTime startDate = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            LocalDateTime startDate = parseDateTimeString(dateTimeString);
 
             // Update the builder with the new start date and time
             builder.setStartDate(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
@@ -166,7 +182,9 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         if (builder != null && builder.getStartDate() != null) {
             String startDate = builder.getStartDate();
-            LocalDateTime startDateTime = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+            // Use the custom parsing method
+            LocalDateTime startDateTime = parseDateTimeString(startDate);
 
             Button dateButton = view.findViewById(R.id.show_date_picker_button);
             Button timeButton = view.findViewById(R.id.show_time_picker_button);
