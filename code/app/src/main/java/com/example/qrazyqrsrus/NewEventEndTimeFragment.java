@@ -161,6 +161,28 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         // Parse the date and time string
         return LocalDateTime.parse(dateTimeStr, formatter);
     }
+    private Bundle makeNewBundle(Bundle args) {
+        View view = getView();
+        if (view == null || args == null) return args; // Safety checks
+        Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder != null) {
+            TextView dateButton = view.findViewById(R.id.date_display_textview);
+            TextView timeButton = view.findViewById(R.id.time_display_textview);
+
+            // Assuming the date and time are set on the buttons in "yyyy-MM-dd" and "HH:mm" formats respectively
+            String dateString = dateButton.getText().toString();
+            String timeString = timeButton.getText().toString();
+
+            // Combine the date and time strings
+            String dateTimeString = dateString + " " + timeString;
+            LocalDateTime endDate = parseDateTimeString(dateTimeString);
+
+            // Update the builder with the new start date and time
+            builder.setEndDate(endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            args.putSerializable("builder", builder);
+        }
+        return args;
+    }
 
 
 
