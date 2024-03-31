@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * the user has either signed up to, or checked into.
  */
 
-public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickListener {
+public class HomeFragment extends Fragment{
     ListView checkedIn;
     ListView signedUp;
     private Attendee attendee;
@@ -49,7 +49,6 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     FloatingActionButton browseEvents;
 
-    ImageButton adminButton;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -70,7 +69,6 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         ListView checkedIn = rootView.findViewById(R.id.checked_in_events_listview);
         ListView signedUp = rootView.findViewById(R.id.signed_up_events_listview);
         browseEvents = rootView.findViewById(R.id.browse_events_button);
-        adminButton = rootView.findViewById(R.id.admin_button);
 
         ArrayList<Event> checkedInEvents = new ArrayList<>();
         ArrayList<Event> signedUpEvents = new ArrayList<>();
@@ -122,15 +120,6 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventList3);
         });
 
-        adminButton.setOnClickListener(v ->{
-            PopupMenu popup = new PopupMenu(this.getContext(), v);
-            popup.setOnMenuItemClickListener(this);
-            popup.getMenuInflater().inflate(R.menu.admin_options_menu, popup.getMenu());
-            popup.show();
-        });
-
-
-
         return rootView;
     }
 
@@ -143,14 +132,4 @@ public class HomeFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         return fragment;
     }
 
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.admin_mode_option){
-            Navigation.findNavController(getView()).navigate(R.id.action_homeFragment_to_adminLoginFragment);
-            return true;
-        }
-        return false;
-    }
 }

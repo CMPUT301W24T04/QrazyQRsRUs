@@ -14,7 +14,7 @@
     <string name="image_upload_failed">There was an error while selecting your image. Try again</string>
     <string name="test_error_message">Error: This error is an error!</string>
     <string name="welcome_to_qrazyqrsrus">Welcome to QrazyQRsRUs!</string>
-    <string name="events">Events:</string>
+    <string name="events">Events</string>
     <string name="no_args">Error: No arguments provided!</string>
     <string name="my_events_fragment_header">Your created events:</string>
     <string name="browse_events_header">Browse events:</string>
@@ -24,7 +24,7 @@
     <string name="placeholder">Placeholder</string>
     <string name="checked_in_text">Checked In</string>
 
-    <string name="mapbox_access_token">pk.eyJ1IjoiYXJiZXItIiwiYSI6ImNsdTk3dTJ5cjA3bzMya241cDczeHppMGcifQ.4tF7hDp2WS44iJn_g-nxqQ</string>
+    <string name="mapbox_access_token">sk.eyJ1IjoiYXJiZXItIiwiYSI6ImNsdWRiandmODBnMzUyamxud3M4NG9tY3EifQ.7fH-3_CrOaSya8iXnbHVTg</string>
 
     <string name="no_qr_code">Error: You must use a QR code</string>
 
