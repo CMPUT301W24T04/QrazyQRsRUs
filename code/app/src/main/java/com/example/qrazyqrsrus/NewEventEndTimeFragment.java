@@ -77,10 +77,9 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         View view = inflater.inflate(R.layout.new_event_end_time_fragment, container, false);
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            //temporarily messily create a new event, put it in bundle to pass to next navigation destination
+
             Bundle args =  makeNewBundle(getArguments());
-//            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
-//            args.putSerializable("event", modifiedEvent);
+
 
             Navigation.findNavController(view).navigate(R.id.action_newEventEndTimeFragment_to_newEventImageFragment, args);
         });
@@ -130,7 +129,7 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         return false;
     }
 
-    //create new event from the user input. messy, needs error checking
+
 
     /**
      * Save the local time
@@ -142,7 +141,6 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
     private LocalDateTime getLocalDateTime(DatePicker datePicker, TimePicker timePicker){
         return LocalDateTime.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
     }
-    ///code changes
 
     private LocalDateTime parseDateTimeString(String dateTimeStr) {
         // Create a DateTimeFormatter with optional parts for day and month
@@ -211,8 +209,6 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                 (view, year1, monthOfYear, dayOfMonth) -> {
-                    // Handle the date chosen by the user
-                    // Example: Update the button text
                     TextView dateButton = getView().findViewById(R.id.date_display_textview);
                     dateButton.setText(String.format(Locale.getDefault(), "%d-%d-%d", year1, monthOfYear + 1, dayOfMonth));
                 }, year, month, day);
@@ -226,8 +222,6 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
                 (view, hourOfDay, minute1) -> {
-                    // Handle the time chosen by the user
-                    // Example: Update the button text
                     TextView timeButton = getView().findViewById(R.id.time_display_textview);
                     timeButton.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute1));
                 }, hour, minute, true);
