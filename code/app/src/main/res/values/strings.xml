@@ -24,7 +24,7 @@
     <string name="placeholder">Placeholder</string>
     <string name="checked_in_text">Checked In</string>
 
-
+    <string name="mapbox_access_token">sk.eyJ1IjoiYXJiZXItIiwiYSI6ImNsdWRiandmODBnMzUyamxud3M4NG9tY3EifQ.7fH-3_CrOaSya8iXnbHVTg</string>
 
     <string name="no_qr_code">Error: You must use a QR code</string>
 
