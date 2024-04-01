@@ -374,7 +374,7 @@ public class Event implements Serializable {
 //        }
 //        ArrayList<Attendee> tempList = new ArrayList<>();
 //        ArrayList<String> tempList2 = new ArrayList<>();
-//        FirebaseDB.getEventCheckedIn(event, tempList, attendeeListAdapter);
+//        FirebaseDB.getInstance().getEventCheckedIn(event, tempList, attendeeListAdapter);
 //        for (Attendee attendee : tempList) {
 //            tempList2.add(attendee.getDocumentId());
 //        }

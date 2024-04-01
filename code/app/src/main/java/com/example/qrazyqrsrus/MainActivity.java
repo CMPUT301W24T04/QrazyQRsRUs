@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         @Override
         public void onCheckInResult(Event event) {
-            FirebaseDB.checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                 @Override
                 public void onResult(boolean isUnique, CheckIn checkIn) {
                     LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
@@ -56,13 +56,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             if (isUnique){
                                 //if the user has not yet chcked into the event, we make a new one
                                 CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
-                                FirebaseDB.addCheckInToEvent(newCheckIn, event);
+                                FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
                             } else{
                                 //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
                                 checkIn.setLongitude(longitude);
                                 checkIn.setLatitude(latitude);
                                 checkIn.incrementCheckIn();
-                                FirebaseDB.updateCheckIn(checkIn);
+                                FirebaseDB.getInstance().updateCheckIn(checkIn);
                             }
 
                         }
@@ -113,9 +113,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.d("test", deviceId);
 
         //we don't need to getToken, this is just for testing
-        //FirebaseDB.getToken();
+        //FirebaseDB.getInstance().getToken();
         //we shouldn't subscribe the user here, this is just for testing
-        //FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
+        //FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Announcements";
             String description = "Receive push notifications from event organizers";
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         //Attendee[] user = new Attendee[1];
 
-        FirebaseDB.loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
+        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
             @Override
             public void onResult(Attendee attendee) {
                 user[0] = attendee;

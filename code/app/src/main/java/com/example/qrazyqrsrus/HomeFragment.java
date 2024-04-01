@@ -78,17 +78,17 @@ public class HomeFragment extends Fragment{
         //if the attendee is not passed, we must get the attendee to display only the events they are in.
         if (getArguments() == null){
 
-            FirebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+            FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
-                    FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+                    FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
+                    FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("user");
-            FirebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
-            FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+            FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
+            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
         }
 
         checkedIn.setAdapter(homeCheckedInListAdapter);

@@ -77,7 +77,7 @@ public class AdminViewEventsFragment extends Fragment {
         previousButton = rootView.findViewById(R.id.previous_event_button);
 
         currentPosition = 0;
-        FirebaseDB.getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
+        FirebaseDB.getInstance().getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
             @Override
             public void onResult(ArrayList<Event> events) {
                 allEvents = new ArrayList<>(events);
@@ -119,8 +119,8 @@ public class AdminViewEventsFragment extends Fragment {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDB.deleteEvent(allEvents.get(currentPosition));
-                FirebaseDB.getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
+                FirebaseDB.getInstance().deleteEvent(allEvents.get(currentPosition));
+                FirebaseDB.getInstance().getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
                     @Override
                     public void onResult(ArrayList<Event> events) {
                         allEvents = new ArrayList<>(events);
@@ -165,7 +165,7 @@ public class AdminViewEventsFragment extends Fragment {
         String descriptionString = "Description: "+currentEvent.getDetails();
         String startDateString = "Starts: "+currentEvent.getStartDate();
         String endDateString = "Ends: "+currentEvent.getEndDate();
-        FirebaseDB.getUserName(currentEvent.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
+        FirebaseDB.getInstance().getUserName(currentEvent.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
                 organizerView.setText(organizerString + string);
@@ -178,7 +178,7 @@ public class AdminViewEventsFragment extends Fragment {
         endDateView.setText(endDateString);
 
         if (currentEvent.getPosterPath() != null) {
-            FirebaseDB.retrieveImage(currentEvent, new FirebaseDB.GetBitmapCallBack() {
+            FirebaseDB.getInstance().retrieveImage(currentEvent, new FirebaseDB.GetBitmapCallBack() {
                 @Override
                 public void onResult(Bitmap bitmap) {
                     posterView.setImageBitmap(bitmap);

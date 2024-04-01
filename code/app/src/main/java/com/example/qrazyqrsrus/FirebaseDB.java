@@ -101,25 +101,42 @@ public class FirebaseDB {
         void onResult(ArrayList<CheckIn> checks, ArrayList<String> names);
     }
 
-    static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    final static FirebaseStorage storage = FirebaseStorage.getInstance();
-    final static FirebaseMessaging messaging = FirebaseMessaging.getInstance();
-    final static CollectionReference usersCollection = db.collection("Users");
-    final static CollectionReference eventsCollection = db.collection("Events");
-    final static CollectionReference checkInsCollection = db.collection("CheckIns");
-    final static CollectionReference adminLoginsCollection = db.collection("Logins");
+    //singleton
+    private static FirebaseDB instance = null;
+    private FirebaseFirestore db;
+    private FirebaseStorage storage;
+    private FirebaseMessaging messaging;
+    private CollectionReference usersCollection;
+    private CollectionReference eventsCollection;
+    private CollectionReference checkInsCollection;
+    private CollectionReference adminLoginsCollection;
 
-    final static String usersTAG = "Users";
-    final static String eventsTAG = "Events";
-    final static String imagesTAG = "Images";
+    final String usersTAG = "Users";
+    final String eventsTAG = "Events";
+    final String imagesTAG = "Images";
 
-    final static String checkInsTag = "CheckIns";
+    final String checkInsTag = "CheckIns";
+
+
+
+    public static FirebaseDB getInstance(){
+        if (instance == null){
+            instance = new FirebaseDB();
+        }
+        return instance;
+    }
 
     //dependency injection doesn't work, because db is a static variable
     //consider refactoring FirebaseDB into a singleton with dependency injection
     //we don't want to mock FirebaseDB, we want to mock FirebaseFirestore.getInstance()
-    public FirebaseDB(FirebaseFirestore firestoreInstance){
-        db = firestoreInstance;
+    private FirebaseDB(){
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
+        messaging = FirebaseMessaging.getInstance();
+        usersCollection = db.collection("Users");
+        eventsCollection = db.collection("Events");
+        checkInsCollection = db.collection("CheckIns");
+        adminLoginsCollection = db.collection("Logins");
     }
 
     // Change String to Attendee class when someone implements it.
@@ -129,7 +146,7 @@ public class FirebaseDB {
      *
      * @param user The user we want to add
      */
-    public static void addUser(Attendee user) {
+    public void addUser(Attendee user) {
         usersCollection
                 .add(user)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -155,7 +172,7 @@ public class FirebaseDB {
      * @param userId The unique identifier of the user that has opened the app
      */
 
-    public static void loginUser(String userId, GetAttendeeCallBack callBack) {
+    public void loginUser(String userId, GetAttendeeCallBack callBack) {
         usersCollection
                 .whereEqualTo("id", userId)
                 .get()
@@ -186,7 +203,7 @@ public class FirebaseDB {
      *
      * @param event The event we want to add
      */
-    public static void addEvent(Event event) {
+    public void addEvent(Event event) {
         eventsCollection
                 .add(event)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -210,7 +227,7 @@ public class FirebaseDB {
      *
      * @param user The user that needs their document updated.
      */
-    public static void updateUser(Attendee user) {
+    public void updateUser(Attendee user) {
         usersCollection
                 .document(user.getDocumentId())
                 .update("name", user.getName(),
@@ -236,7 +253,7 @@ public class FirebaseDB {
      *
      * @param event The event that needs its document updated.
      */
-    public static void updateEvent(Event event) {
+    public void updateEvent(Event event) {
         eventsCollection
                 .document(event.getDocumentId())
                 .update("announcements", event.getAnnouncements(),
@@ -266,7 +283,7 @@ public class FirebaseDB {
      *                 folder is either profiles, posters, qrcodes, and image is just the name of
      *                 the image
      */
-    public static void uploadImage(Uri file, String pathName) {
+    public void uploadImage(Uri file, String pathName) {
         StorageReference storageRef = storage.getReference();
         StorageReference storageReference = storageRef.child(pathName + ".jpg");
 
@@ -292,7 +309,7 @@ public class FirebaseDB {
      * @param user This is the user we want to retrieve their profile picture
      * @param callBack This callBack will be used to get back bitmap
      */
-    public static void retrieveImage(Attendee user, GetBitmapCallBack callBack) {
+    public void retrieveImage(Attendee user, GetBitmapCallBack callBack) {
         //ArrayList<Bitmap> localBitMap = new ArrayList<Bitmap>();
         try {
             StorageReference storageRef = storage.getReference(user.getProfilePicturePath() + ".jpg");
@@ -321,7 +338,7 @@ public class FirebaseDB {
      * @param event This is the event we're trying to get its poster.
      * @param callBack This callBack will be used to get back bitmap
      */
-    public static void retrieveImage(Event event, GetBitmapCallBack callBack) {
+    public void retrieveImage(Event event, GetBitmapCallBack callBack) {
         try {
             StorageReference storageRef = storage.getReference(event.getPosterPath() + ".jpg");
             File localFile = File.createTempFile(event.getPosterPath().split("/")[1], "jpg");
@@ -342,7 +359,7 @@ public class FirebaseDB {
         }
     }
 
-    public static void retrieveImage(String path, GetBitmapCallBack callBack) {
+    public void retrieveImage(String path, GetBitmapCallBack callBack) {
         try {
             StorageReference storageRef = storage.getReference(path + ".jpg");
             File localFile = File.createTempFile(path.split("/")[1], "jpg");
@@ -368,7 +385,7 @@ public class FirebaseDB {
      *
      * @param pathName the pathname where we can find the file in the database storage
      */
-    public static void deleteImage(String pathName){
+    public void deleteImage(String pathName){
         StorageReference storageRef = storage.getReference();
         StorageReference storageReference = storageRef.child(pathName + ".jpg");
 
@@ -391,7 +408,7 @@ public class FirebaseDB {
      * @param eventList         The list we're going to hold the events in.
      * @param eventArrayAdapter The ArrayAdapter of eventList.
      */
-    public static void getAllEvents(ArrayList<Event> eventList, ArrayAdapter<Event> eventArrayAdapter) {
+    public void getAllEvents(ArrayList<Event> eventList, ArrayAdapter<Event> eventArrayAdapter) {
         eventsCollection
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -436,7 +453,7 @@ public class FirebaseDB {
                 });
 
     }
-    public static void getAllEvents(GetAllEventsCallBack callBack) {
+    public void getAllEvents(GetAllEventsCallBack callBack) {
         ArrayList<Event> eventList = new ArrayList<>();
         eventsCollection
                 .get()
@@ -489,7 +506,7 @@ public class FirebaseDB {
      * @param attendeeList         The list we're going to hold the users in.
      * @param attendeeArrayAdapter The ArrayAdapter of attendeeList.
      */
-    public static void getAllUsers(ArrayList<Attendee> attendeeList, ArrayAdapter<Attendee> attendeeArrayAdapter) {
+    public void getAllUsers(ArrayList<Attendee> attendeeList, ArrayAdapter<Attendee> attendeeArrayAdapter) {
         usersCollection
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -524,7 +541,7 @@ public class FirebaseDB {
      * @param attendeeList         The list we're going to hold the users in.
      * @param callback The OnFinishedCallback that we will invoke once firebase is done it's operation
      */
-    public static void getAllUsers(ArrayList<Attendee> attendeeList, OnFinishedCallback callback) {
+    public void getAllUsers(ArrayList<Attendee> attendeeList, OnFinishedCallback callback) {
         usersCollection
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -559,7 +576,7 @@ public class FirebaseDB {
      * @param user the user who as signed up to events
      * @param eventArrayList the list you want to add the events to
      */
-    public static void getAttendeeSignedUpEvents(Attendee user, ArrayList<Event> eventArrayList, HomeSignedUpListAdapter adapter) {
+    public void getAttendeeSignedUpEvents(Attendee user, ArrayList<Event> eventArrayList, HomeSignedUpListAdapter adapter) {
         eventsCollection
                 .whereArrayContains("signUps", user.getDocumentId())
                 .get()
@@ -599,7 +616,7 @@ public class FirebaseDB {
      * @param eventList the list passed in to get the events
      * @param adapter the adapter used to update the ListView
      */
-    public static void getEventsCheckedIn(Attendee user, ArrayList<Event> eventList, HomeCheckedInListAdapter adapter) {
+    public void getEventsCheckedIn(Attendee user, ArrayList<Event> eventList, HomeCheckedInListAdapter adapter) {
         ArrayList<String> myCheckIns = new ArrayList<>();
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
@@ -663,7 +680,7 @@ public class FirebaseDB {
      * @param event the event we're getting the attendees
      * @param attendeeArrayList the list passed in to get the attendees
      */
-    public static void getEventSignedUp(Event event, ArrayList<Attendee> attendeeArrayList) {
+    public void getEventSignedUp(Event event, ArrayList<Attendee> attendeeArrayList) {
         for (String signUps : event.getSignUps()) {
             usersCollection
                     .document(signUps)
@@ -691,7 +708,7 @@ public class FirebaseDB {
      * @param event the event we're getting the attendees
      * @param attendeeArrayList the list passed in to get the events
      */
-    public static void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList,  ArrayAdapter<Attendee> attendeeArrayAdapter) {
+    public void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList,  ArrayAdapter<Attendee> attendeeArrayAdapter) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId())
                 .get()
@@ -734,7 +751,7 @@ public class FirebaseDB {
      * @param userDocumentId This the document id of the user
      * @param callBack This callBack will be used to get back the name of user
      */
-    public static void getUserName(String userDocumentId, GetStringCallBack callBack) {
+    public void getUserName(String userDocumentId, GetStringCallBack callBack) {
         usersCollection.document(userDocumentId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -759,7 +776,7 @@ public class FirebaseDB {
      * @param mode an integer: 0 if we are checking promotional qr codes, 1 if we are checking checkin qr codes
      * @param callBack a class that implements the UniqueCheckCallBack that will allow you to handle the boolean result if there is an already existing event with the qr code.
      */
-    public static void checkUnique(String qrContent, int mode, UniqueCheckCallBack callBack) {
+    public void checkUnique(String qrContent, int mode, UniqueCheckCallBack callBack) {
         String field;
         if (mode == 0) {
             field = "qrCodePromo";
@@ -790,7 +807,7 @@ public class FirebaseDB {
      * @param mode an integer: 0 if we are checking promotional qr codes, 1 if we are checking checkin qr codes
      * @param callBack a class that implements the MatchingQRCallBack that will allow you to handle the event with the matching qr code
      */
-    public static void findEventWithQR(String qrContent, int mode, MatchingQRCallBack callBack) {
+    public void findEventWithQR(String qrContent, int mode, MatchingQRCallBack callBack) {
         String field;
         if (mode == 0) {
             field = "qrCodePromo";
@@ -836,7 +853,7 @@ public class FirebaseDB {
      * @param user the user who as signed up to events
      * @param eventArrayList the list you want to add the events to
      */
-    public static void getEventsMadeByUser(Attendee user, ArrayList<Event> eventArrayList, EventListAdapter adapter) {
+    public void getEventsMadeByUser(Attendee user, ArrayList<Event> eventArrayList, EventListAdapter adapter) {
         eventsCollection
                 .whereEqualTo("organizerId", user.getDocumentId())
                 .get()
@@ -869,7 +886,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void addCheckIn(CheckIn checkIn) {
+    public void addCheckIn(CheckIn checkIn) {
         checkInsCollection
                 .add(checkIn)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -881,7 +898,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void updateCheckIn(CheckIn checkIn) {
+    public void updateCheckIn(CheckIn checkIn) {
         checkInsCollection
                 .document(checkIn.getDocumentId())
                 .update("attendeeDocId", checkIn.getAttendeeDocId(),
@@ -902,7 +919,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckInCallBack callBack) {
+    public void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckInCallBack callBack) {
         checkInsCollection
                 .whereEqualTo("attendeeDocId", attendeeDocId)
                 .whereEqualTo("eventDocId", eventDocId)
@@ -934,7 +951,7 @@ public class FirebaseDB {
      * @param checkIn the object representing the checkIn. this holds the document ID of the event, and attendee that is checking in
      * @param event the event we are changing
      */
-    public static void addCheckInToEvent(CheckIn checkIn, Event event) {
+    public void addCheckInToEvent(CheckIn checkIn, Event event) {
         checkInsCollection
                 .add(checkIn)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -960,7 +977,7 @@ public class FirebaseDB {
      * @param postersPaths The list to be populated with poster paths
      * @param callback the OnFinishedCallback to invoke when firebase has completed it's operation
      */
-    public static void getPostersPaths(ArrayList<String> postersPaths, OnFinishedCallback callback) {
+    public void getPostersPaths(ArrayList<String> postersPaths, OnFinishedCallback callback) {
         storage.getReference().child("poster")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -986,7 +1003,7 @@ public class FirebaseDB {
      * @param profilesPaths The list to be populated with profile picture paths
      * @param callback the OnFinishedCallback to invoke when firebase has completed it's operation
      */
-    public static void getProfilePicturesPaths(ArrayList<String> profilesPaths, OnFinishedCallback callback) {
+    public void getProfilePicturesPaths(ArrayList<String> profilesPaths, OnFinishedCallback callback) {
         storage.getReference().child("profile")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -1011,7 +1028,7 @@ public class FirebaseDB {
      * @param imagePaths The ArrayList to store all of the paths
      * @param callback The callback to invoke once firebase has finished this operation
      */
-    public static void getAllPicturesPaths(ArrayList<String> imagePaths, OnFinishedCallback callback){
+    public void getAllPicturesPaths(ArrayList<String> imagePaths, OnFinishedCallback callback){
         getPostersPaths(imagePaths, new OnFinishedCallback() {
             @Override
             public void onFinished() {
@@ -1031,7 +1048,7 @@ public class FirebaseDB {
      * @param imagePath This is the path of the image we're trying to get (has the file extension)
      * @param callBack This callBack will be used to get back bitmap
      */
-    public static void adminRetrieveImage(String imagePath, GetBitmapCallBack callBack) {
+    public void adminRetrieveImage(String imagePath, GetBitmapCallBack callBack) {
         try {
             StorageReference storageRef = storage.getReference(imagePath);
             String path = imagePath.substring(0, imagePath.lastIndexOf("."));
@@ -1059,7 +1076,7 @@ public class FirebaseDB {
      *
      * @param event the event to be deleted
      */
-    public static void deleteEvent(Event event) {
+    public void deleteEvent(Event event) {
         eventsCollection
                 .document(event.getDocumentId())
                 .delete()
@@ -1102,7 +1119,7 @@ public class FirebaseDB {
      *
      * @param imagePath This is the path of the image we're trying to get (has the file extension)
      */
-    public static void deleteImageAdmin(String imagePath, OnFinishedCallback callback) {
+    public void deleteImageAdmin(String imagePath, OnFinishedCallback callback) {
         storage.getReference()
                 .child(imagePath)
                 .delete()
@@ -1177,7 +1194,7 @@ public class FirebaseDB {
      * Removes the profile of a user
      * @param attendee The user whose profile we want to remove
      */
-    public static void deleteProfile(Attendee attendee) {
+    public void deleteProfile(Attendee attendee) {
         attendee.setEmail(null);
         attendee.setName("Guest24");
         if (attendee.getProfilePicturePath() != null){
@@ -1193,7 +1210,7 @@ public class FirebaseDB {
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
      * @param event
      */
-    public static void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
+    public void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
                 .get()
@@ -1240,7 +1257,7 @@ public class FirebaseDB {
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
      * @param event
      */
-    public static void getEventSignedUpUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
+    public void getEventSignedUpUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
         for(Integer i = 0; i < event.getSignUps().size(); i++){
             usersCollection
                     .whereEqualTo("documentId", event.getSignUps().get(i))
@@ -1281,7 +1298,7 @@ public class FirebaseDB {
      * @param password The password input by the user
      * @param callback The callback we invoked to tell if the user input valid or invalid admin login credentials
      */
-    public static void attemptAdminLogin(String username, String password, AttemptLoginCallback callback){
+    public void attemptAdminLogin(String username, String password, AttemptLoginCallback callback){
         adminLoginsCollection
                 .whereEqualTo("user", username)
                 .whereEqualTo("pass", password)
@@ -1306,7 +1323,7 @@ public class FirebaseDB {
 
     }
 
-    public static void userCheckedIntoEvent(Attendee user, Event event, UniqueCheckCallBack callBack) {
+    public void userCheckedIntoEvent(Attendee user, Event event, UniqueCheckCallBack callBack) {
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
                 .whereEqualTo("eventDocId", event.getDocumentId())
@@ -1319,7 +1336,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void getEventCheckedInUsersGeoLocation(Event event, ArrayList<Attendee> attendeeDataList) {
+    public void getEventCheckedInUsersGeoLocation(Event event, ArrayList<Attendee> attendeeDataList) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
                 .get()
@@ -1354,7 +1371,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void getToken(GetTokenCallback callback){
+    public void getToken(GetTokenCallback callback){
         messaging
                 .getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
@@ -1376,7 +1393,7 @@ public class FirebaseDB {
      * This function subscribes a user to the topic that FCM will send new announcements to as push notifications
      * @param topicName The name of the topic in FCM that the user is subscribing to
      */
-    public static void subscribeAttendeeToEventTopic(String topicName){
+    public void subscribeAttendeeToEventTopic(String topicName){
         messaging
                 .subscribeToTopic(topicName)
                 .addOnCompleteListener(new OnCompleteListener() {
@@ -1400,7 +1417,7 @@ public class FirebaseDB {
      * @param event the event we want to get the check in locations
      * @param callback The callback we invoked to return the two lists
      * */
-    public static void getGeolocations(Event event, GetMapMarkersCallback callback) {
+    public void getGeolocations(Event event, GetMapMarkersCallback callback) {
         ArrayList<CheckIn> checkIns = new ArrayList<>();
         ArrayList<String> names = new ArrayList<>();
         AtomicInteger tasksCount = new AtomicInteger(event.getCheckIns().size());

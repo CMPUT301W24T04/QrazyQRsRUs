@@ -128,7 +128,7 @@ public class GeoLocation extends Fragment {
                 Bundle bundle = getArguments();
                 Event event = (Event) bundle.getSerializable("event");
                 // get all checked-in attendees in a list with their geolocation on
-//                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
+//                FirebaseDB.getInstance().getEventCheckedInUsersGeoLocation(event, attendeeDataList);
                 attendee_location = Point.fromLngLat( 53.5281, -90.0000);
                 // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
                 ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();

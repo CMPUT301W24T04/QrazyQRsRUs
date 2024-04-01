@@ -4,7 +4,6 @@ package com.example.qrazyqrsrus;
 import static android.graphics.ImageDecoder.createSource;
 import static android.graphics.ImageDecoder.decodeBitmap;
 
-import static com.example.qrazyqrsrus.FirebaseDB.checkUnique;
 
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;

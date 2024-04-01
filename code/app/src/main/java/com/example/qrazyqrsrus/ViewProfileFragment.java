@@ -192,7 +192,7 @@ public class ViewProfileFragment extends Fragment {
         }
         loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
         //loadUserProfile(userId);
-//        FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+//        FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
 //            @Override
 //            public void onResult(Attendee attendee) {
 //
@@ -253,7 +253,7 @@ public class ViewProfileFragment extends Fragment {
             }
             imgProfilePicture.setImageBitmap(profileBitmap);
         } else{
-            FirebaseDB.retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
+            FirebaseDB.getInstance().retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
                 @Override
                 public void onResult(Bitmap bitmap) {
                     imgProfilePicture.setImageBitmap(bitmap);
@@ -268,13 +268,13 @@ public class ViewProfileFragment extends Fragment {
         if (newImageUri != null){
             //if the user has changed their profile picture, we save it
             String pathname = generatePathName(attendee.getName());
-            FirebaseDB.uploadImage(newImageUri,pathname);
+            FirebaseDB.getInstance().uploadImage(newImageUri,pathname);
             //we delete their old profile picture if there was one
             if (attendee.getProfilePicturePath() != null){
-                FirebaseDB.deleteImage(attendee.getProfilePicturePath());
+                FirebaseDB.getInstance().deleteImage(attendee.getProfilePicturePath());
             }
             attendee.setProfilePicturePath(pathname);
-            FirebaseDB.updateUser(attendee);
+            FirebaseDB.getInstance().updateUser(attendee);
             newImageUri = null;
         } else{
             //if the user's profile picture path is null, we generate a new bitmap for them
@@ -287,9 +287,9 @@ public class ViewProfileFragment extends Fragment {
             //we will, unless the user clicked delete on their generated profile picture
             if (imageDeleted){
                 if (attendee.getProfilePicturePath() != null){
-                    FirebaseDB.deleteImage(attendee.getProfilePicturePath());
+                    FirebaseDB.getInstance().deleteImage(attendee.getProfilePicturePath());
                     attendee.setProfilePicturePath(null);
-                    FirebaseDB.updateUser(attendee);
+                    FirebaseDB.getInstance().updateUser(attendee);
                     imageDeleted = false;
                 }
 
@@ -300,7 +300,7 @@ public class ViewProfileFragment extends Fragment {
         attendee.setName(etFullName.getText().toString());
         attendee.setGeolocationOn(switchGeolocation.isChecked());
         attendee.setEmail(etEmailAddress.getText().toString());
-        FirebaseDB.updateUser(attendee);
+        FirebaseDB.getInstance().updateUser(attendee);
         Toast.makeText(getContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show();
         exitEditMode();
 
