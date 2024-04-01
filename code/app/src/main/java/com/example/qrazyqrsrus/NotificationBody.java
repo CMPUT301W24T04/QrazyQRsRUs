@@ -6,10 +6,12 @@ package com.example.qrazyqrsrus;
 public class NotificationBody {
     private String title;
     private String body;
+    private String eventId;
 
-    public NotificationBody(String title, String body) {
+    public NotificationBody(String title, String body, String eventId) {
         this.title = title;
         this.body = body;
+        this.eventId = eventId;
     }
 
     public String getTitle() {
@@ -26,5 +28,13 @@ public class NotificationBody {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 }

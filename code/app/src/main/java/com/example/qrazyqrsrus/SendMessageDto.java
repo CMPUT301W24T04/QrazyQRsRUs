@@ -9,11 +9,13 @@ public class SendMessageDto {
     private String to;
     private NotificationBody notification;
     private String topic;
+    private String eventId;
 
-    public SendMessageDto(String to, NotificationBody notification, String topic) {
+    public SendMessageDto(String to, NotificationBody notification, String topic, String eventId) {
         this.to = to;
         this.notification = notification;
         this.topic = topic;
+        this.eventId = eventId;
     }
 
     public String getTo() {
@@ -38,6 +40,14 @@ public class SendMessageDto {
 
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 
     /**

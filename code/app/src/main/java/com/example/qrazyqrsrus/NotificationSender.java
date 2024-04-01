@@ -41,10 +41,10 @@ public class NotificationSender implements Callback<MessageSentResponse> {
      * @param eventName a string that represents the title of the notification
      * @param notificationText a string that represents the body of the notification
      */
-    public void sendMessage(Boolean isBroadcast, String to, String topic, String eventName, String notificationText){
-        NotificationBody body = new NotificationBody(eventName, notificationText);
+    public void sendMessage(Boolean isBroadcast, String to, String topic, String eventName, String notificationText, String eventId){
+        NotificationBody body = new NotificationBody(eventName, notificationText, eventId);
 
-        SendMessageDto dto = new SendMessageDto(to, body, topic);
+        SendMessageDto dto = new SendMessageDto(to, body, topic, eventId);
 
         try{
             if (isBroadcast){
