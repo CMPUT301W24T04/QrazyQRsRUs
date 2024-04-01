@@ -112,7 +112,7 @@ public class GeoLocation extends Fragment {
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
         // Load the mapbox map
-        mapView.getMapboxMap().loadStyle(Style.STANDARD, new Style.OnStyleLoaded() {
+        mapView.getMapboxMap().loadStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 //https://docs.mapbox.com/android/maps/guides/styles/set-a-style/
@@ -128,8 +128,9 @@ public class GeoLocation extends Fragment {
                 Bundle bundle = getArguments();
                 Event event = (Event) bundle.getSerializable("event");
                 // get all checked-in attendees in a list with their geolocation on
-//                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
-                attendee_location = Point.fromLngLat( 53.5281, -90.0000);
+                //FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
+
+                attendee_location = Point.fromLngLat( -90.0000, 53.5281);
                 // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
                 ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
                 mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);

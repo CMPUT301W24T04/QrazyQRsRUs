@@ -61,7 +61,13 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
 
         // change value of name and num_checkins from content value
-        Name.setText(attendee.getName());
+        FirebaseDB.getUserName(attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
+            @Override
+            public void onResult(String string) {
+                Name.setText(string);
+            }
+        });
+
         String checkins_string = "" + attendee.getCheckins();
 
 //        String num_checkins = attendee.getCheckins().toString();
