@@ -1,7 +1,8 @@
 //this fragment is the third fragment in the event creation sequence. it allows users to select an end time for their event.
 
 package com.example.qrazyqrsrus;
-
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +10,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import androidx.appcompat.widget.Toolbar;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.SignStyle;
+import java.time.temporal.ChronoField;
+import java.util.Calendar;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -28,19 +38,6 @@ import java.time.format.DateTimeFormatter;
 public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
     private androidx.appcompat.widget.Toolbar toolbar;
-
-    /**
-     * Saves the end dats in a bundle
-     * @param param1
-     * @param param2
-     * @return fragment
-     */
-    public static NewEventEndTimeFragment newInstance(String param1, String param2) {
-        NewEventEndTimeFragment fragment = new NewEventEndTimeFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     //temporarily set listener to be mainActivity. should eventually be adding events to firestore.
     @Override
@@ -80,13 +77,17 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         View view = inflater.inflate(R.layout.new_event_end_time_fragment, container, false);
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            //temporarily messily create a new event, put it in bundle to pass to next navigation destination
+
             Bundle args =  makeNewBundle(getArguments());
-//            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
-//            args.putSerializable("event", modifiedEvent);
+
 
             Navigation.findNavController(view).navigate(R.id.action_newEventEndTimeFragment_to_newEventImageFragment, args);
         });
+        TextView dateButton = view.findViewById(R.id.date_display_textview);
+        dateButton.setOnClickListener(v -> showDatePickerDialog());
+
+        TextView timeButton = view.findViewById(R.id.time_display_textview);
+        timeButton.setOnClickListener(v -> showTimePickerDialog());
         Bundle args = getArguments();
         handleArguments(args, view);
         createToolbar(view);
@@ -128,7 +129,7 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         return false;
     }
 
-    //create new event from the user input. messy, needs error checking
+
 
     /**
      * Save the local time
@@ -141,58 +142,92 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         return LocalDateTime.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
     }
 
-    private Bundle makeNewBundle(Bundle args){
+    private LocalDateTime parseDateTimeString(String dateTimeStr) {
+        // Create a DateTimeFormatter with optional parts for day and month
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("yyyy")
+                .appendLiteral('-')
+                .appendValue(ChronoField.MONTH_OF_YEAR, 1, 2, SignStyle.NORMAL)
+                .appendLiteral('-')
+                .appendValue(ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NORMAL)
+                .appendLiteral(' ')
+                .appendValue(ChronoField.HOUR_OF_DAY, 1, 2, SignStyle.NORMAL)
+                .appendLiteral(':')
+                .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+                .toFormatter(Locale.US);
+
+        // Parse the date and time string
+        return LocalDateTime.parse(dateTimeStr, formatter);
+    }
+    private Bundle makeNewBundle(Bundle args) {
         View view = getView();
+        if (view == null || args == null) return args; // Safety checks
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
+        if (builder != null) {
+            TextView dateButton = view.findViewById(R.id.date_display_textview);
+            TextView timeButton = view.findViewById(R.id.time_display_textview);
 
-        DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
-        TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
-        LocalDateTime endDate = getLocalDateTime(datePicker, timePicker);
+            // Assuming the date and time are set on the buttons in "yyyy-MM-dd" and "HH:mm" formats respectively
+            String dateString = dateButton.getText().toString();
+            String timeString = timeButton.getText().toString();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        builder.setEndDate(endDate.format(formatter));
+            // Combine the date and time strings
+            String dateTimeString = dateString + " " + timeString;
+            LocalDateTime endDate = parseDateTimeString(dateTimeString);
 
-
-
-        //we put the updates builder back into the bundle
-        args.putSerializable("builder", builder);
-
+            // Update the builder with the new start date and time
+            builder.setEndDate(endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            args.putSerializable("builder", builder);
+        }
         return args;
     }
-//    private Bundle makeNewBundle(Bundle bundle){
-//        DatePicker datePicker = getView().findViewById(R.id.event_date_picker);
-//        TimePicker timePicker = getView().findViewById(R.id.event_time_picker);
-//        LocalDateTime startDate = getLocalDateTime(datePicker, timePicker);
-//        bundle.putSerializable("startDate", startDate);
-//        return bundle;
-//    }
-
-    private void handleArguments(Bundle args, View view){
+    private void handleArguments (Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
-        if (builder.getEndDate() != null){
+        if (builder != null && builder.getEndDate() != null) {
             String endDate = builder.getEndDate();
-            //if builder.getEndDate() != null, the user has already been to this screen, so we restore their input
-            DatePicker datePicker = view.findViewById(R.id.event_date_picker);
-            TimePicker timePicker = view.findViewById(R.id.event_time_picker);
-            //MAKE SURE STRING SLICING IS RIGHT
-            String yearString = endDate.substring(0,4);
-            String monthString = endDate.substring(5,7);
-            String dayString = endDate.substring(8,10);
 
-            Log.d("yearString", yearString);
-            Log.d("monthString", monthString);
-            Log.d("dayString", dayString);
+            // Use the custom parsing method
+            LocalDateTime endDateTime = parseDateTimeString(endDate);
 
-            datePicker.updateDate(Integer.valueOf(yearString), Integer.valueOf(monthString), Integer.valueOf(dayString));
+            TextView dateButton = view.findViewById(R.id.date_display_textview);
+            TextView timeButton = view.findViewById(R.id.time_display_textview);
 
-            String hourString = endDate.substring(11,13);
-            String minuteString = endDate.substring(14,16);
+            // Format and set the date on the date button
+            String formattedDate = endDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            dateButton.setText(formattedDate);
 
-            Log.d("hourString", hourString);
-            Log.d("minuteString", minuteString);
-
-            timePicker.setHour(Integer.valueOf(hourString));
-            timePicker.setMinute(Integer.valueOf(minuteString));
+            // Format and set the time on the time button
+            String formattedTime = endDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+            timeButton.setText(formattedTime);
         }
     }
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    TextView dateButton = getView().findViewById(R.id.date_display_textview);
+                    dateButton.setText(String.format(Locale.getDefault(), "%d-%d-%d", year1, monthOfYear + 1, dayOfMonth));
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
+                (view, hourOfDay, minute1) -> {
+                    TextView timeButton = getView().findViewById(R.id.time_display_textview);
+                    timeButton.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute1));
+                }, hour, minute, true);
+        timePickerDialog.show();
+    }
+
+
+
 }
