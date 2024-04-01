@@ -46,7 +46,22 @@
         android:clickable="true"
         android:focusable="true"/>
 
-
+    <TextView
+        android:id="@+id/time_display_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="HH:mm"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/date_display_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
 
 
