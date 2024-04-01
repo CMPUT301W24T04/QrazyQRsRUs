@@ -49,9 +49,14 @@ public class HomeSignedUpListAdapter extends ArrayAdapter<Event> {
 
         // get textviews from content fragment
         TextView Name = view.findViewById(R.id.signed_up_name);
+        TextView Location = view.findViewById(R.id.signed_up_location);
 
 
         // set values of textviews based on the object attributes
+
+        Name.setText(event.getName()); //.getEventName());
+        Location.setText(event.getLocation());
+
         String tempName = event.getName();
         if (tempName.length() > 20) {
             String newText = tempName.substring(0, 20) + "...";

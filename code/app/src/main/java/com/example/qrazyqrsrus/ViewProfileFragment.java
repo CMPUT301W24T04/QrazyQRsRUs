@@ -64,7 +64,7 @@ public class ViewProfileFragment extends Fragment {
     private FirebaseFirestore db;
     private boolean isProfileLoaded = false;
     private Button btnDone, btnCancel;
-    private Boolean imageUpdates;
+    private Boolean imageUpdates = false;
     private Uri newImageUri;
     private Boolean imageDeleted = false;
 

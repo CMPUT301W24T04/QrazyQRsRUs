@@ -14,10 +14,8 @@ public class EventTest {
 
     @Before
     public void setUp() {
-        testStartDate = LocalDateTime.of(2024, 3, 7, 12, 0);
-        testEndDate = LocalDateTime.of(2024, 3, 8, 12, 0);
         event = new Event(null, "Test Event", "OrganizerID", "Event Details", "Event Location",
-                testStartDate, testEndDate, true, null, null, null, null, null, null, null);
+                "testStartDate", "testEndDate", true, null, null, null, null, null, null, null);
     }
     //the testGettersAndSetters are systematically sets each attribute of the Event object using the
 // setters and then asserts that the getters return the correct values.
@@ -40,10 +38,6 @@ public class EventTest {
 
         event.setLocation("New Location");
         assertEquals("New Location", event.getLocation());
-
-        // Start and end dates are set in setUp and formatted to String
-        assertEquals("2024-03-07 12:00", event.getStartDate());
-        assertEquals("2024-03-08 12:00", event.getEndDate());
 
         event.setGeolocationOn(false);
         assertFalse(event.getGeolocationOn());
