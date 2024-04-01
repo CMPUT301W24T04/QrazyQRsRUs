@@ -36,6 +36,7 @@ import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class QRCodeScanHandler{
 
@@ -69,6 +70,8 @@ public class QRCodeScanHandler{
          * @param event the event of the scanned qr code that is throwing an error. this parameter can be null depending on what kind of error there is
          */
         public void onNoResult(@Nullable Event event, int errorNumber);
+
+        public void onSpecialResult();
     }
 
     /**
@@ -82,9 +85,15 @@ public class QRCodeScanHandler{
         barcodeLauncher = activity.registerForActivityResult(new ScanContract(),
                 result -> {
                     //this ActivityResultCallback lambda function handles the results of the scanning activity
+                    //we check if the user scanned the special QR code that will log them in to the admin screen
+                    if (Objects.equals(result.getContents(), "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")){
+                        callback.onSpecialResult();
+                        return;
+                    }
                     //we check if there is a result
                     if(result.getContents() == null) {
                         callback.onNoResult(null, 2);
+                        return;
                     } else {
                         //first we look to see if the qr code we just scanned is an event's promo qr code
                         FirebaseDB.findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
