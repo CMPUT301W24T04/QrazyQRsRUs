@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * This is a utility class that does all the Firebase related actions.
  */
@@ -93,6 +96,11 @@ public class FirebaseDB {
         void onResult(String token);
     }
 
+
+    public interface GetMapMarkersCallback {
+        void onResult(ArrayList<CheckIn> checks, ArrayList<String> names);
+    }
+
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
     final static FirebaseStorage storage = FirebaseStorage.getInstance();
     final static FirebaseMessaging messaging = FirebaseMessaging.getInstance();
@@ -104,6 +112,8 @@ public class FirebaseDB {
     final static String usersTAG = "Users";
     final static String eventsTAG = "Events";
     final static String imagesTAG = "Images";
+
+    final static String checkInsTag = "CheckIns";
 
     //dependency injection doesn't work, because db is a static variable
     //consider refactoring FirebaseDB into a singleton with dependency injection
@@ -935,7 +945,7 @@ public class FirebaseDB {
                         updateCheckIn(checkIn);
                         //we delete the signup from the event's field
                         event.deleteSignUp(checkIn.getAttendeeDocId());
-                        //we add the checkin and update our event :)
+                        //we add the checkIn and update our event :)
                         event.addCheckIn(checkIn.getDocumentId());
                         updateEvent(event);
                     }
@@ -1384,6 +1394,51 @@ public class FirebaseDB {
                 });
     }
 
-
-
+    /**
+     * Gets two lists, one for the CheckIn instances and one for the names of the attendees
+     *
+     * @param event the event we want to get the check in locations
+     * @param callback The callback we invoked to return the two lists
+     * */
+    public static void getGeolocations(Event event, GetMapMarkersCallback callback) {
+        ArrayList<CheckIn> checkIns = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
+        AtomicInteger tasksCount = new AtomicInteger(event.getCheckIns().size());
+        for (String checkIn : event.getCheckIns()) {
+            checkInsCollection.document(checkIn).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot1) {
+                            String docId = (String) documentSnapshot1.get("attendeeDocId");
+                            usersCollection.document(docId)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot2) {
+                                            Boolean geolocationOn = (Boolean) documentSnapshot2.get("geolocationOn");
+                                            if (Boolean.TRUE.equals(geolocationOn)) {
+                                                checkIns.add(documentSnapshot1.toObject(CheckIn.class));
+                                                names.add((String) documentSnapshot2.get("name"));
+                                            }
+                                            if (tasksCount.decrementAndGet() == 0) {
+                                                callback.onResult(checkIns, names);
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(checkInsTag, "Something went wrong" + e);
+                                        }
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(checkInsTag, "Something went wrong" + e);
+                        }
+                    });
+        }
+    }
 }
