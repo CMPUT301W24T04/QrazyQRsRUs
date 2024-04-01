@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is a utility class that does all the Firebase related actions.
+ *
  */
 public class FirebaseDB {
 
@@ -1319,7 +1320,7 @@ public class FirebaseDB {
                 });
     }
 
-    public static void getEventCheckedInUsersGeoLocation(Event event, ArrayList<Attendee> attendeeDataList) {
+    public static void getEventCheckedInUsersGeoLocation(Event event, ArrayList<String> attendeeDataList, ArrayList latitudeList, ArrayList longitudeList) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
                 .get()
@@ -1330,18 +1331,19 @@ public class FirebaseDB {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // check if the checked in user has a name that exists
                                 String documentId = document.getId();
-                                String id = (String) document.getData().get("id");
-                                String name = (String) document.getData().get("name");
-                                String email = (String) document.getData().get("email");
-                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
-                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
-//                                if(attendee.getGeolocationOn() == true) {
-                                if(attendee.getGeolocationOn() == true) {
-                                    attendeeDataList.add(attendee);
-//                                }
-                                }
+                                double latitude = (double) document.getData().get("latitude");
+                                double longitude = (double) document.getData().get("longitude");
+//                                String id = (String) document.getData().get("id");
+//                                String name = (String) document.getData().get("name");
+//                                String email = (String) document.getData().get("email");
+//                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+//                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+//                                long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+//                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
+                                attendeeDataList.add(documentId);
+                                latitudeList.add(latitude);
+                                longitudeList.add(longitude);
+
                             }
                         }
                     }

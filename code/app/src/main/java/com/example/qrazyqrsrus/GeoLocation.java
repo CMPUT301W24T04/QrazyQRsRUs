@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -57,14 +58,12 @@ import kotlin.DslMarker;
 
 public class GeoLocation extends Fragment {
     private MapView mapView;
-    ArrayList<Attendee> attendeeDataList;
     private  FloatingActionButton floatingActionButton;
     // Initialize the image
     private  ImageHolder image;
     private Point attendee_location;
+    private View view;
 
-    ViewAnnotationManager viewAnnotationManager;
-//    private Marker
 
     /**
      * Used to verify the permissions specified in the manifest file
@@ -103,16 +102,13 @@ public class GeoLocation extends Fragment {
         mapView = mapLayout.findViewById(R.id.mapView);
 //        mapDelegateProvider = mapLayout.findViewById(R.id.mapView);
 
-        floatingActionButton = mapLayout.findViewById(R.id.focusLocation);
-        floatingActionButton.hide();
-
         //import android.Manifest; to have ACCESS_FINE_LOCATION work
         if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
 
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
         // Load the mapbox map
-        mapView.getMapboxMap().loadStyle(Style.STANDARD, new Style.OnStyleLoaded() {
+        mapView.getMapboxMap().loadStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 //https://docs.mapbox.com/android/maps/guides/styles/set-a-style/
@@ -128,56 +124,28 @@ public class GeoLocation extends Fragment {
                 Bundle bundle = getArguments();
                 Event event = (Event) bundle.getSerializable("event");
                 // get all checked-in attendees in a list with their geolocation on
-//                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList);
-                attendee_location = Point.fromLngLat( 53.5281, -90.0000);
+//                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList, latitudeList, longitudeList);
+
+                FirebaseDB.getGeolocations(event, new FirebaseDB.GetMapMarkersCallback() {
+                    @Override
+                    public void onResult(ArrayList<CheckIn> checks, ArrayList<String> names) {
+                        for(int i = 0; i < checks.size();i++){
+                            View marker = inflater.inflate(R.layout.marker_layout,container, false);
+                            TextView name = marker.findViewById(R.id.annotation);
+                            name.setText(names.get(i).toString());
+                            attendee_location = Point.fromLngLat( checks.get(i).getLongitude(),checks.get(i).getLatitude());
+                            // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
+                            ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
+                            mapView.getViewAnnotationManager().addViewAnnotation(marker,viewAnnotationOptions);
+                        }
+                    }
+                });
+
+
+                attendee_location = Point.fromLngLat( -90.0000, 53.5281);
                 // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
                 ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
                 mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);
-
-                // Add a pin to all locations of attendees
-//                for(Integer i = 0; i < attendeeDataList.size(); i++)
-//                {
-//                    attendee_location = Point.fromLngLat( attendeeDataList.get(i).getLongitude(), attendeeDataList.get(i).getLongitude());
-//                    PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-//                            .withPoint(attendee_location)
-//                            .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString()); //image.Companion.from(R.drawable.baseline_location_on_24).getBitmap()
-//                    point.create(pointAnnotationOptions);
-//                }
-
-
-
-//                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-//                        .withPoint(attendee_location)
-//                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString());
-
-                //ViewAnnotationOptions viewAnnotationOptions1;
-                //viewAnnotationOptions1 = ViewAnnotationOptions.Builder().
-                //viewAnnotationOptions1 = ViewAnnotationOptionsKtxKt.geometry(viewAnnotationOptions1.toBuilder(), attendee_location).build();
-
-//                viewAnnotationOptions = ViewAnnotationOptions.Builder
-//                        .geometry(attendee_location)
-//                        .build();
-
-
-//                point.create(pointAnnotationOptions);
-
-//                AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
-//                CircleAnnotationManager circleAnnotationManager = CircleAnnotationManagerKt.createCircleAnnotationManager(annotationApi, new AnnotationConfig());
-//                // circle annotations options
-//                CircleAnnotationOptions circleAnnotationOptions = new CircleAnnotationOptions()
-//                        .withPoint(attendee_location)
-//                                .withCircleRadius(8.0)
-//                        .withCircleColor("#ee4e8b")
-//                        .withCircleBlur(0.5)
-//                        .withCircleStrokeWidth(2.0)
-//                        .withCircleStrokeColor("#ffffff");
-//                circleAnnotationManager.create(circleAnnotationOptions);
-
-//                attendee_location = Point.fromLngLat( 53.5281, -113.5265);
-//                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-//                        .withPoint(attendee_location)
-//                        .withIconImage(image.Companion.from(R.drawable.baseline_location_on_24).toString());
-//                point.create(pointAnnotationOptions);
 
             }
         });
