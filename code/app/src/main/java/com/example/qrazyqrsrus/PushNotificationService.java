@@ -2,12 +2,14 @@ package com.example.qrazyqrsrus;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.navigation.NavDeepLinkBuilder;
 
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -27,24 +29,38 @@ public class PushNotificationService extends FirebaseMessagingService {
 
         // Extract event ID from the notification data
         String eventId = message.getData().get("eventId");
+        Bundle args = new Bundle();
 
         if (eventId != null){
             Log.d("NotificationService", "Please tell me it works");
+            try {
+                Event event = Tasks.await(FirebaseDB.getEventById(eventId)); // Await literally waits for the task to give a result before moving on
+                // Use the event object here
+                args.putSerializable("event", event);
+            } catch (Exception e) {
+                Log.d("PoopyDoopy", e.getMessage());
+            }
         }else {
             Log.d("NotificationService", "It doesn't:(");
         }
 
         // Create an intent to open the activity containing the fragment
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 
         // Include the event ID as an extra in the intent
-        intent.putExtra("eventId", eventId);
+        //intent.putExtra("eventId", eventId);
 
-        // Set the intent action or use a custom action if needed
-        intent.setAction(Intent.ACTION_VIEW);
+        // Set the intent action
+        //intent.setAction(Intent.ACTION_VIEW);
 
         // Start the activity when the notification is clicked
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        //PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        PendingIntent pendingIntent = new NavDeepLinkBuilder(getApplicationContext())
+                .setGraph(R.navigation.home_events_nav_graph)
+                .setDestination(R.id.eventDetailsFragment3)         // THIS IS A POSSIBLE SPOT FOR AN ERROR, I AM NOT SURE WHICH NAV GRAPH TO USE AND THEREFORE WHICH DESTINATION
+                .setArguments(args)
+                .createPendingIntent();
 
         // Build the notification
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "EVENTS")
@@ -52,7 +68,7 @@ public class PushNotificationService extends FirebaseMessagingService {
                 .setContentText(message.getNotification().getBody())
                 .setSmallIcon(R.drawable.dialog_background)
                 .setContentIntent(pendingIntent) // Set the PendingIntent
-                .setAutoCancel(true); // Close the notification when clicked
+                .setAutoCancel(true);
 
         // Show the notification
         NotificationManager notificationManager = getSystemService(NotificationManager.class);

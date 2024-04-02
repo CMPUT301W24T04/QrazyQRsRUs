@@ -126,26 +126,26 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
 
-        String eventId = getIntent().getStringExtra("eventId");
-
-        if (eventId != null) {
-            Log.d("eventId", "YAY NOT NULL");
-            FirebaseDB.getEventById(eventId, new FirebaseDB.GetEventCallback() {
-                @Override
-                public void onSuccess(Event event) {
-                    Log.d("eventIdFirebaseFunction", "Holy shit it works?");
-                    ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false)); //THIS IS JUST A TEST, I DONT KNOW HOW ELSE TO IMPLEMENT IT
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    // ERROR HANDLING
-                    Log.d("eventIdFirebaseFunction", "Nope");
-                }
-            });
-        }else {
-            Log.d("eventId", "man i'm tired");
-        }
+//        String eventId = getIntent().getStringExtra("eventId");
+//
+//        if (eventId != null) {
+//            Log.d("eventId", "YAY NOT NULL");
+//            FirebaseDB.getEventById(eventId, new FirebaseDB.GetEventCallback() {
+//                @Override
+//                public void onSuccess(Event event) {
+//                    Log.d("eventIdFirebaseFunction", "Holy shit it works?");
+//                    ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false)); //THIS IS JUST A TEST, I DONT KNOW HOW ELSE TO IMPLEMENT IT
+//                }
+//
+//                @Override
+//                public void onFailure(String errorMessage) {
+//                    // ERROR HANDLING
+//                    Log.d("eventIdFirebaseFunction", "Nope");
+//                }
+//            });
+//        }else {
+//            Log.d("eventId", "man i'm tired");
+//        }
 
 
 
