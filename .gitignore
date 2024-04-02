@@ -1,7 +1,4 @@
 LICENSE
 README.md
-doc/
 .idea/
 .DS_Store
-code/app/src/main/res/values/strings.xml
-code/gradle.properties

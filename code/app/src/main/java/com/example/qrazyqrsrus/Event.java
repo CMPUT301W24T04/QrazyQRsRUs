@@ -101,21 +101,6 @@ public class Event implements Serializable {
         this.checkIns = checkIns;
     }
 
-    /**
-     * event constructor
-     * @param eventName
-     * @param eventDetails
-     * @param eventLocation
-     * @param eventDate
-     */
-    public Event(String eventName, String eventDetails, String eventLocation, LocalDateTime eventDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        this.name = eventName;
-        this.details = eventDetails;
-        this.location = eventLocation;
-        this.startDate = eventDate.format(formatter);
-    }
-
     /** get
      *
      * @return String

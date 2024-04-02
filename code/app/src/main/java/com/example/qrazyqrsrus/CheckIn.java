@@ -6,14 +6,14 @@ public class CheckIn {
     private String attendeeDocId;
     private String documentId;
     private String eventDocId;
-    private double longitude;
-    private double latitude;
+    private Double longitude;
+    private Double latitude;
     private Integer numberOfCheckIns;
 
     public CheckIn() {
 
     }
-    public CheckIn(String attendeeDocId, String eventDocId, double longitude, double latitude) {
+    public CheckIn(String attendeeDocId, String eventDocId, Double longitude, Double latitude) {
         this.attendeeDocId = attendeeDocId;
         this.eventDocId = eventDocId;
         this.longitude = longitude;
@@ -21,7 +21,7 @@ public class CheckIn {
         this.numberOfCheckIns = 1;
     }
 
-    public CheckIn(String attendeeDocId, String documentId, String eventDocId, double longitude, double latidude, Integer numberOfCheckIns) {
+    public CheckIn(String attendeeDocId, String documentId, String eventDocId, Double longitude, Double latidude, Integer numberOfCheckIns) {
         this.attendeeDocId = attendeeDocId;
         this.documentId = documentId;
         this.eventDocId = eventDocId;

@@ -33,9 +33,3 @@ google-services.json
 
 # Android Profiling
 *.hprof
-
-# mapbox key
-gradle.properties
-
-# mapbox key
-app/src/main/res/values/strings.xml

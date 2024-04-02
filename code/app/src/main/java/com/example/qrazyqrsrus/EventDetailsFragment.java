@@ -96,6 +96,7 @@ public class EventDetailsFragment extends Fragment {
         Button promoQRShare = rootView.findViewById(R.id.promo_share_button);
         Button checkInQRShare = rootView.findViewById(R.id.check_in_share_button);
 
+
         //try to get event and attendee from bundle
         //if attendee is not there, that's fine, if event not there, very bad.
         if (getArguments() == null){
@@ -216,7 +217,11 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
-        String nameString = "Name: "+event.getName();
+
+
+
+
+        String nameString = ""+event.getName();
         //String organizerString = "Organized by: ";
         FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
             @Override
@@ -224,10 +229,10 @@ public class EventDetailsFragment extends Fragment {
                 updateOrganizerString(string, rootView);
             }
         });
-        String locationString = "Location: "+event.getLocation();
-        String descriptionString = "Description: "+event.getDetails();
-        String startDateString = "Starts: "+event.getStartDate();
-        String endDateString = "Ends: "+event.getEndDate();
+        String locationString = "Location:     "+event.getLocation();
+        String descriptionString = "Description:     "+event.getDetails();
+        String startDateString = "Start DateTime:     "+event.getStartDate();
+        String endDateString = "End DateTime    "+event.getEndDate();
 
 
         nameView.setText(nameString);
@@ -254,7 +259,7 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void updateOrganizerString(String string, View view){
-        ((TextView) view.findViewById(R.id.event_detail_organizer)).setText("Organizer: " + string);
+        ((TextView) view.findViewById(R.id.event_detail_organizer)).setText("Organizer:     " + string);
     }
 
     private void setAttendee(Attendee attendee){
