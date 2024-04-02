@@ -1397,49 +1397,7 @@ public class FirebaseDB {
                 });
     }
 
-//    public static void getEventById(String eventId, GetEventCallback callback) {
-//        eventsCollection.document(eventId)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            if (document.exists()) {
-//                                String id = document.getId();
-//                                String name = document.getString("name");
-//                                String organizerId = document.getString("organizerId");
-//                                String details = document.getString("details");
-//                                String location = document.getString("location");
-//                                String startDate = document.getString("startDate");
-//                                String endDate = document.getString("endDate");
-//                                Boolean geolocationOn = document.getBoolean("geolocationOn");
-//                                String posterPath = document.getString("posterPath");
-//                                String qrCode = document.getString("qrCode");
-//                                String qrCodePromo = document.getString("qrCodePromo");
-//                                String organizerToken = document.getString("organizerToken");
-//                                ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
-//                                ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
-//                                ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
-//
-//                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
-//                                callback.onSuccess(event);
-//                            } else {
-//                                Log.d(eventsTAG, "No such event exists");
-//                                callback.onFailure("No such event exists");
-//                            }
-//                        } else {
-//                            Log.d(eventsTAG, "Error getting event document: ", task.getException());
-//                            callback.onFailure("Error getting event document: " + task.getException().getMessage());
-//                        }
-//                    }
-//                });
-//    }
-
-
-    public static Task<Event> getEventById(String eventId) {
-        TaskCompletionSource<Event> taskCompletionSource = new TaskCompletionSource<>();
-
+    public static void getEventById(String eventId, GetEventCallback callback) {
         eventsCollection.document(eventId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -1465,20 +1423,62 @@ public class FirebaseDB {
                                 ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
 
                                 Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
-                                taskCompletionSource.setResult(event);
+                                callback.onSuccess(event);
                             } else {
                                 Log.d(eventsTAG, "No such event exists");
-                                taskCompletionSource.setException(new Exception("No such event exists"));
+                                callback.onFailure("No such event exists");
                             }
                         } else {
                             Log.d(eventsTAG, "Error getting event document: ", task.getException());
-                            taskCompletionSource.setException(task.getException());
+                            callback.onFailure("Error getting event document: " + task.getException().getMessage());
                         }
                     }
                 });
-
-        return taskCompletionSource.getTask();
     }
+
+
+//    public static Task<Event> getEventById(String eventId) {
+//        TaskCompletionSource<Event> taskCompletionSource = new TaskCompletionSource<>();
+//
+//        eventsCollection.document(eventId)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            DocumentSnapshot document = task.getResult();
+//                            if (document.exists()) {
+//                                String id = document.getId();
+//                                String name = document.getString("name");
+//                                String organizerId = document.getString("organizerId");
+//                                String details = document.getString("details");
+//                                String location = document.getString("location");
+//                                String startDate = document.getString("startDate");
+//                                String endDate = document.getString("endDate");
+//                                Boolean geolocationOn = document.getBoolean("geolocationOn");
+//                                String posterPath = document.getString("posterPath");
+//                                String qrCode = document.getString("qrCode");
+//                                String qrCodePromo = document.getString("qrCodePromo");
+//                                String organizerToken = document.getString("organizerToken");
+//                                ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
+//                                ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
+//                                ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+//
+//                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+//                                taskCompletionSource.setResult(event);
+//                            } else {
+//                                Log.d(eventsTAG, "No such event exists");
+//                                taskCompletionSource.setException(new Exception("No such event exists"));
+//                            }
+//                        } else {
+//                            Log.d(eventsTAG, "Error getting event document: ", task.getException());
+//                            taskCompletionSource.setException(task.getException());
+//                        }
+//                    }
+//                });
+//
+//        return taskCompletionSource.getTask();
+//    }
 
 
 

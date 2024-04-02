@@ -2,6 +2,7 @@ package com.example.qrazyqrsrus;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -17,6 +18,8 @@ import com.google.firebase.messaging.RemoteMessage;
 //this idea was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
 //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
 public class PushNotificationService extends FirebaseMessagingService {
+
+    Context context = this;
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
@@ -34,9 +37,39 @@ public class PushNotificationService extends FirebaseMessagingService {
         if (eventId != null){
             Log.d("NotificationService", "Please tell me it works");
             try {
-                Event event = Tasks.await(FirebaseDB.getEventById(eventId)); // Await literally waits for the task to give a result before moving on
+                FirebaseDB.getEventById(eventId, new FirebaseDB.GetEventCallback() {
+                    @Override
+                    public Event onSuccess(Event event) {
+                        args.putSerializable("event", event);
+                        PendingIntent pendingIntent = new NavDeepLinkBuilder(getApplicationContext())
+                                .setGraph(R.navigation.home_events_nav_graph)
+                                .setDestination(R.id.eventDetailsFragment3)         // THIS IS A POSSIBLE SPOT FOR AN ERROR, I AM NOT SURE WHICH NAV GRAPH TO USE AND THEREFORE WHICH DESTINATION
+                                .setArguments(args)
+                                .createPendingIntent();
+
+                        // Build the notification
+                        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, "EVENTS")
+                                .setContentTitle(message.getNotification().getTitle())
+                                .setContentText(message.getNotification().getBody())
+                                .setSmallIcon(R.drawable.dialog_background)
+                                .setContentIntent(pendingIntent) // Set the PendingIntent
+                                .setAutoCancel(true);
+
+                        // Show the notification
+                        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                        notificationManager.notify(0, notificationBuilder.build());
+
+                        return null;
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.d("getEventById", "failure");
+                    }
+                }); // Await literally waits for the task to give a result before moving on
                 // Use the event object here
-                args.putSerializable("event", event);
+
             } catch (Exception e) {
                 Log.d("PoopyDoopy", e.getMessage());
             }
@@ -56,23 +89,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         // Start the activity when the notification is clicked
         //PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        PendingIntent pendingIntent = new NavDeepLinkBuilder(getApplicationContext())
-                .setGraph(R.navigation.home_events_nav_graph)
-                .setDestination(R.id.eventDetailsFragment3)         // THIS IS A POSSIBLE SPOT FOR AN ERROR, I AM NOT SURE WHICH NAV GRAPH TO USE AND THEREFORE WHICH DESTINATION
-                .setArguments(args)
-                .createPendingIntent();
 
-        // Build the notification
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "EVENTS")
-                .setContentTitle(message.getNotification().getTitle())
-                .setContentText(message.getNotification().getBody())
-                .setSmallIcon(R.drawable.dialog_background)
-                .setContentIntent(pendingIntent) // Set the PendingIntent
-                .setAutoCancel(true);
-
-        // Show the notification
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.notify(0, notificationBuilder.build());
 
     }
 }
