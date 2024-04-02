@@ -111,6 +111,38 @@ public class FirebaseDB {
     private CollectionReference checkInsCollection;
     private CollectionReference adminLoginsCollection;
 
+    public CollectionReference getUsersCollection() {
+        return usersCollection;
+    }
+
+    public void setUsersCollection(CollectionReference usersCollection) {
+        this.usersCollection = usersCollection;
+    }
+
+    public CollectionReference getEventsCollection() {
+        return eventsCollection;
+    }
+
+    public void setEventsCollection(CollectionReference eventsCollection) {
+        this.eventsCollection = eventsCollection;
+    }
+
+    public CollectionReference getCheckInsCollection() {
+        return checkInsCollection;
+    }
+
+    public void setCheckInsCollection(CollectionReference checkInsCollection) {
+        this.checkInsCollection = checkInsCollection;
+    }
+
+    public CollectionReference getAdminLoginsCollection() {
+        return adminLoginsCollection;
+    }
+
+    public void setAdminLoginsCollection(CollectionReference adminLoginsCollection) {
+        this.adminLoginsCollection = adminLoginsCollection;
+    }
+
     final String usersTAG = "Users";
     final String eventsTAG = "Events";
     final String imagesTAG = "Images";
@@ -121,7 +153,9 @@ public class FirebaseDB {
 
     public static FirebaseDB getInstance(){
         if (instance == null){
-            instance = new FirebaseDB();
+            FirebaseFirestore firestoreInstance = FirebaseFirestore.getInstance();
+            instance = new FirebaseDB(firestoreInstance, FirebaseStorage.getInstance(), FirebaseMessaging.getInstance(), firestoreInstance.collection("Users"), firestoreInstance.collection("Events"),
+                    firestoreInstance.collection("CheckIns"), firestoreInstance.collection("Logins"));
         }
         return instance;
     }
@@ -129,14 +163,20 @@ public class FirebaseDB {
     //dependency injection doesn't work, because db is a static variable
     //consider refactoring FirebaseDB into a singleton with dependency injection
     //we don't want to mock FirebaseDB, we want to mock FirebaseFirestore.getInstance()
-    private FirebaseDB(){
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
-        messaging = FirebaseMessaging.getInstance();
-        usersCollection = db.collection("Users");
-        eventsCollection = db.collection("Events");
-        checkInsCollection = db.collection("CheckIns");
-        adminLoginsCollection = db.collection("Logins");
+    private FirebaseDB(FirebaseFirestore firestoreInstance, FirebaseStorage storageInstance, FirebaseMessaging messagingInstance, CollectionReference usersCollection, CollectionReference eventsCollection,
+                       CollectionReference checkInsCollection, CollectionReference adminLoginsCollection){
+        this.db = firestoreInstance;
+        this.storage = storageInstance;
+        this.messaging = messagingInstance;
+        this.usersCollection = usersCollection;
+        this.eventsCollection = eventsCollection;
+        this.checkInsCollection = checkInsCollection;
+        this.adminLoginsCollection = adminLoginsCollection;
+    }
+
+    public FirebaseDB createTestInstance(FirebaseFirestore firestoreInstance, FirebaseStorage storageInstance, FirebaseMessaging messagingInstance, CollectionReference usersCollection, CollectionReference eventsCollection,
+                                         CollectionReference checkInsCollection, CollectionReference adminLoginsCollection){
+        return new FirebaseDB(firestoreInstance, storageInstance, messagingInstance, usersCollection, eventsCollection, checkInsCollection, adminLoginsCollection);
     }
 
     // Change String to Attendee class when someone implements it.
