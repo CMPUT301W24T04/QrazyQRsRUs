@@ -113,6 +113,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.d("test", deviceId);
 
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Event Announcements";
+            String description = "Receive push notifications from event organizers";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system. You can't change the importance
+            // or other notification behaviors after this.
+            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+
         String eventId = getIntent().getStringExtra("eventId");
 
         if (eventId != null) {
@@ -121,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 @Override
                 public void onSuccess(Event event) {
                     Log.d("eventIdFirebaseFunction", "Holy shit it works?");
-                    ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true)); //THIS IS JUST A TEST, I DONT KNOW HOW ELSE TO IMPLEMENT IT
+                    ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false)); //THIS IS JUST A TEST, I DONT KNOW HOW ELSE TO IMPLEMENT IT
                 }
 
                 @Override

@@ -47,7 +47,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         // Build the notification
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "channel_id")
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "EVENTS")
                 .setContentTitle(message.getNotification().getTitle())
                 .setContentText(message.getNotification().getBody())
                 .setSmallIcon(R.drawable.dialog_background)
