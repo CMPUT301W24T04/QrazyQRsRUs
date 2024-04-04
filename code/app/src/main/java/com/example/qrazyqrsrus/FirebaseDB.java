@@ -143,6 +143,30 @@ public class FirebaseDB {
         this.adminLoginsCollection = adminLoginsCollection;
     }
 
+    public FirebaseFirestore getDb() {
+        return db;
+    }
+
+    public void setDb(FirebaseFirestore db) {
+        this.db = db;
+    }
+
+    public FirebaseStorage getStorage() {
+        return storage;
+    }
+
+    public void setStorage(FirebaseStorage storage) {
+        this.storage = storage;
+    }
+
+    public FirebaseMessaging getMessaging() {
+        return messaging;
+    }
+
+    public void setMessaging(FirebaseMessaging messaging) {
+        this.messaging = messaging;
+    }
+
     final String usersTAG = "Users";
     final String eventsTAG = "Events";
     final String imagesTAG = "Images";
@@ -160,6 +184,18 @@ public class FirebaseDB {
         return instance;
     }
 
+    /**
+     * This method is used to get a test instance of FirebaseDB that can use Mock Firebase Firestore/Storage/Messaging instances, to perform tests without hitting the actual database.
+     * @param firestoreInstance
+     * @param firebaseStorageInstance
+     * @param firebaseMessagingInstance
+     * @return
+     */
+    public static FirebaseDB getInstance(FirebaseFirestore firestoreInstance, FirebaseStorage firebaseStorageInstance, FirebaseMessaging firebaseMessagingInstance){
+        return new FirebaseDB(firestoreInstance, firebaseStorageInstance, firebaseMessagingInstance, firestoreInstance.collection("Users"), firestoreInstance.collection("Events"),
+                firestoreInstance.collection("CheckIns"), firestoreInstance.collection("Logins"));
+    }
+
     //dependency injection doesn't work, because db is a static variable
     //consider refactoring FirebaseDB into a singleton with dependency injection
     //we don't want to mock FirebaseDB, we want to mock FirebaseFirestore.getInstance()
@@ -172,11 +208,6 @@ public class FirebaseDB {
         this.eventsCollection = eventsCollection;
         this.checkInsCollection = checkInsCollection;
         this.adminLoginsCollection = adminLoginsCollection;
-    }
-
-    public FirebaseDB createTestInstance(FirebaseFirestore firestoreInstance, FirebaseStorage storageInstance, FirebaseMessaging messagingInstance, CollectionReference usersCollection, CollectionReference eventsCollection,
-                                         CollectionReference checkInsCollection, CollectionReference adminLoginsCollection){
-        return new FirebaseDB(firestoreInstance, storageInstance, messagingInstance, usersCollection, eventsCollection, checkInsCollection, adminLoginsCollection);
     }
 
     // Change String to Attendee class when someone implements it.
@@ -192,7 +223,7 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Log.d(usersTAG, "User document snapshot written with ID:" + documentReference.getId());
+//                        Log.d(usersTAG, "User document snapshot written with ID:" + documentReference.getId());
                         user.setDocumentId(documentReference.getId());
                         updateUser(user);
                     }
@@ -200,7 +231,7 @@ public class FirebaseDB {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w(usersTAG, "Error while adding user document", e);
+//                        Log.w(usersTAG, "Error while adding user document", e);
                     }
                 });
     }
@@ -277,13 +308,13 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Log.d(usersTAG, "User document updated successfully");
+//                        Log.d(usersTAG, "User document updated successfully");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w(usersTAG, "Error while updating user document", e);
+//                        Log.w(usersTAG, "Error while updating user document", e);
                     }
                 });
     }
