@@ -510,7 +510,6 @@ public class FirebaseDB {
                                 String organizerToken = (String) document.getData().get("organizerToken");
                                 Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
                                 }
@@ -558,7 +557,6 @@ public class FirebaseDB {
                                 String organizerToken = (String) document.getData().get("organizerToken");
                                 Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
                                 }
@@ -1520,8 +1518,9 @@ public class FirebaseDB {
                                 ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
                                 ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
                                 ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
                                 callback.onSuccess(event);
                             } else {
                                 Log.d(eventsTAG, "No such event exists");
