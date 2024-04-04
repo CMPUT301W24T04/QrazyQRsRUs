@@ -114,7 +114,7 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
             try {
                 args = makeNewBundle(getArguments());
                 Event event = ((Event.EventBuilder) args.getSerializable("builder")).build();
-                FirebaseDB.addEvent(event);
+                FirebaseDB.getInstance().addEvent(event);
                 Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
             } catch (Exception e) {
                 new ErrorDialog(R.string.no_qr_code).show(getActivity().getSupportFragmentManager(), "Error Dialog");
@@ -130,22 +130,22 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
 //            LocalDateTime endDate = (LocalDateTime) args.getSerializable("endDate");
 //            String posterPath = (String) args.getSerializable("posterPath");
 //            Uri uri = (Uri) args.getParcelable("uri");
-//            FirebaseDB.uploadImage(uri, posterPath);
+//            FirebaseDB.getInstance().uploadImage(uri, posterPath);
 //            String qrCodePromo = (String) args.getSerializable("qrCodePromo");
 //            String qrCode = (String) args.getSerializable("qrCode");
-//            FirebaseDB.uploadImage(uri, posterPath);
+//            FirebaseDB.getInstance().uploadImage(uri, posterPath);
 //
 //            Event event = new Event(name, organizerId, details, location, startDate, endDate, max_attendees);
 //            event.setPosterPath(posterPath);
 //            event.setQrCodePromo(qrCodePromo);
 //            event.setQrCode(qrCode);
-//            FirebaseDB.addEvent(event);
+//            FirebaseDB.getInstance().addEvent(event);
 //            Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
         });
         Bundle bundle = getArguments();
         handleArguments(bundle, view);
         createToolbar(view);
-//        FirebaseDB.subscribeAttendeeToEventTopic();
+//        FirebaseDB.getInstance().subscribeAttendeeToEventTopic();
         return view;
     }
 

@@ -116,7 +116,7 @@ public class EventDetailsFragment extends Fragment {
         //then we update the images that are displayed, and the visibility of the signup button once we have the attendee
         if (this.attendee == null){
             String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+            FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
                     setAttendee(attendee);
@@ -171,8 +171,8 @@ public class EventDetailsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 event.addSignUp(attendee.getDocumentId());
-                FirebaseDB.updateEvent(event);
-                FirebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
+                FirebaseDB.getInstance().updateEvent(event);
+                FirebaseDB.getInstance().subscribeAttendeeToEventTopic(event.getDocumentId());
                 signUpEvent.setVisibility(View.GONE);
             }
         });
@@ -226,7 +226,7 @@ public class EventDetailsFragment extends Fragment {
 
         String nameString = ""+event.getName();
         //String organizerString = "Organized by: ";
-        FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
+        FirebaseDB.getInstance().getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
                 updateOrganizerString(string, rootView);
@@ -277,7 +277,7 @@ public class EventDetailsFragment extends Fragment {
         if (Objects.equals(this.attendee.getDocumentId(), event.getOrganizerId())) {
             viewAttendees.setVisibility(View.VISIBLE);
         }
-        FirebaseDB.userCheckedIntoEvent(this.attendee, this.event, new FirebaseDB.UniqueCheckCallBack() {
+        FirebaseDB.getInstance().userCheckedIntoEvent(this.attendee, this.event, new FirebaseDB.UniqueCheckCallBack() {
             @Override
             public void onResult(boolean isUnique) {
                 if (isUnique) {
@@ -304,7 +304,7 @@ public class EventDetailsFragment extends Fragment {
      */
     private void setImages(ImageView posterView, ImageView promoQRView, ImageView checkInQRView){
         if (this.event.getPosterPath() != null) {
-            FirebaseDB.retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
+            FirebaseDB.getInstance().retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
                 @Override
                 public void onResult(Bitmap bitmap) {
                     posterView.setImageBitmap(bitmap);

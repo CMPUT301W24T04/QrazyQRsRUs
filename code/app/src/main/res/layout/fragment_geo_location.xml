@@ -10,9 +10,9 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="-90.0000"
-        mapbox:mapbox_cameraTargetLng="53.5281"
-        mapbox:mapbox_cameraZoom="9.8"/>
+        mapbox:mapbox_cameraTargetLat="40.0000"
+        mapbox:mapbox_cameraTargetLng="-105.2551"
+        mapbox:mapbox_cameraZoom="3.5"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"

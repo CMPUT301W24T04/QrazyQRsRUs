@@ -89,7 +89,7 @@ public class EventList extends Fragment {  // FIX LATER
         eventList.setAdapter(eventListAdapter);
 
         // we get all events from the database, and have it populate the datalist and listadapter
-        FirebaseDB.getAllEvents(eventDataList, eventListAdapter);
+        FirebaseDB.getInstance().getAllEvents(eventDataList, eventListAdapter);
 
         //set the header to say "browse all events"
         TextView header = eventListLayout.findViewById(R.id.event_list_title);

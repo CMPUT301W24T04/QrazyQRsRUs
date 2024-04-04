@@ -52,6 +52,7 @@ public class Event implements Serializable {
         this.announcements = new ArrayList<String>();
         this.signUps = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
+        this.maxAttendees = maxAttendees
     }
 
     // Constructor when getting retrieving from database
@@ -77,6 +78,32 @@ public class Event implements Serializable {
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
+        this.maxAttendees = maxAttendees;
+    }
+
+    public Event(String documentId, String name, String organizerId, String details,
+                 String location, String startDate, String endDate,
+                 Boolean geolocationOn, String posterPath, String qrCode,
+                 String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
+                 ArrayList<String> checkIns, Integer maxAttendees) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        this.documentId = documentId;
+        this.name = name;
+        this.organizerId = organizerId;
+        this.details = details;
+        this.location = location;
+        this.maxAttendees = maxAttendees;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.geolocationOn = geolocationOn;
+        this.posterPath = posterPath;
+        this.qrCode = qrCode;
+        this.qrCodePromo = qrCodePromo;
+        this.organizerToken = organizerToken;
+        this.announcements = announcements;
+        this.signUps = signUps;
+        this.checkIns = checkIns;
+        this.maxAttendees = maxAttendees;
     }
 
     public Event(String documentId, String name, String organizerId, String details,
@@ -296,11 +323,11 @@ public class Event implements Serializable {
             this.signUps.add(signUp);
             // Change this to notification when we've implemented notification
             if (signUps.size() == 1) {
-                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st signup!");
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st signup!", this.getDocumentId());
             } else if (signUps.size() == 10) {
-                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th signup!");
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th signup!", this.getDocumentId());
             } else if (signUps.size() == 100) {
-                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th signup!");
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th signup!", this.getDocumentId());
             }
         }
     }
@@ -340,11 +367,11 @@ public class Event implements Serializable {
 
             // Change this to notification when we've implemented notification
             if (checkIns.size() == 1) {
-                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st check-in!");
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 1st check-in!", this.getDocumentId());
             } else if (checkIns.size() == 10) {
-                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th check-in!");
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 10th check-in!", this.getDocumentId());
             } else if (checkIns.size() == 100) {
-                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th check-in!");
+                NotificationSender.getInstance().sendMessage(false, this.organizerToken, null, "Milestone: " + this.name, "You've got your 100th check-in!", this.getDocumentId());
             }
         }
     }

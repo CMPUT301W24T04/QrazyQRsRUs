@@ -207,7 +207,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 //    private Event saveImageToFirebase(Uri uri, Event event){
 //        String pathname = generateUniquePathName(event);
 //        event.setPosterPath(pathname);
-//        FirebaseDB.uploadImage(uri, pathname);
+//        FirebaseDB.getInstance().uploadImage(uri, pathname);
 //        return event;
 //    }
 
@@ -223,7 +223,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         if (this.uri == null){
             //if this.uri is null, the user either 1) did not upload an image or 2) had uploaded an image before, but returned to this screen and deleted the image
             if (this.initialPath != null){
-                FirebaseDB.deleteImage(this.initialPath);
+                FirebaseDB.getInstance().deleteImage(this.initialPath);
                 builder.setUri(null);
                 builder.setPosterPath(null);
             }
@@ -232,9 +232,9 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
             //if this.uri is not null, the user either 1) uploaded an image for the first time or changed the image or 2) did not change the image they initially uploaded
             if (this.initialPath == null || this.initialPath != this.path){
                 if (this.initialPath != null){
-                    FirebaseDB.deleteImage(this.initialPath);
+                    FirebaseDB.getInstance().deleteImage(this.initialPath);
                 }
-                FirebaseDB.uploadImage(this.uri, this.path);
+                FirebaseDB.getInstance().uploadImage(this.uri, this.path);
                 builder.setUri(this.uri);
                 builder.setPosterPath(this.path);
             }
@@ -252,7 +252,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
             this.uri = builder.getUri();
             this.initialPath = builder.getPosterPath();
             this.path = this.initialPath;
-            FirebaseDB.retrieveImage(builder.getPosterPath(), new FirebaseDB.GetBitmapCallBack() {
+            FirebaseDB.getInstance().retrieveImage(builder.getPosterPath(), new FirebaseDB.GetBitmapCallBack() {
                 @Override
                 public void onResult(Bitmap bitmap) {
                     ((ImageView) view.findViewById(R.id.new_event_display_event_poster)).setImageBitmap(bitmap);

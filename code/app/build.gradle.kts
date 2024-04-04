@@ -78,6 +78,10 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     testImplementation("org.mockito:mockito-core:5.11.0")
+    //maybe need, probably do no need
+    testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
+    testImplementation("org.powermock:powermock-module-junit4:2.0.9")
+    testImplementation("org.testng:testng:7.4.0")
 
     //for FCM
     implementation("com.google.firebase:firebase-messaging")

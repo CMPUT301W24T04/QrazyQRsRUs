@@ -76,7 +76,7 @@ public class AdminViewAttendeesFragment extends Fragment {
         allAttendees = new ArrayList<Attendee>();
 
         //we get the initial list of all Attendees
-        FirebaseDB.getAllUsers(allAttendees, new FirebaseDB.OnFinishedCallback() {
+        FirebaseDB.getInstance().getAllUsers(allAttendees, new FirebaseDB.OnFinishedCallback() {
             @Override
             public void onFinished() {
                 updateView();
@@ -113,9 +113,9 @@ public class AdminViewAttendeesFragment extends Fragment {
             public void onClick(View v) {
                 //we will delete the currently viewed image, clear our list of attendees, and get the updated list from firebase
                 //TODO: see if we need to put the clear and getAllUsers into a onFinished callback with deleteProfile
-                FirebaseDB.deleteProfile(allAttendees.get(currentPosition));
+                FirebaseDB.getInstance().deleteProfile(allAttendees.get(currentPosition));
                 allAttendees.clear();
-                FirebaseDB.getAllUsers(allAttendees, new FirebaseDB.OnFinishedCallback() {
+                FirebaseDB.getInstance().getAllUsers(allAttendees, new FirebaseDB.OnFinishedCallback() {
                     //when the database is finished this operation, we update what is being displayed on screen
                     @Override
                     public void onFinished() {
@@ -169,7 +169,7 @@ public class AdminViewAttendeesFragment extends Fragment {
         if (currentAttendee.getProfilePicturePath() == null){
             //TODO: nothing?
         } else{
-            FirebaseDB.retrieveImage(currentAttendee, new FirebaseDB.GetBitmapCallBack() {
+            FirebaseDB.getInstance().retrieveImage(currentAttendee, new FirebaseDB.GetBitmapCallBack() {
                 @Override
                 public void onResult(Bitmap bitmap) {
                     imageView.setImageBitmap(bitmap);

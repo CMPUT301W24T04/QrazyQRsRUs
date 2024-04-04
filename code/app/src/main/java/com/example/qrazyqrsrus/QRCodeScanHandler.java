@@ -2,8 +2,6 @@
 //currently, no class properly implements onNoResult if there is an error while QR code scanning
 package com.example.qrazyqrsrus;
 
-//import static com.example.qrazyqrsrus.FirebaseDB.findEventWithQR;
-
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
@@ -96,7 +94,7 @@ public class QRCodeScanHandler{
                         return;
                     } else {
                         //first we look to see if the qr code we just scanned is an event's promo qr code
-                        FirebaseDB.findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
+                        FirebaseDB.getInstance().findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
                             public void onResult(Event matchingEvent) {
                                 //if a promo QR code is successfully found
@@ -108,7 +106,7 @@ public class QRCodeScanHandler{
                             //if there we do not find an event in the DB with a matching promo qr content, we look for a matching check-in qr code
                             @Override
                             public void onNoResult() {
-                                FirebaseDB.findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
+                                FirebaseDB.getInstance().findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
                                     @Override
                                     public void onResult(Event matchingEvent) {
                                         Log.d("findEventWithQR", "callback invoked");
@@ -117,7 +115,7 @@ public class QRCodeScanHandler{
                                             //if so, they can check in normally
                                             callback.onCheckInResult(matchingEvent);
                                         } else{
-                                            FirebaseDB.userCheckedIntoEvent(user, matchingEvent, new FirebaseDB.UniqueCheckCallBack() {
+                                            FirebaseDB.getInstance().userCheckedIntoEvent(user, matchingEvent, new FirebaseDB.UniqueCheckCallBack() {
                                                 @Override
                                                 public void onResult(boolean isUnique) {
                                                     if (isUnique) {
