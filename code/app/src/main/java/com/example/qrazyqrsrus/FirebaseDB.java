@@ -510,6 +510,7 @@ public class FirebaseDB {
                                 String organizerToken = (String) document.getData().get("organizerToken");
                                 Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
                                 }
@@ -557,6 +558,7 @@ public class FirebaseDB {
                                 String organizerToken = (String) document.getData().get("organizerToken");
                                 Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
                                 }

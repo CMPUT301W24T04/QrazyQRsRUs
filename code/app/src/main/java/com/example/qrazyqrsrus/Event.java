@@ -52,6 +52,7 @@ public class Event implements Serializable {
         this.announcements = new ArrayList<String>();
         this.signUps = new ArrayList<String>();
         this.checkIns = new ArrayList<String>();
+        this.maxAttendees = maxAttendees
     }
 
     // Constructor when getting retrieving from database
@@ -77,6 +78,7 @@ public class Event implements Serializable {
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
+        this.maxAttendees = maxAttendees;
     }
 
     public Event(String documentId, String name, String organizerId, String details,
@@ -101,13 +103,14 @@ public class Event implements Serializable {
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
+        this.maxAttendees = maxAttendees;
     }
 
     public Event(String documentId, String name, String organizerId, String details,
                  String location, String startDate, String endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
-                 ArrayList<String> checkIns) {
+                 ArrayList<String> checkIns, Integer maxAttendees) {
         this.documentId = documentId;
         this.name = name;
         this.organizerId = organizerId;
@@ -123,6 +126,7 @@ public class Event implements Serializable {
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
+        this.maxAttendees = maxAttendees;
     }
 
     /** get
@@ -149,7 +153,12 @@ public class Event implements Serializable {
      * @return String
      */
     public void setName(String eventName) {
-        this.name = eventName;
+        if (eventName == null || eventName.isEmpty()) {
+            this.name = "Common Event";
+        }
+        else {
+            this.name = eventName;
+        }
     }
     /** get
      *
@@ -177,7 +186,12 @@ public class Event implements Serializable {
      * @return String
      */
     public void setDetails(String details) {
-        this.details = details;
+        if (details == null || details.isEmpty()) {
+            this.details = "No Description Available";
+        }
+        else {
+            this.details = details;
+        }
     }
     /** get
      *
@@ -191,7 +205,12 @@ public class Event implements Serializable {
      * @return String
      */
     public void setLocation(String location) {
-        this.location = location;
+        if (location == null || location.isEmpty()) {
+            this.location = "N/A";
+        }
+        else {
+            this.location = location;
+        }
     }
     /** get
      *
@@ -228,28 +247,26 @@ public class Event implements Serializable {
     public String getPosterPath() {
         return posterPath;
     }
-    /** set
+    /** Sets the path of the image for the poster
      *
      * @return String
      */
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
-    /** get
+    /** Gets the QR code to check in
      *
-     * @return String
      */
     public String getQrCode() {
         return qrCode;
     }
-    /** set
+    /** Sets the qr code used to check in
      *
-     * @return String
      */
     public void setQrCode(String qrCode) {
         this.qrCode = qrCode;
     }
-    /** get
+    /** Gets the promo QR code (as a string)
      *
      * @return String
      */
@@ -263,26 +280,25 @@ public class Event implements Serializable {
     public void setQrCodePromo(String qrCodePromo) {
         this.qrCodePromo = qrCodePromo;
     }
-    /** get
+    /** Gets the announcements
      *
      * @return ArrayList<String>
      */
     public ArrayList<String> getAnnouncements() {
         return announcements;
     }
-    /** set
-     *
-     * @return ArrayList<String>
+    /** Sets the announcements
      */
     public void setAnnouncements(ArrayList<String> announcements) {
         this.announcements = announcements;
     }
     /** adds announcement
      *
-     * @return String
      */
     public void addAnnouncement(String announcement) {
-        this.announcements.add(announcement);
+        if (announcement != null && !announcement.isEmpty()) {
+            this.announcements.add(announcement);
+        }
     }
     /** get
      *
@@ -384,30 +400,6 @@ public class Event implements Serializable {
     public Integer getAttendeeCount(){
         return this.signUps.size() + this.checkIns.size();
     }
-    /**
-     * checkes if user is checked in or signed up
-     * @param userDocumentId
-     * @param event
-     * @return Boolean
-     */
-
-
-//    public static Boolean hasCheckedInOrSignedUp(String userDocumentId, Event event) {
-//        if (event.getSignUps().contains(userDocumentId)) {
-//            return true;
-//        }
-//        ArrayList<Attendee> tempList = new ArrayList<>();
-//        ArrayList<String> tempList2 = new ArrayList<>();
-//        FirebaseDB.getInstance().getEventCheckedIn(event, tempList, attendeeListAdapter);
-//        for (Attendee attendee : tempList) {
-//            tempList2.add(attendee.getDocumentId());
-//        }
-//        if (tempList2.contains(userDocumentId)) {
-//            return true;
-//        }
-//        return false;
-//    }
-
     /** get
      *
      * @return string of the organizers FCM token

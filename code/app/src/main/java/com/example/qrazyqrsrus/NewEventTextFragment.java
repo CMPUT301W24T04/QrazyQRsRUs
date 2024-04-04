@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -81,6 +82,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         });
 
         SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
+        SwitchCompat geolocationToggle = view.findViewById(R.id.geolocation_toggle);
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
 
         limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -91,7 +93,6 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
                 maxAttendeesEditText.setText("");
             }
         });
-
         Bundle args = getArguments();
         handleArguments(args, view);
         createToolbar(view);
@@ -145,6 +146,9 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         }
 
         builder.setMaxAttendees(maxAttendees);
+
+        SwitchCompat geolocationOn = (SwitchCompat) view.findViewById(R.id.geolocation_toggle);
+        builder.setGeolocationOn(geolocationOn.isChecked());
         //we put the updates builder back into the bundle
         bundle.putSerializable("builder", builder);
 
