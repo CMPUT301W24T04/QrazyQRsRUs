@@ -556,7 +556,8 @@ public class FirebaseDB {
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 String organizerToken = (String) document.getData().get("organizerToken");
-                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
+                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
@@ -728,7 +729,8 @@ public class FirebaseDB {
                                                     String qrCode = (String) document.getData().get("qrCode");
                                                     String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                                     String organizerToken = (String) document.getData().get("organizerToken");
-                                                    Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
+                                                    Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                                    Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
                                                     ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                                     if (announcements == null) {
                                                         announcements = new ArrayList<String>();
@@ -1516,10 +1518,11 @@ public class FirebaseDB {
                                 String qrCode = document.getString("qrCode");
                                 String qrCodePromo = document.getString("qrCodePromo");
                                 String organizerToken = document.getString("organizerToken");
+                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
                                 ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
                                 ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
                                 ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
-                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
 
                                 Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
                                 callback.onSuccess(event);

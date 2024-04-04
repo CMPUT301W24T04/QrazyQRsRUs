@@ -207,7 +207,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Sign Up"
                 android:textColor="@color/white"
-                android:visibility="invisible"
+                android:visibility="visible"
                 app:backgroundTint="@color/green2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.487"

@@ -275,21 +275,31 @@ public class EventDetailsFragment extends Fragment {
      */
     private void setButtonVisibility(Button signUpButton, Button viewAttendees, Event event){
         if (Objects.equals(this.attendee.getDocumentId(), event.getOrganizerId())) {
-            viewAttendees.setVisibility(View.VISIBLE);
+            //leave early, we should not show signup button if person viewing is owner
+            signUpButton.setVisibility(View.GONE);
+            return;
+        }
+
+        if (event.getSignUps().contains(this.attendee.getDocumentId())){
+            //we shouldn't show signup button to those already signed up
+            signUpButton.setVisibility(View.GONE);
+            return;
+        }
+
+        if (event.getMaxAttendees() != null){
+            if (event.getAttendeeCount() >= event.getMaxAttendees()){
+                //we shouldn't show signup if the event is full
+                signUpButton.setVisibility(View.GONE);
+                return;
+            }
         }
         FirebaseDB.getInstance().userCheckedIntoEvent(this.attendee, this.event, new FirebaseDB.UniqueCheckCallBack() {
             @Override
             public void onResult(boolean isUnique) {
-                if (isUnique) {
+                if (!isUnique) {
+                    //if user is already checked in, we should not show signup button
+//                    signUpButton.setVisibility(View.GONE);
                     return;
-                }
-                else if (event.getSignUps().contains(EventDetailsFragment.this.attendee.getDocumentId())){
-                    return;
-                } else if (Objects.equals(event.getOrganizerId(), EventDetailsFragment.this.attendee.getDocumentId())) {
-                    return;
-                }
-                else {
-                    signUpButton.setVisibility(View.VISIBLE);
                 }
             }
         });
