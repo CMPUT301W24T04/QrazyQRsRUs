@@ -116,7 +116,7 @@ public class AnnouncementEditFragment extends Fragment{
 
         //we should be subscribing the person whenever they sign up/checkin, not here
         //we should also be creating a unique topic for each event
-        FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
+        FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
         //we amke the notification channel to send notifications to
         //this can be done in MainActivity, it doesn't really matter
         createNotificationChannel();
@@ -136,7 +136,7 @@ public class AnnouncementEditFragment extends Fragment{
             public void onClick(View v) {
                 NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString(), event.getDocumentId());
                 addAnnouncement(event);
-                FirebaseDB.updateEvent(event); // Updates the database with new event
+                FirebaseDB.getInstance().updateEvent(event); // Updates the database with new event
             }
         });
 
@@ -144,7 +144,7 @@ public class AnnouncementEditFragment extends Fragment{
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 showDeleteConfirmationDialog(position, event);
-                FirebaseDB.updateEvent(event);
+                FirebaseDB.getInstance().updateEvent(event);
                 return true;
             }
         });

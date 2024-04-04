@@ -67,7 +67,7 @@ public class AdminViewImagesFragment extends Fragment {
         allImagePaths = new ArrayList<String>();
 
         //we get the initial list of all picture paths
-        FirebaseDB.getAllPicturesPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
+        FirebaseDB.getInstance().getAllPicturesPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
             @Override
             public void onFinished() {
                 updateView();
@@ -103,12 +103,12 @@ public class AdminViewImagesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //we will delete the currently viewed image
-                FirebaseDB.deleteImageAdmin(allImagePaths.get(currentPosition), new FirebaseDB.OnFinishedCallback() {
+                FirebaseDB.getInstance().deleteImageAdmin(allImagePaths.get(currentPosition), new FirebaseDB.OnFinishedCallback() {
                     @Override
                     public void onFinished() {
                         //we clear the list of image paths and get it again
                         allImagePaths.clear();
-                        FirebaseDB.getAllPicturesPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
+                        FirebaseDB.getInstance().getAllPicturesPaths(allImagePaths, new FirebaseDB.OnFinishedCallback() {
                             //when the database finished this operation, we update what is being displayed on screen
                             @Override
                             public void onFinished() {
@@ -153,7 +153,7 @@ public class AdminViewImagesFragment extends Fragment {
     public void updateView() {
         Log.d("image test", allImagePaths.get(currentPosition));
         String currentImagePath = allImagePaths.get(currentPosition);
-        FirebaseDB.adminRetrieveImage(currentImagePath, new FirebaseDB.GetBitmapCallBack() {
+        FirebaseDB.getInstance().adminRetrieveImage(currentImagePath, new FirebaseDB.GetBitmapCallBack() {
             @Override
             public void onResult(Bitmap bitmap) {
                 imageView.setImageBitmap(bitmap);

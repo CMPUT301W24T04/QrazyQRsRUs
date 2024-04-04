@@ -18,7 +18,7 @@ public class CurrentUser {
      * This method is to be called one, when MainActivity is created, to initialize our user
      */
     public void initializeUser(String deviceId) {
-        FirebaseDB.loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
+        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
             @Override
             public void onResult(Attendee attendee) {
                 CurrentUser.this.currentUser = attendee;

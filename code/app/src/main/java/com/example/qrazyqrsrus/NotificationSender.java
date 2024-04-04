@@ -62,11 +62,9 @@ public class NotificationSender implements Callback<MessageSentResponse> {
 
     @Override
     public void onResponse(Call<MessageSentResponse> call, Response<MessageSentResponse> response) {
-        Log.d("hooray", "it should work");
     }
 
     @Override
     public void onFailure(Call<MessageSentResponse> call, Throwable t) {
-        Log.d("huh oh", "it dont work");
     }
 }

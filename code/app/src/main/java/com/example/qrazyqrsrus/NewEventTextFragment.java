@@ -70,7 +70,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            FirebaseDB.getToken(new FirebaseDB.GetTokenCallback() {
+            FirebaseDB.getInstance().getToken(new FirebaseDB.GetTokenCallback() {
                 @Override
                 public void onResult(String token) {
                     Log.d("newEventTextFragment", token);

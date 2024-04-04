@@ -49,19 +49,19 @@ public class MyEventsListFragment extends Fragment {
 
         //if the attendee is not passed, we must get the attendee to display only the events they are in.
         if (getArguments() == null){
-            FirebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+            FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
+                    FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
                     setAttendee(attendee);
-//                    FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+//                    FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
             setAttendee(attendee);
-            FirebaseDB.getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
-//            FirebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+            FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
+//            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
         }
 
         eventListView.setAdapter(myEventsListAdapter);

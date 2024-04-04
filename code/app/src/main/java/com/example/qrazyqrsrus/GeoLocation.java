@@ -58,6 +58,7 @@ import kotlin.DslMarker;
 
 public class GeoLocation extends Fragment {
     private MapView mapView;
+    ArrayList<Attendee> attendeeDataList;
     private  FloatingActionButton floatingActionButton;
     // Initialize the image
     private  ImageHolder image;
@@ -126,7 +127,7 @@ public class GeoLocation extends Fragment {
                 // get all checked-in attendees in a list with their geolocation on
 //                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList, latitudeList, longitudeList);
 
-                FirebaseDB.getGeolocations(event, new FirebaseDB.GetMapMarkersCallback() {
+                FirebaseDB.getInstance().getGeolocations(event, new FirebaseDB.GetMapMarkersCallback() {
                     @Override
                     public void onResult(ArrayList<CheckIn> checks, ArrayList<String> names) {
                         for(int i = 0; i < checks.size();i++){

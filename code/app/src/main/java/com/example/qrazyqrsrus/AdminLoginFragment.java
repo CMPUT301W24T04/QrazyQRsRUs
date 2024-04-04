@@ -27,7 +27,7 @@
 //        EditText usernameEditText = rootView.findViewById(R.id.etUsername);
 //        EditText passwordEditText = rootView.findViewById(R.id.etPassword);
 //        loginButton.setOnClickListener(v ->{
-//            FirebaseDB.attemptAdminLogin(usernameEditText.getText().toString(), passwordEditText.getText().toString(), new FirebaseDB.AttemptLoginCallback() {
+//            FirebaseDB.getInstance().attemptAdminLogin(usernameEditText.getText().toString(), passwordEditText.getText().toString(), new FirebaseDB.getInstance().AttemptLoginCallback() {
 //                //if the user has input a username and password that match some document's fields in the admin Logins collection, we navigate to the admin home screen
 //                @Override
 //                public void onResult() {

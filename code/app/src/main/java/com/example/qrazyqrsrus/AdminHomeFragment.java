@@ -28,7 +28,6 @@ public class AdminHomeFragment extends Fragment {
         Button profilesButton = view.findViewById(R.id.admin_profiles_button);
         Button imagesButton = view.findViewById(R.id.admin_images_button);
 
-        ImageButton backButton = view.findViewById(R.id.back_button);
 
         eventsButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewEventsFragment);
@@ -42,9 +41,6 @@ public class AdminHomeFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewImagesFragment);
         });
 
-        backButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).popBackStack();
-        });
 
         return view;
     }

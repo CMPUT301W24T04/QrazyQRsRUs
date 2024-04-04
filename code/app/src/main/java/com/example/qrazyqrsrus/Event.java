@@ -83,6 +83,30 @@ public class Event implements Serializable {
                  String location, String startDate, String endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
+                 ArrayList<String> checkIns, Integer maxAttendees) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        this.documentId = documentId;
+        this.name = name;
+        this.organizerId = organizerId;
+        this.details = details;
+        this.location = location;
+        this.maxAttendees = maxAttendees;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.geolocationOn = geolocationOn;
+        this.posterPath = posterPath;
+        this.qrCode = qrCode;
+        this.qrCodePromo = qrCodePromo;
+        this.organizerToken = organizerToken;
+        this.announcements = announcements;
+        this.signUps = signUps;
+        this.checkIns = checkIns;
+    }
+
+    public Event(String documentId, String name, String organizerId, String details,
+                 String location, String startDate, String endDate,
+                 Boolean geolocationOn, String posterPath, String qrCode,
+                 String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
                  ArrayList<String> checkIns) {
         this.documentId = documentId;
         this.name = name;
@@ -374,7 +398,7 @@ public class Event implements Serializable {
 //        }
 //        ArrayList<Attendee> tempList = new ArrayList<>();
 //        ArrayList<String> tempList2 = new ArrayList<>();
-//        FirebaseDB.getEventCheckedIn(event, tempList, attendeeListAdapter);
+//        FirebaseDB.getInstance().getEventCheckedIn(event, tempList, attendeeListAdapter);
 //        for (Attendee attendee : tempList) {
 //            tempList2.add(attendee.getDocumentId());
 //        }
