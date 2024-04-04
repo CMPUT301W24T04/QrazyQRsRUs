@@ -83,7 +83,7 @@ public class Event implements Serializable {
                  String location, String startDate, String endDate,
                  Boolean geolocationOn, String posterPath, String qrCode,
                  String qrCodePromo, String organizerToken, ArrayList<String> announcements, ArrayList<String> signUps,
-                 ArrayList<String> checkIns) {
+                 ArrayList<String> checkIns, Integer maxAttendees) {
         this.documentId = documentId;
         this.name = name;
         this.organizerId = organizerId;
@@ -99,6 +99,7 @@ public class Event implements Serializable {
         this.announcements = announcements;
         this.signUps = signUps;
         this.checkIns = checkIns;
+        this.maxAttendees = maxAttendees;
     }
 
     /** get

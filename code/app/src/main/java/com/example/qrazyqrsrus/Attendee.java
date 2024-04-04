@@ -26,6 +26,7 @@ public class Attendee implements Serializable {
     public Attendee(String id) {
         this.id = id;
         this.name = "Guest24";
+        this.geolocationOn = false;
     }
 
     /**

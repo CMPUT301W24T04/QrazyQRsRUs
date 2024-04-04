@@ -413,6 +413,7 @@ public class FirebaseDB {
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 String organizerToken = (String) document.getData().get("organizerToken");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
                                 }
@@ -425,7 +426,7 @@ public class FirebaseDB {
                                     checkIns = new ArrayList<String>();
                                 }
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
                                 eventList.add(event);
                             }
                             eventArrayAdapter.notifyDataSetChanged();
@@ -459,6 +460,7 @@ public class FirebaseDB {
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 String organizerToken = (String) document.getData().get("organizerToken");
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
                                 }
@@ -471,7 +473,7 @@ public class FirebaseDB {
                                     checkIns = new ArrayList<String>();
                                 }
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
                                 eventList.add(event);
                             }
                             callBack.onResult(eventList);
@@ -629,6 +631,7 @@ public class FirebaseDB {
                                                     String qrCode = (String) document.getData().get("qrCode");
                                                     String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                                     String organizerToken = (String) document.getData().get("organizerToken");
+                                                    Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
                                                     ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                                     if (announcements == null) {
                                                         announcements = new ArrayList<String>();
@@ -642,7 +645,7 @@ public class FirebaseDB {
                                                         checkIns = new ArrayList<String>();
                                                     }
 
-                                                    Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+                                                    Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
                                                     eventList.add(event);
                                                 }
                                                 adapter.notifyDataSetChanged();

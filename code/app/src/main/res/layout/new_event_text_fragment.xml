@@ -88,6 +88,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/event_details_input_layout" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/geolocation_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Geolocation Tracking"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/max_attendees_input_layout" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/max_attendees_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
