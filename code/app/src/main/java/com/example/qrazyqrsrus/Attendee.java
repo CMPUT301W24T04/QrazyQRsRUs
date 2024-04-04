@@ -100,7 +100,13 @@ public class Attendee implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name == null || name.isEmpty())
+        {
+            this.name = "GuestT04";
+        }
+        else {
+            this.name = name;
+        }
     }
 
     public String getEmail() {
@@ -108,7 +114,13 @@ public class Attendee implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        if (email == null || email.isEmpty())
+        {
+            this.email = null;
+        }
+        else {
+            this.email = email;
+        }
     }
 
     public String getProfilePicturePath() {
