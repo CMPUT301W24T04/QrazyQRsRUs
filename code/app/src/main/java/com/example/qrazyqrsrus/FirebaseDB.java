@@ -508,7 +508,14 @@ public class FirebaseDB {
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 String organizerToken = (String) document.getData().get("organizerToken");
-                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
+                                Integer maxAttendees;
+                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                if (maxAttendeesLong != null){
+                                    maxAttendees = ((Long) document.getData().get("maxAttendees")).intValue();
+                                } else{
+                                    maxAttendees = null;
+                                }
+//                                Integer maxAttendees = (Integer) ((int) document.getData().get("maxAttendees"));
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
@@ -555,7 +562,13 @@ public class FirebaseDB {
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 String organizerToken = (String) document.getData().get("organizerToken");
-                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
+                                Integer maxAttendees;
+                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                if (maxAttendeesLong != null){
+                                    maxAttendees = ((Long) document.getData().get("maxAttendees")).intValue();
+                                } else{
+                                    maxAttendees = null;
+                                }
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
@@ -727,7 +740,13 @@ public class FirebaseDB {
                                                     String qrCode = (String) document.getData().get("qrCode");
                                                     String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                                     String organizerToken = (String) document.getData().get("organizerToken");
-                                                    Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
+                                                    Integer maxAttendees;
+                                                    Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                                    if (maxAttendeesLong != null){
+                                                        maxAttendees = ((Long) document.getData().get("maxAttendees")).intValue();
+                                                    } else{
+                                                        maxAttendees = null;
+                                                    }
                                                     ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                                     if (announcements == null) {
                                                         announcements = new ArrayList<String>();
@@ -1515,11 +1534,27 @@ public class FirebaseDB {
                                 String qrCode = document.getString("qrCode");
                                 String qrCodePromo = document.getString("qrCodePromo");
                                 String organizerToken = document.getString("organizerToken");
-                                ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
-                                ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
-                                ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+                                Integer maxAttendees;
+                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                if (maxAttendeesLong != null){
+                                    maxAttendees = ((Long) document.getData().get("maxAttendees")).intValue();
+                                } else{
+                                    maxAttendees = null;
+                                }
+                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                if (announcements == null) {
+                                    announcements = new ArrayList<String>();
+                                }
+                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                                if (signUps == null) {
+                                    signUps = new ArrayList<String>();
+                                }
+                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                                if (checkIns == null) {
+                                    checkIns = new ArrayList<String>();
+                                }
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
                                 callback.onSuccess(event);
                             } else {
                                 Log.d(eventsTAG, "No such event exists");

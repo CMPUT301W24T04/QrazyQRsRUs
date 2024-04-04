@@ -37,7 +37,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         if (eventId != null){
             Log.d("NotificationService", "Please tell me it works");
             try {
-                FirebaseDB.getEventById(eventId, new FirebaseDB.GetEventCallback() {
+                FirebaseDB.getInstance().getEventById(eventId, new FirebaseDB.GetEventCallback() {
                     @Override
                     public Event onSuccess(Event event) {
                         args.putSerializable("event", event);

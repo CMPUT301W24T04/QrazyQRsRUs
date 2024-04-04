@@ -164,7 +164,7 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String qrContent = ((Event.EventBuilder) (getArguments().getSerializable("builder"))).getName() + "_" + timeStamp + "_checkin";
         //we check if our qr code is unique
-        QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+        QRCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
                 generateBitmap(qrContent, getView());
@@ -184,7 +184,7 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
     private void tryGenerateNewQR(String content){
         String qrContent = content;
         //we check if our qr code is unique
-        QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+        QRCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
                 generateBitmap(qrContent, getView());

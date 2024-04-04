@@ -110,9 +110,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         CurrentUser.getInstance().initializeUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
 
         // Apparently this is not good practice, but if it works, it works.
-        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+//        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        Log.d("test", deviceId);
+//        Log.d("test", deviceId);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -170,14 +170,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         //Attendee[] user = new Attendee[1];
 
-        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                user[0] = attendee;
-                ChangeFragment(new HomeEventsFragment());
-            }
-        });
+//        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
+//            @Override
+//            public void onResult(Attendee attendee) {
+//                user[0] = attendee;
+//                ChangeFragment(new HomeEventsFragment());
+//            }
+//        });
 
+        ChangeFragment(new HomeEventsFragment());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
             if (!notificationManager.areNotificationsEnabled()){
@@ -188,10 +189,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
 
 
-        if (deviceId == null) {
-            Log.d("deviceId", "super badness");
-            return;
-        }
+//        if (deviceId == null) {
+//            Log.d("deviceId", "super badness");
+//            return;
+//        }
 
         // When the navigation bar is clicked
         binding.BottomNavView.setOnItemSelectedListener(item -> {
@@ -201,12 +202,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch(user[0]);
+                qrHandler.launch(CurrentUser.getInstance().getCurrentUser());
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
                 //create a new instance of the ViewProfileFragment fragment, with the attendee that was obtained by logging in the user
-                ChangeFragment(ViewProfileFragment.newInstance(user[0]));
+                ChangeFragment(ViewProfileFragment.newInstance(CurrentUser.getInstance().getCurrentUser()));
             }
 
             return true;
