@@ -508,7 +508,8 @@ public class FirebaseDB {
                                 String qrCode = (String) document.getData().get("qrCode");
                                 String qrCodePromo = (String) document.getData().get("qrCodePromo");
                                 String organizerToken = (String) document.getData().get("organizerToken");
-                                Integer maxAttendees = (Integer) document.getData().get("maxAttendees");
+                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
                                 ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
                                 if (announcements == null){
                                     announcements = new ArrayList<String>();
