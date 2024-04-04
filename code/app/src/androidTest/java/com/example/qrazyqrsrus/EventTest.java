@@ -83,3 +83,4 @@
 //        assertFalse(event.getCheckIns().contains("CheckIn 2"));
 //    }
 //}
+
