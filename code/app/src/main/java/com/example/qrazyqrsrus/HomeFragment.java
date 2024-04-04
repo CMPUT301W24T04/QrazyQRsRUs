@@ -87,6 +87,9 @@ public class HomeFragment extends Fragment{
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("user");
+            if (attendee == null){
+                attendee = CurrentUser.getInstance().getCurrentUser();
+            }
             FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
             FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
         }

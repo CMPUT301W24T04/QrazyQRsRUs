@@ -14,7 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -77,6 +77,14 @@ public class FirebaseDB {
     public interface GetAllEventsCallBack {
         void onResult(ArrayList<Event> events);
     }
+
+    // Define a callback interface to handle the result
+    public interface GetEventCallback {
+        Event onSuccess(Event event);
+
+        void onFailure(String errorMessage);
+    }
+
 
     public interface OnFinishedCallback{
         void onFinished();
@@ -1410,7 +1418,7 @@ public class FirebaseDB {
                 });
     }
 
-    public void getEventCheckedInUsersGeoLocation(Event event, ArrayList<Attendee> attendeeDataList) {
+    public void getEventCheckedInUsersGeoLocation(Event event, ArrayList<String> attendeeDataList, ArrayList latitudeList, ArrayList longitudeList) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
                 .get()
@@ -1421,18 +1429,19 @@ public class FirebaseDB {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // check if the checked in user has a name that exists
                                 String documentId = document.getId();
-                                String id = (String) document.getData().get("id");
-                                String name = (String) document.getData().get("name");
-                                String email = (String) document.getData().get("email");
-                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
-                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
-//                                if(attendee.getGeolocationOn() == true) {
-                                if(attendee.getGeolocationOn() == true) {
-                                    attendeeDataList.add(attendee);
-//                                }
-                                }
+                                double latitude = (double) document.getData().get("latitude");
+                                double longitude = (double) document.getData().get("longitude");
+//                                String id = (String) document.getData().get("id");
+//                                String name = (String) document.getData().get("name");
+//                                String email = (String) document.getData().get("email");
+//                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+//                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+//                                long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+//                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
+                                attendeeDataList.add(documentId);
+                                latitudeList.add(latitude);
+                                longitudeList.add(longitude);
+
                             }
                         }
                     }
@@ -1484,6 +1493,92 @@ public class FirebaseDB {
                     }
                 });
     }
+
+    public void getEventById(String eventId, GetEventCallback callback) {
+        eventsCollection.document(eventId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                String id = document.getId();
+                                String name = document.getString("name");
+                                String organizerId = document.getString("organizerId");
+                                String details = document.getString("details");
+                                String location = document.getString("location");
+                                String startDate = document.getString("startDate");
+                                String endDate = document.getString("endDate");
+                                Boolean geolocationOn = document.getBoolean("geolocationOn");
+                                String posterPath = document.getString("posterPath");
+                                String qrCode = document.getString("qrCode");
+                                String qrCodePromo = document.getString("qrCodePromo");
+                                String organizerToken = document.getString("organizerToken");
+                                ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
+                                ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
+                                ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+
+                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+                                callback.onSuccess(event);
+                            } else {
+                                Log.d(eventsTAG, "No such event exists");
+                                callback.onFailure("No such event exists");
+                            }
+                        } else {
+                            Log.d(eventsTAG, "Error getting event document: ", task.getException());
+                            callback.onFailure("Error getting event document: " + task.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
+
+//    public static Task<Event> getEventById(String eventId) {
+//        TaskCompletionSource<Event> taskCompletionSource = new TaskCompletionSource<>();
+//
+//        eventsCollection.document(eventId)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            DocumentSnapshot document = task.getResult();
+//                            if (document.exists()) {
+//                                String id = document.getId();
+//                                String name = document.getString("name");
+//                                String organizerId = document.getString("organizerId");
+//                                String details = document.getString("details");
+//                                String location = document.getString("location");
+//                                String startDate = document.getString("startDate");
+//                                String endDate = document.getString("endDate");
+//                                Boolean geolocationOn = document.getBoolean("geolocationOn");
+//                                String posterPath = document.getString("posterPath");
+//                                String qrCode = document.getString("qrCode");
+//                                String qrCodePromo = document.getString("qrCodePromo");
+//                                String organizerToken = document.getString("organizerToken");
+//                                ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
+//                                ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
+//                                ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+//
+//                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
+//                                taskCompletionSource.setResult(event);
+//                            } else {
+//                                Log.d(eventsTAG, "No such event exists");
+//                                taskCompletionSource.setException(new Exception("No such event exists"));
+//                            }
+//                        } else {
+//                            Log.d(eventsTAG, "Error getting event document: ", task.getException());
+//                            taskCompletionSource.setException(task.getException());
+//                        }
+//                    }
+//                });
+//
+//        return taskCompletionSource.getTask();
+//    }
+
+
+
 
     /**
      * Gets two lists, one for the CheckIn instances and one for the names of the attendees

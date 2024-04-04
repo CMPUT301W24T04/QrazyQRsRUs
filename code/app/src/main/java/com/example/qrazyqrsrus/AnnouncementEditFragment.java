@@ -134,7 +134,7 @@ public class AnnouncementEditFragment extends Fragment{
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString());
+                NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString(), event.getDocumentId());
                 addAnnouncement(event);
                 FirebaseDB.getInstance().updateEvent(event); // Updates the database with new event
             }
