@@ -64,15 +64,18 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         FirebaseDB.getInstance().getUserName(attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
-                Name.setText(string);
+                attendee.setName(string);
+                Name.setText(attendee.getName());
+
+                String checkins_string = "" + attendee.getCheckins();
+
+//        String num_checkins = attendee.getCheckins().toString();
+                //concatnate number of checkins to the sentence using .concat()
+                checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
             }
         });
 
-        String checkins_string = "" + attendee.getCheckins();
 
-//        String num_checkins = attendee.getCheckins().toString();
-        //concatnate number of checkins to the sentence using .concat()
-        checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
 
 
         return view;
