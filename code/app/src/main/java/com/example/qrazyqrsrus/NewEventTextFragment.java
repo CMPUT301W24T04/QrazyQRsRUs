@@ -82,7 +82,6 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         });
 
         SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
-        SwitchCompat geolocationToggle = view.findViewById(R.id.geolocation_toggle);
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
 
         limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -132,6 +131,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         builder.setLocation(((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         builder.setDetails(((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
         builder.setOrganizerId(((Attendee) bundle.getSerializable("attendee")).getDocumentId());
+        builder.setGeolocationOn(((SwitchCompat) view.findViewById(R.id.geolocation_toggle)).isChecked());
         builder.setOrganizerToken(organizerToken);
 
         String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();

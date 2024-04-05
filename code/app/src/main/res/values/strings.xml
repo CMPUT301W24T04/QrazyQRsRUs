@@ -27,5 +27,7 @@
 
 
     <string name="no_qr_code">Error: You must use a QR code</string>
+    <string name="no_s_date">Error: You must use a start date</string>
+    <string name="no_e_date">Error: You must use a end date</string>
 
 </resources>
