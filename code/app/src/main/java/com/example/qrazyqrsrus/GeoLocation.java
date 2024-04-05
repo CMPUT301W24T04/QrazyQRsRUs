@@ -142,11 +142,10 @@ public class GeoLocation extends Fragment {
                     }
                 });
 
-
-                attendee_location = Point.fromLngLat( -90.0000, 53.5281);
-                // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
-                ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
-                mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);
+//                attendee_location = Point.fromLngLat( -90.0000, 53.5281);
+//                // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
+//                ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
+//                mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);
 
             }
         });

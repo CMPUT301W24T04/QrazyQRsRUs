@@ -1355,7 +1355,7 @@ public class FirebaseDB {
                                     // check if the checked in user has a name that exists
 
                                     String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
+                                    String id = (String) document.getData().get("attendeeDocId");
                                     String name = (String) document.getData().get("name");
                                     String email = (String) document.getData().get("email");
                                     String profilePicturePath = (String) document.getData().get("profilePicturePath");
