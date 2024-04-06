@@ -207,33 +207,6 @@ public class ViewProfileFragment extends Fragment {
         return view;
     }
 
-
-    private String getInitials(String name) {
-        String[] parts = name.trim().split("\\s+");
-        StringBuilder initials = new StringBuilder();
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                initials.append(part.substring(0, 1).toUpperCase());
-            }
-        }
-        return initials.toString();
-    }
-
-    private Bitmap createInitialsImage(String initials) {
-        Bitmap image = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(image);
-        Paint paint = new Paint();
-        paint.setColor(Color.BLUE);
-        paint.setTextSize(40);
-        paint.setAntiAlias(true);
-        paint.setTypeface(Typeface.DEFAULT_BOLD);
-        canvas.drawColor(Color.WHITE);
-        float centerX = (100 - paint.measureText(initials)) / 2;
-        float centerY = (100 - ((paint.descent() + paint.ascent()) / 2)) / 2;
-        canvas.drawText(initials, centerX, centerY, paint);
-        return image;
-    }
-
     private void loadInitialAttendee(Attendee attendee){
         this.attendee = attendee;
         etFullName.setText(attendee.getName());
@@ -247,9 +220,9 @@ public class ViewProfileFragment extends Fragment {
         if (attendee.getProfilePicturePath() == null){
             Bitmap profileBitmap;
             if (attendee.getName() == null){
-                profileBitmap = createInitialsImage(getInitials(userId));
+                profileBitmap = InitialsPictureGenerator.createInitialsImage(InitialsPictureGenerator.getInitials(userId));
             } else{
-                profileBitmap = createInitialsImage(getInitials(attendee.getName()));
+                profileBitmap = InitialsPictureGenerator.createInitialsImage(InitialsPictureGenerator.getInitials(attendee.getName()));
             }
             imgProfilePicture.setImageBitmap(profileBitmap);
         } else{
@@ -280,7 +253,7 @@ public class ViewProfileFragment extends Fragment {
             //if the user's profile picture path is null, we generate a new bitmap for them
             //this occurs when the user has no profile picture uploaded, and changes their name
             if (attendee.getProfilePicturePath() == null){
-                Bitmap profileBitmap = createInitialsImage(getInitials(etFullName.getText().toString()));
+                Bitmap profileBitmap = InitialsPictureGenerator.createInitialsImage(InitialsPictureGenerator.getInitials(etFullName.getText().toString()));
                 imgProfilePicture.setImageBitmap(profileBitmap);
             }
             //if the user has deleted their previous profile picture, we check if we need to delete it from firebase
@@ -419,7 +392,7 @@ public class ViewProfileFragment extends Fragment {
         //we tell the state that the user has deleted their profile pciture, so it can delete the old one from firebase if needed
         imageDeleted = true;
         //we remove the user's uploaded profile pciture, and change it to the geneerated one
-        Bitmap profileBitmap = createInitialsImage(getInitials(etFullName.getText().toString()));
+        Bitmap profileBitmap = InitialsPictureGenerator.createInitialsImage(InitialsPictureGenerator.getInitials(etFullName.getText().toString()));
         imgProfilePicture.setImageBitmap(profileBitmap);
         //we clear any previously uploaded image (during this edit)
         newImageUri = null;

@@ -108,7 +108,6 @@ public class EventDetailsFragment extends Fragment {
             this.isCheckedIn = (Boolean) getArguments().get("isCheckedIn");
 
         }
-
         //we check if attendee is set, logging in the user if not
         //then we update the images that are displayed, and the visibility of the signup button once we have the attendee
         if (this.attendee == null){

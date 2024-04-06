@@ -61,18 +61,21 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
 
         // change value of name and num_checkins from content value
-        FirebaseDB.getInstance().getUserName(attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
+        FirebaseDB.getInstance().getUserName(attendee.getId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
-                Name.setText(string);
+                attendee.setName(string);
+                Name.setText(attendee.getName());
+
+                String checkins_string = "" + attendee.getCheckins();
+
+//        String num_checkins = attendee.getCheckins().toString();
+                //concatnate number of checkins to the sentence using .concat()
+                checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
             }
         });
 
-        String checkins_string = "" + attendee.getCheckins();
 
-//        String num_checkins = attendee.getCheckins().toString();
-        //concatnate number of checkins to the sentence using .concat()
-        checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
 
 
         return view;

@@ -8,10 +8,17 @@ public class CheckIn {
     private String eventDocId;
     private Double longitude;
     private Double latitude;
-    private Integer numberOfCheckIns;
+    private long numberOfCheckIns;
 
-    public CheckIn() {
+    public CheckIn(){
 
+    }
+
+    public CheckIn(String attendeeDocId, String documentId, String eventDocId, long numberOfCheckIns) {
+        this.attendeeDocId = attendeeDocId;
+        this.documentId = documentId;
+        this.eventDocId = eventDocId;
+        this.numberOfCheckIns = numberOfCheckIns;
     }
     public CheckIn(String attendeeDocId, String eventDocId, Double longitude, Double latitude) {
         this.attendeeDocId = attendeeDocId;
@@ -21,12 +28,12 @@ public class CheckIn {
         this.numberOfCheckIns = 1;
     }
 
-    public CheckIn(String attendeeDocId, String documentId, String eventDocId, Double longitude, Double latidude, Integer numberOfCheckIns) {
+    public CheckIn(String attendeeDocId, String documentId, String eventDocId, Double longitude, Double latitude, long numberOfCheckIns) {
         this.attendeeDocId = attendeeDocId;
         this.documentId = documentId;
         this.eventDocId = eventDocId;
         this.longitude = longitude;
-        this.latitude = latidude;
+        this.latitude = latitude;
         this.numberOfCheckIns = numberOfCheckIns;
     }
 
@@ -50,7 +57,7 @@ public class CheckIn {
         this.latitude = latitude;
     }
 
-    public Integer getNumberOfCheckIns() {
+    public long getNumberOfCheckIns() {
         return numberOfCheckIns;
     }
 
@@ -78,7 +85,7 @@ public class CheckIn {
         this.eventDocId = eventDocId;
     }
 
-    public void setNumberOfCheckIns(Integer numberOfCheckIns) {
+    public void setNumberOfCheckIns(long numberOfCheckIns) {
         this.numberOfCheckIns = numberOfCheckIns;
     }
 }

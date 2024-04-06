@@ -75,22 +75,16 @@ public class AnnouncementEditFragment extends Fragment{
     private String messageText;
     private String tokenToSendTo;
     private Event event;
-    //we use Retrofit to create our Java interface out of the HTTP Api defined on the backend
-    //this definition was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
-    //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
-    private FcmApi api = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build()
-            .create(FcmApi.class);
-    private ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    Log.d("Notification Permissions", "user accepted notification permissions");
-                } else {
-                    Log.e("Notification Permissions", "user denied notification permissions");
-                }
-            });
+
+    //TODO: find out if we can delete
+//    private ActivityResultLauncher<String> requestPermissionLauncher =
+//            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+//                if (isGranted) {
+//                    Log.d("Notification Permissions", "user accepted notification permissions");
+//                } else {
+//                    Log.e("Notification Permissions", "user denied notification permissions");
+//                }
+//            });
 
     public AnnouncementEditFragment() {
         // Constructor
@@ -116,12 +110,15 @@ public class AnnouncementEditFragment extends Fragment{
 
         //we should be subscribing the person whenever they sign up/checkin, not here
         //we should also be creating a unique topic for each event
-        FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
+        //TODO: find out if we can delete
+//        FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
         //we amke the notification channel to send notifications to
         //this can be done in MainActivity, it doesn't really matter
-        createNotificationChannel();
+        //TODO: find out if we can delete
+//        createNotificationChannel();
         //we ask for permission to send notifcations if they are not yet granted
-        requestNotificationPermission();
+        //TODO: find out if we can delete
+//        requestNotificationPermission();
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
         addButton = rootView.findViewById(R.id.button_add);
         backButton = rootView.findViewById(R.id.button_back);
@@ -136,7 +133,7 @@ public class AnnouncementEditFragment extends Fragment{
             public void onClick(View v) {
                 NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString(), event.getDocumentId());
                 addAnnouncement(event);
-                FirebaseDB.getInstance().updateEvent(event); // Updates the database with new event
+
             }
         });
 
@@ -144,7 +141,7 @@ public class AnnouncementEditFragment extends Fragment{
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 showDeleteConfirmationDialog(position, event);
-                FirebaseDB.getInstance().updateEvent(event);
+
                 return true;
             }
         });
@@ -159,18 +156,20 @@ public class AnnouncementEditFragment extends Fragment{
         return rootView;
     }
 
+
+    //TODO: find out if we can delete
     /**
      * This function launches a new activity where Android can request notification permissions if they have not yet been granted.
      */
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            if (!notificationManager.areNotificationsEnabled()){
-                //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-    }
+//    private void requestNotificationPermission() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+//            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+//            if (!notificationManager.areNotificationsEnabled()){
+//                //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
+//                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+//            }
+//        }
+//    }
 
     /**
      * Adds an announcement to the local list then updates the Event object's announcements
@@ -184,6 +183,7 @@ public class AnnouncementEditFragment extends Fragment{
             announcements.add(newAnnouncement);
             adapter.notifyDataSetChanged();
             event.setAnnouncements(announcements);
+            FirebaseDB.getInstance().updateEvent(event); // Updates the database with new event
             announcementEditText.setText("");
             showToast("Announcement Added");
 
@@ -220,6 +220,7 @@ public class AnnouncementEditFragment extends Fragment{
         adapter.notifyDataSetChanged();
         event.setAnnouncements(announcements);
         showToast("Announcement Deleted");
+        FirebaseDB.getInstance().updateEvent(event);
 
     }
 
@@ -246,25 +247,26 @@ public class AnnouncementEditFragment extends Fragment{
         return fragment;
     }
 
-    /**
-     * This function registers a new Android Notification Channel where event announcements will be send to.
-     * If the channel already exists, this does nothing.
-     */
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is not in the Support Library.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Event Announcements";
-            String description = "Receive push notifications from event organizers";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system. You can't change the importance
-            // or other notification behaviors after this.
-            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+    //TODO: find out if we can delete
+//    /**
+//     * This function registers a new Android Notification Channel where event announcements will be send to.
+//     * If the channel already exists, this does nothing.
+//     */
+//    private void createNotificationChannel() {
+//        // Create the NotificationChannel, but only on API 26+ because
+//        // the NotificationChannel class is not in the Support Library.
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "Event Announcements";
+//            String description = "Receive push notifications from event organizers";
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
+//            channel.setDescription(description);
+//            // Register the channel with the system. You can't change the importance
+//            // or other notification behaviors after this.
+//            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
 }
 
