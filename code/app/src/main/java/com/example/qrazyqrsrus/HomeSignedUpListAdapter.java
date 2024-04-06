@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class holds the information for users signed up on the content view for the events signed up list
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -1,4 +1,4 @@
-//
+// This fragment displays all the announcements
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;

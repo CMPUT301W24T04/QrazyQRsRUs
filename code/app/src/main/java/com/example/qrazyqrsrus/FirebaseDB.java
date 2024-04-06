@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class holds all the functions that access the firebase database
 import static android.graphics.ImageDecoder.createSource;
 
 import android.graphics.Bitmap;

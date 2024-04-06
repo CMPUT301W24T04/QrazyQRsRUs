@@ -1,4 +1,4 @@
-// This fragmend displays a list of attendees who signed up for an event
+// This fragment displays a list of attendees who signed up for an event
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;

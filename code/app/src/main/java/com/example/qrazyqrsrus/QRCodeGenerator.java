@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class generates new QR codes in the event creation sequence
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.widget.ImageView;

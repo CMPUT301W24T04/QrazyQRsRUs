@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This fragment contains the logic to send notifications to users
 import android.util.Log;
 
 import retrofit2.Call;
