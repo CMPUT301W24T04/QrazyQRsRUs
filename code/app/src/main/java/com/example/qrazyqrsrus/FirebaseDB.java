@@ -399,12 +399,12 @@ public class FirebaseDB {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                    Log.d(imagesTAG, "Successfully retrieved image");
+//                    Log.d(imagesTAG, "Successfully retrieved image");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
+//                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
                 }
             });
         } catch (IOException exception) {

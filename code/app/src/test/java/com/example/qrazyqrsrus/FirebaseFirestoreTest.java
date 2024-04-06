@@ -5,6 +5,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -34,15 +37,18 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 
 
 public class FirebaseFirestoreTest{
@@ -94,6 +100,9 @@ public class FirebaseFirestoreTest{
     UploadTask.TaskSnapshot mockTaskSnapshot = Mockito.mock(UploadTask.TaskSnapshot.class);
 
     @Mock
+    FileDownloadTask.TaskSnapshot mockDownloadTaskSnapshot = Mockito.mock(FileDownloadTask.TaskSnapshot.class);
+
+    @Mock
     Task<DocumentReference> mockTask = (Task<DocumentReference>) Mockito.mock(Task.class);
 
     @Mock
@@ -104,6 +113,9 @@ public class FirebaseFirestoreTest{
 
     @Mock
     UploadTask mockUploadTask = Mockito.mock(UploadTask.class);
+
+    @Mock
+    FileDownloadTask mockFileDownloadTask = Mockito.mock(FileDownloadTask.class);
 
     @Mock
     Void mockVoid = Mockito.mock(Void.class);
@@ -135,9 +147,12 @@ public class FirebaseFirestoreTest{
 
         //we set up the mock storage instance to return a storage reference
         when(mockFirebaseStorage.getReference()).thenReturn(mockStorageReference);
+        when(mockFirebaseStorage.getReference(Mockito.any())).thenReturn(mockStorageReference);
 
         //we set up the storage reference to return a Task that we can attach onSuccessListeners to
         when(mockStorageReference.putFile(Mockito.any())).thenReturn(mockUploadTask);
+        when(mockStorageReference.child(Mockito.any())).thenReturn(mockStorageReference);
+        when(mockStorageReference.getFile((File) Mockito.any())).thenReturn(mockFileDownloadTask);
 
         //setting up the onSuccess listeners was made possible thanks to the help of ChatGPT
         //OpenAI, 2024, ChatGPT, Firebase Firestore mock Task onSuccess/onComplete Listeners
@@ -168,6 +183,13 @@ public class FirebaseFirestoreTest{
             // Call the onSuccess method with a mock DocumentReference
             listener.onSuccess(mockTaskSnapshot);
             return mockUploadTask;
+        });
+        when(mockFileDownloadTask.addOnSuccessListener(Mockito.any())).thenAnswer(invocation -> {
+            // Get the onSuccess listener
+            OnSuccessListener<FileDownloadTask.TaskSnapshot> listener = invocation.getArgument(0);
+            // Call the onSuccess method with a mock DocumentReference
+            listener.onSuccess(mockDownloadTaskSnapshot);
+            return mockFileDownloadTask;
         });
 
         //we first create a partial mock of the FirebaseDB class, with mock instances of Firestore, FirebaseStorage, and FirebaseMessaging
@@ -307,12 +329,43 @@ public class FirebaseFirestoreTest{
         String pathName = "picture_path_name";
         Uri mockUri = Mockito.mock(Uri.class);
 
-        when(mockStorageReference.child(pathName + ".jpg")).thenReturn(mockStorageReference);
+
 
         firebaseDBSpy.uploadImage(mockUri, pathName);
 
         //we verify that an onsuccesslistener is added
         verify(mockUploadTask).addOnSuccessListener(Mockito.any());
         verify(mockUploadTask).addOnFailureListener(Mockito.any());
+    }
+
+
+//    @PrepareForTest(BitmapFactory.class)
+    @Test
+    public void testRetrieveImage_Attendee(){
+        Attendee testAttendee = new Attendee("4321", "1234", "johnny t", "email", "profile/my_crazy_profile_pic", true);
+
+        Bitmap testBitmap = Mockito.mock(Bitmap.class);
+
+        ArgumentCaptor<File> localFileCaptor = ArgumentCaptor.forClass(File.class);
+
+        FirebaseDB.GetBitmapCallBack mockCallback = Mockito.mock(FirebaseDB.GetBitmapCallBack.class);
+
+//        PowerMockito.mockStatic(BitmapFactory.class);
+//        when(BitmapFactory.decodeFile(Mockito.any())).thenReturn(testBitmap);
+
+        try (MockedStatic<BitmapFactory> mockedFactory = Mockito.mockStatic(BitmapFactory.class)){
+            mockedFactory.when(() -> BitmapFactory.decodeFile(Mockito.any()))
+                    .thenReturn(testBitmap);
+        }
+
+        firebaseDBSpy.retrieveImage(testAttendee, mockCallback);
+
+        verify(mockStorageReference).getFile(localFileCaptor.capture());
+
+        assertEquals("my_crazy_profile_pic.jpg", localFileCaptor.getValue().getPath());
+        verify(mockFileDownloadTask).addOnSuccessListener(Mockito.any());
+        verify(mockFileDownloadTask).addOnFailureListener(Mockito.any());
+
+        verify(mockCallback).onResult(Mockito.any());
     }
 }
