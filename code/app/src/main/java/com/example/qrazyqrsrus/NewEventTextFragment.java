@@ -3,15 +3,11 @@ package com.example.qrazyqrsrus;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -21,10 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Locale;
 
 /**
  * shows the new event text
@@ -35,7 +29,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-//        listener = (AddEventListener) context;
+
     }
 
     /**
@@ -46,9 +40,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
 
-        }
     }
 
     /**
@@ -61,7 +53,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     *
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,18 +63,16 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            FirebaseDB.getInstance().getToken(new FirebaseDB.GetTokenCallback() {
-                @Override
-                public void onResult(String token) {
-                    Log.d("newEventTextFragment", token);
-                    Bundle bundle = makeNewBundle(token);
+            FirebaseDB.getInstance().getToken(token -> {
+                Log.d("newEventTextFragment", token);
+                Bundle bundle = makeNewBundle(token);
+                if (bundle != null) {
                     Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
                 }
             });
         });
 
         SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
-        SwitchCompat geolocationToggle = view.findViewById(R.id.geolocation_toggle);
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
 
         limitAttendeesToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -94,9 +84,10 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
             }
         });
         Bundle args = getArguments();
-        handleArguments(args, view);
+        if (args != null) {
+            handleArguments(args, view);
+        }
         createToolbar(view);
-
         return view;
     }
     private void createToolbar(View view){
@@ -111,9 +102,11 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.cancel_button){
-            Navigation.findNavController(getView()).navigate(R.id.action_newEventTextFragment_to_newEventFragment);
+        if (item.getItemId() == R.id.cancel_button) {
+            View view = getView();
+            if (view != null) {
+                Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventFragment);
+            }
             return true;
         }
         return false;
@@ -124,40 +117,46 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
      *
      * @return  a Bundle containing all of the user input, and the userID of the organizer
      */
-    private Bundle makeNewBundle(String organizerToken){
-        Bundle bundle = getArguments();
+    private Bundle makeNewBundle(String organizerToken) {
         View view = getView();
+        if (view == null) return null;
+
+        Bundle bundle = getArguments();
+        if (bundle == null) return null;
+
         Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
+        Attendee attendee = (Attendee) bundle.getSerializable("attendee");
+
+        if (builder == null || attendee == null) return null;
+
         builder.setName(((EditText) view.findViewById(R.id.event_name_edit_text)).getText().toString());
         builder.setLocation(((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         builder.setDetails(((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
-        builder.setOrganizerId(((Attendee) bundle.getSerializable("attendee")).getDocumentId());
+        builder.setOrganizerId(attendee.getDocumentId());
         builder.setOrganizerToken(organizerToken);
 
         String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
-
-        Integer maxAttendees = null;
         if (!maxAttendeesString.isEmpty()) {
             try {
-                maxAttendees = Integer.valueOf(maxAttendeesString);
+                Integer maxAttendees = Integer.valueOf(maxAttendeesString);
+                builder.setMaxAttendees(maxAttendees);
             } catch (NumberFormatException e) {
-                throw new RuntimeException("cannot convert string to int");
+                Log.e("NewEventTextFragment", "Number format exception", e);
             }
         }
 
-        builder.setMaxAttendees(maxAttendees);
+        SwitchCompat geolocationToggle = view.findViewById(R.id.geolocation_toggle);
+        if (geolocationToggle.isChecked()) {
+            builder.setGeolocationOn(true);
+        }
 
-        SwitchCompat geolocationOn = (SwitchCompat) view.findViewById(R.id.geolocation_toggle);
-        builder.setGeolocationOn(geolocationOn.isChecked());
-        //we put the updates builder back into the bundle
         bundle.putSerializable("builder", builder);
-
         return bundle;
     }
 
     private void handleArguments(Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
-        if (builder.getName() != null){
+        if (builder != null && builder.getName() != null){
             //if builder.getName() != null, the user has already been to this screen, so we restore their input
             ((EditText) view.findViewById(R.id.event_name_edit_text)).setText(builder.getName());
             ((EditText) view.findViewById(R.id.event_location_edit_text)).setText(builder.getLocation());
@@ -165,7 +164,8 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
             //we check if user set maxAttendees
             if (builder.getMaxAttendees() != null){
                 ((SwitchCompat) view.findViewById(R.id.limit_attendees_toggle)).setChecked(true);
-                ((EditText) view.findViewById(R.id.max_attendees_edit_text)).setText(builder.getMaxAttendees().toString());
+                String maxAttendees = String.format(Locale.getDefault(), "%d", builder.getMaxAttendees());
+                ((EditText) view.findViewById(R.id.max_attendees_edit_text)).setText(maxAttendees);
             }
         }
     }
