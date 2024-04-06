@@ -9,19 +9,15 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
-public class AttendeeSignUpsListAdapterTest {
+public class HomeSignedUpListAdapterTest {
     ArrayList<Attendee> MockAttendeeDataList = new ArrayList<>();
     Attendee mockAttendee = Mockito.mock(Attendee.class);
-    /**
-     * Creates the mock object to be added to the list
-     * @return Attendee
-     */
+
     private Attendee mockAttendee(){
         return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true);
     }
-
     /**
-     * Checks if the correct object can be added to the list
+     * Checks if the list can have the right object added to it
      */
     @Test
     public void getView() {

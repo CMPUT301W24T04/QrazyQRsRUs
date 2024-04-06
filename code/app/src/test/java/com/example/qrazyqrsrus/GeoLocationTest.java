@@ -8,6 +8,7 @@ import android.widget.ListView;
 
 import com.google.firebase.Firebase;
 
+import org.junit.Before;
 import org.junit.Rule;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,15 +26,19 @@ import org.junit.Test;  // ADD THIS TO STOP ERROR
 
 import java.util.ArrayList;
 
-public class AttendeeSignupsListTest extends AttendeeList{
+import javax.security.auth.callback.Callback;
+
+public class GeoLocationTest {
+//    public interface GetMapMarkersCallback {
+//        void onResult(ArrayList<CheckIn> checks, ArrayList<String> names);
+//    }
     ArrayList<Attendee> MockAttendeeDataList = new ArrayList<>();
-
-    AttendeeSignUpsListAdapter MockAttendeeListAdapter; // = new AttendeeListAdapter(ArrayList, MockAttendeeDataList);
-
+    ArrayList<CheckIn> MockCheckinDataList = new ArrayList<>();
     Event mockEvent = Mockito.mock(Event.class);
 
-    Attendee mockAttendee1 = Mockito.mock(Attendee.class);
+    interface GetMapMarkersCallback{};
 
+//    GetMapMarkersCallback mockCallback = Mockito.mock(GetMapMarkersCallback.class);
     FirebaseDB mockFirebase = Mockito.mock(FirebaseDB.class);
 
     /**
@@ -44,32 +49,30 @@ public class AttendeeSignupsListTest extends AttendeeList{
         return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true);
     }
     /**
-     * Checks if the correct object can be added to the list
+     * Creates the mock object to be added to the list
+     * @return CheckIn
      */
+    public CheckIn mockCheckin() {
+        return new CheckIn("attendeeID", "documentID", "eventID", 56.0000, 135.0000, 15);
+    }
+
     @Test
     public void onCreateView() {
-
-        MockAttendeeDataList.add(mockAttendee1);
-
-        assertNotNull(MockAttendeeDataList);
-    }
-    /**
-     * Check if object has the correct attributes when added
-     */
-    @Test
-    public void TestListContents(){
         MockAttendeeDataList.add(mockAttendee());
-        assertEquals(MockAttendeeDataList.get(0).getName(), "John");
-        assertEquals(MockAttendeeDataList.get(0).getCheckins(), 8);
+        assertNotNull(MockAttendeeDataList);
+
+        MockCheckinDataList.add(mockCheckin());
+        assertNotNull(MockCheckinDataList);
     }
+
     /**
      * Checks if the firebase function used in the class can be called
      */
-    @Test
-    public void TestFirebaseCalls(){
-        //https://stackoverflow.com/questions/9841623/mockito-how-to-verify-method-was-called-on-an-object-created-within-a-method
-        //accessed 4/6/2024
-        mockFirebase.getEventSignedUpUsers(mockEvent, MockAttendeeDataList, MockAttendeeListAdapter);
-        verify(mockFirebase).getEventSignedUpUsers(mockEvent, MockAttendeeDataList, MockAttendeeListAdapter);
-    }
+//    @Test
+//    public void TestFirebaseCalls(){
+//        //https://stackoverflow.com/questions/9841623/mockito-how-to-verify-method-was-called-on-an-object-created-within-a-method
+//        //accessed 4/6/2024
+//        mockFirebase.getGeolocations(mockEvent, GetMapMarkersCallback);
+//        verify(mockFirebase).getGeolocations(mockEvent, GetMapMarkersCallback);
+//    }
 }

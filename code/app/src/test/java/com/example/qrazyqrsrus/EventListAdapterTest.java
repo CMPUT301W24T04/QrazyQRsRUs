@@ -16,7 +16,10 @@ public class EventListAdapterTest{
     ArrayList<String> announcements = new ArrayList<>();
     ArrayList<String> signUps = new ArrayList<>();
     ArrayList<String> checkIns = new ArrayList<>();
-
+    /**
+     * Creates the mock object to be added to the list
+     * @return Event
+     */
     private Event mockEvent(){
             return new Event("1111111", "John", "222222222", "This is an event",
                     "Edmonton", "4/6/2024", "4/8/2024",
@@ -24,6 +27,9 @@ public class EventListAdapterTest{
                     "promoQr", "organizerToken",announcements,signUps,
                     checkIns, 10);
         }
+    /**
+     * Checks if the correct object can be added to the list
+     */
     @Test
     public void getView() {
 

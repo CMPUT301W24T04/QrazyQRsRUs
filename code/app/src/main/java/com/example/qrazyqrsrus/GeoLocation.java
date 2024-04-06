@@ -64,6 +64,9 @@ import java.util.ArrayList;
 
 import kotlin.DslMarker;
 
+/**
+ * Creates the map and adds markers to the map
+ */
 public class GeoLocation extends Fragment {
     private MapView mapView;
     ArrayList<Attendee> attendeeDataList;

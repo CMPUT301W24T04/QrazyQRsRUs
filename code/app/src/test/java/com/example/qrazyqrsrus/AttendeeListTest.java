@@ -52,10 +52,16 @@ public class AttendeeListTest extends AttendeeList{
 //        attendeeList.add();
 //        return attendeeList;
 //    }
-
+    /**
+     * Creates the mock object to be added to the list
+     * @return Attendee
+     */
     private Attendee mockAttendee(){
         return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true,8);
     }
+    /**
+     * Checks if the correct object can be added to the list
+     */
     @Test
     public void onCreateView() {
 
@@ -64,13 +70,18 @@ public class AttendeeListTest extends AttendeeList{
         assertNotNull(MockAttendeeDataList);
     }
 
+    /**
+     * Check if object has the correct attributes when added
+     */
     @Test
     public void TestListContents(){
         MockAttendeeDataList.add(mockAttendee());
         assertEquals(MockAttendeeDataList.get(0).getName(), "John");
         assertEquals(MockAttendeeDataList.get(0).getCheckins(), 8);
     }
-
+    /**
+     * Checks if the firebase function used in the class can be called
+     */
     @Test
     public void TestFirebaseCalls(){
         //https://stackoverflow.com/questions/9841623/mockito-how-to-verify-method-was-called-on-an-object-created-within-a-method
