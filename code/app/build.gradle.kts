@@ -39,9 +39,14 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
     //Navigation
     //from https://developer.android.com/guide/navigation#kts on Feb. 19, 2024
@@ -71,14 +76,8 @@ dependencies {
     //photo picker
     implementation("androidx.activity:activity:1.8.2")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-
-    testImplementation("org.mockito:mockito-core:5.11.0")
     //maybe need, probably do no need
+    testImplementation("org.mockito:mockito-core:5.11.0")
     testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
     testImplementation("org.powermock:powermock-module-junit4:2.0.9")
     testImplementation("org.testng:testng:7.4.0")
