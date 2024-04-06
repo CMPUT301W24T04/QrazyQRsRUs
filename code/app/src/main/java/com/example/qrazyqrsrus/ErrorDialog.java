@@ -1,3 +1,4 @@
+// This fragment displays an error if there are problems with QR code scanning
 package com.example.qrazyqrsrus;
 
 import android.app.Dialog;
@@ -15,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 /**
- * Displays error when QR code is wront
+ * Displays error when QR code is wrong
  */
 public class ErrorDialog extends DialogFragment {
     @StringRes int resID;

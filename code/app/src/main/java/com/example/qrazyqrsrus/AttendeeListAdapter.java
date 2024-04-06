@@ -1,3 +1,6 @@
+// This fragment gets the attendee information to display the name and number of check-ins on the list
+// Problems: gets the name from usersCollection but gets number of check ins from checkIns collection but still works
+
 package com.example.qrazyqrsrus;
 
 import android.content.Context;

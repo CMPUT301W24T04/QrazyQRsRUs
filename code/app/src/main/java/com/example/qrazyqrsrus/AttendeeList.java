@@ -1,3 +1,4 @@
+// This fragment displays all users who have checked in to an event
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
@@ -75,7 +76,7 @@ public class AttendeeList extends Fragment {
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
         FirebaseDB.getInstance().getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
-//        for(int i = 0; i < attendeeDataList.size();i++){
+//        for(int i = 0; i < attendeeDataList.size();i++){yeah
 //            Attendee current_attendee = attendeeDataList.get(i);
 //            FirebaseDB.getInstance().getUserName(current_attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
 //                @Override

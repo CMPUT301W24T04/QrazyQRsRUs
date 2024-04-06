@@ -14,6 +14,9 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Generates a QR code for an event
+ */
 public class QRCodeGenerator {
 
     private static Bitmap bitmap = null;

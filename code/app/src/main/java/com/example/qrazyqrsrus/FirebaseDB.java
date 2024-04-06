@@ -1363,7 +1363,6 @@ public class FirebaseDB {
                                     long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
                                     Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
                                     attendeeDataList.add(attendee);
-
                                 }
                                 attendeeListAdapter.notifyDataSetChanged();
                             }

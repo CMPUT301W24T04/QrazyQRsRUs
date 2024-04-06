@@ -1,3 +1,4 @@
+//
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
