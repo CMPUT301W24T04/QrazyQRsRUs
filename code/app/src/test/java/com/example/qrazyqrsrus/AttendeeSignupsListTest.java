@@ -41,7 +41,7 @@ public class AttendeeSignupsListTest extends AttendeeList{
      * @return Attendee
      */
     private Attendee mockAttendee(){
-        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true);
+        return new Attendee("1", "documentId", "John", "john@ualberta.ca", "111111111111111", true);
     }
     /**
      * Checks if the correct object can be added to the list
@@ -60,7 +60,12 @@ public class AttendeeSignupsListTest extends AttendeeList{
     public void TestListContents(){
         MockAttendeeDataList.add(mockAttendee());
         assertEquals(MockAttendeeDataList.get(0).getName(), "John");
-        assertEquals(MockAttendeeDataList.get(0).getCheckins(), 8);
+        assertEquals(MockAttendeeDataList.get(0).getId(), "1");
+        assertEquals(MockAttendeeDataList.get(0).getDocumentId(), "documentId");
+        assertEquals(MockAttendeeDataList.get(0).getEmail(), "john@ualberta.ca");
+        assertEquals(MockAttendeeDataList.get(0).getProfilePicturePath(), "111111111111111");
+        assertEquals(MockAttendeeDataList.get(0).getGeolocationOn(), true);
+
     }
     /**
      * Checks if the firebase function used in the class can be called
