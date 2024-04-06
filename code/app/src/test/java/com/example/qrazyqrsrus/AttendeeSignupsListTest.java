@@ -1,3 +1,4 @@
+// This function contains test cases for the SignUpsList fragment
 package com.example.qrazyqrsrus;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,12 +36,23 @@ public class AttendeeSignupsListTest extends AttendeeList{
 
     FirebaseDB mockFirebase = Mockito.mock(FirebaseDB.class);
 
+    private Attendee mockAttendee(){
+        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true,8);
+    }
+
     @Test
     public void onCreateView() {
 
         MockAttendeeDataList.add(mockAttendee1);
 
         assertNotNull(MockAttendeeDataList);
+    }
+
+    @Test
+    public void TestListContents(){
+        MockAttendeeDataList.add(mockAttendee());
+        assertEquals(MockAttendeeDataList.get(0).getName(), "John");
+        assertEquals(MockAttendeeDataList.get(0).getCheckins(), 8);
     }
 
     @Test

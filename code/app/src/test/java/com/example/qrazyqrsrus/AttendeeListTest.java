@@ -1,3 +1,4 @@
+// This function contains test cases for the AttendeeList fragment
 package com.example.qrazyqrsrus;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,32 +58,10 @@ public class AttendeeListTest extends AttendeeList{
     }
     @Test
     public void onCreateView() {
-//        FirebaseDB mockFirebaseDB = Mockito.mock(FirebaseDB.class);
-//        attendee1.setCheckins(8);
-//        attendee1.setName("John");
-//        attendee1.setDocumentId("ewifnkw");
-//        attendee1.setEmail("john@ualberta.ca");
-//        attendee1.setProfilePicturePath("111111111111111");
-//        attendee1.setGeolocationOn(true);
-//        attendee1.setId("1");
-
-        //        Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
-
-//        Attendee attendee1 = new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true,8);
-//        attendeeDataList.add(attendee1);
-//
-//        assertEquals(2, attendeeDataList.size());
-//        assertNotNull(attendeeDataList);
 
         MockAttendeeDataList.add(mockAttendee1);
 
         assertNotNull(MockAttendeeDataList);
-
-
-
-//        when(mockFirebaseDB.class).then;
-//
-//        mockFirebaseDB.getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter);
     }
 
     @Test
