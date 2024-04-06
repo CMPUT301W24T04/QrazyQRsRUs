@@ -57,7 +57,7 @@ public class AttendeeListTest extends AttendeeList{
      * @return Attendee
      */
     private Attendee mockAttendee(){
-        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true,8);
+        return new Attendee("1", "DocumentId", "John", "john@ualberta.ca", "111111111111111", true,8);
     }
     /**
      * Checks if the correct object can be added to the list
@@ -77,6 +77,11 @@ public class AttendeeListTest extends AttendeeList{
     public void TestListContents(){
         MockAttendeeDataList.add(mockAttendee());
         assertEquals(MockAttendeeDataList.get(0).getName(), "John");
+        assertEquals(MockAttendeeDataList.get(0).getId(), "1");
+        assertEquals(MockAttendeeDataList.get(0).getDocumentId(), "DocumentId");
+        assertEquals(MockAttendeeDataList.get(0).getEmail(), "john@ualberta.ca");
+        assertEquals(MockAttendeeDataList.get(0).getProfilePicturePath(), "111111111111111");
+        assertEquals(MockAttendeeDataList.get(0).getGeolocationOn(), true);
         assertEquals(MockAttendeeDataList.get(0).getCheckins(), 8);
     }
     /**
