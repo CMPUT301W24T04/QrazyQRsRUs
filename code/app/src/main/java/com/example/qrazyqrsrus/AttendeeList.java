@@ -75,6 +75,15 @@ public class AttendeeList extends Fragment {
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
         FirebaseDB.getInstance().getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
+//        for(int i = 0; i < attendeeDataList.size();i++){
+//            Attendee current_attendee = attendeeDataList.get(i);
+//            FirebaseDB.getInstance().getUserName(current_attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
+//                @Override
+//                public void onResult(String string) {
+//                    current_attendee.setName(string);
+//                }
+//            });
+//        }
         //FirebaseDB.getInstance().getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
 
         // populate the attendees list

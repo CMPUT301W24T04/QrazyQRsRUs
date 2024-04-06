@@ -15,7 +15,7 @@ public class EventTest {
     @Before
     public void setUp() {
         event = new Event(null, "Test Event", "OrganizerID", "Event Details", "Event Location",
-                "testStartDate", "testEndDate", true, null, null, null, null, null, null, null);
+                "testStartDate", "testEndDate", true, null, null, null, null, null, null, null, 2);
     }
     //the testGettersAndSetters are systematically sets each attribute of the Event object using the
 // setters and then asserts that the getters return the correct values.

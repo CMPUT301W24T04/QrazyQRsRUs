@@ -372,7 +372,7 @@ public class Event implements Serializable {
     }
 
     public Integer getAttendeeCount(){
-        return this.signUps.size() + this.checkIns.size();
+        return (this.signUps == null ? 0 : this.signUps.size()) + (this.checkIns == null ? 0 : this.checkIns.size());
     }
     /** get
      *

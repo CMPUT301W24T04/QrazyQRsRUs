@@ -32,7 +32,7 @@ public class EventDetailsFragmentTest {
         // Initialize the fragmentScenario
         fragmentScenario = FragmentScenario.launchInContainer(EventDetailsFragment.class);
         this.event = new Event(null, "Test Event", "OrganizerID", "Event Details", "Event Location",
-                "testStartDate", "testEndDate", true, null, null, null, null, null, null, null);;
+                "testStartDate", "testEndDate", true, null, null, null, null, null, null, null, 2);;
         this.attendee = new Attendee("1", "doc123", "John Doe", "john@example.com", "path/to/profile.jpg", true);
 
     }

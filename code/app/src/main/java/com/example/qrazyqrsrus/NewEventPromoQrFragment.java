@@ -88,10 +88,7 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
                     if (uri != null) {
 //                        Log.d("PhotoPicker", "Selected URI: " + uri);
                         //as long as the user selected an image, we invoke our function to update the imageView to display the uploaded poster, and save the event's poster
-                        //imageView = (ImageView) view.findViewById(R.id.new_event_display_qr_code);
                         imageUploaded(uri);
-                    } else {
-//                        Log.d("PhotoPicker", "No media selected");
                     }
                 });
 
@@ -187,9 +184,17 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         QRCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
-                generateBitmap(qrContent, getView());
+                QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+                    @Override
+                    public void onUnique() {
+                        generateBitmap(qrContent, getView());
+                    }
+                    @Override
+                    public void onNotUnique() {
+                        new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    }
+                });
             }
-
             @Override
             public void onNotUnique() {
                 new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
@@ -206,7 +211,6 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         if (bitmap != null){
             ((ImageView) view.findViewById(R.id.new_event_display_qr_code)).setImageBitmap(bitmap);
             promoQRContent = content;
-            saveImage(bitmap);
         } else{
             Log.d("generateBitmap", "error generating the bitmap");
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");

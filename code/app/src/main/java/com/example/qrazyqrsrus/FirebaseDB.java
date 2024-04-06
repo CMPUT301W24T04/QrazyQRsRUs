@@ -1292,24 +1292,72 @@ public class FirebaseDB {
         updateUser(attendee);
     }
 
+//    /**
+//     * Gets users from the list of users field in each event
+//     * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
+//     * @param event
+//     */
+//    public void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
+//        checkInsCollection
+//                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                // check if the checked in user has a name that exists
+//                                if(document.get("name") != null){
+//                                    String documentId = document.getId();
+//                                    String id = (String) document.getData().get("id");
+//                                    String name = (String) document.getData().get("name");
+//                                    String email = (String) document.getData().get("email");
+//                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
+//                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+//                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+//                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
+//                                    attendeeDataList.add(attendee);
+//                                }
+//                                // otherwise add a default name
+//                                else{
+//                                    String documentId = document.getId();
+//                                    String id = (String) document.getData().get("id");
+//                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+//                                    Attendee attendee = new Attendee("No Name", documentId, id, checkins);
+//                                    attendeeDataList.add(attendee);
+//                                }
+//                            }
+//                            attendeeListAdapter.notifyDataSetChanged();
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
+//                    }
+//                });
+//    }
+
     /**
      * Gets users from the list of users field in each event
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
      * @param event
      */
     public void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
-        checkInsCollection
-                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // check if the checked in user has a name that exists
-                                if(document.get("name") != null){
+        for(Integer i = 0; i < event.getCheckIns().size(); i++) {
+            checkInsCollection
+                    .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    // check if the checked in user has a name that exists
+
                                     String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
+                                    String id = (String) document.getData().get("attendeeDocId");
                                     String name = (String) document.getData().get("name");
                                     String email = (String) document.getData().get("email");
                                     String profilePicturePath = (String) document.getData().get("profilePicturePath");
@@ -1317,28 +1365,20 @@ public class FirebaseDB {
                                     long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
                                     Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
                                     attendeeDataList.add(attendee);
-                                }
-                                // otherwise add a default name
-                                else{
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
-                                    Attendee attendee = new Attendee("No Name", documentId, id, checkins);
-                                    attendeeDataList.add(attendee);
-                                }
-                            }
-                            attendeeListAdapter.notifyDataSetChanged();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
-                    }
-                });
-    }
 
+                                }
+                                attendeeListAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
+                        }
+                    });
+        }
+    }
     /**
      * Gets users from the list of signed up users field in each event
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
