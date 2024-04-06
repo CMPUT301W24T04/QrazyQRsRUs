@@ -37,7 +37,7 @@ public class AttendeeSignupsListTest extends AttendeeList{
     FirebaseDB mockFirebase = Mockito.mock(FirebaseDB.class);
 
     private Attendee mockAttendee(){
-        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true,8);
+        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true);
     }
 
     @Test

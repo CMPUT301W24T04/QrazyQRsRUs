@@ -14,7 +14,7 @@ public class AttendeeSignUpsListAdapterTest {
     Attendee mockAttendee = Mockito.mock(Attendee.class);
 
     private Attendee mockAttendee(){
-        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true,8);
+        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true);
     }
     @Test
     public void getView() {
@@ -24,9 +24,17 @@ public class AttendeeSignUpsListAdapterTest {
         assertNotNull(MockAttendeeDataList);
     }
 
+    /**
+     * Test if the correct attributes are being added to the list
+     */
     @org.junit.Test
     public void TestListContents(){
         MockAttendeeDataList.add(mockAttendee());
+        assertEquals(MockAttendeeDataList.get(0).getName(), "John");
+        assertEquals(MockAttendeeDataList.get(0).getDocumentId(), "ewifnkw");
+        assertEquals(MockAttendeeDataList.get(0).getId(), "1");
+        assertEquals(MockAttendeeDataList.get(0).getProfilePicturePath(), "111111111111111");
+        assertEquals(MockAttendeeDataList.get(0).getGeolocationOn(), true);
         assertEquals(MockAttendeeDataList.get(0).getName(), "John");
     }
 }
