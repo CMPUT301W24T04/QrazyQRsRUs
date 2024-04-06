@@ -86,12 +86,14 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         View view = inflater.inflate(R.layout.new_event_start_time_fragment, container, false);
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            //temporarily messily create a new event, put it in bundle to pass to next navigation destination
-            Bundle args =  makeNewBundle(getArguments());
-//            Event modifiedEvent = modifyEvent((Event) args.getSerializable("event"));
-//            args.putSerializable("event", modifiedEvent);
+            try {
+                //temporarily messily create a new event, put it in bundle to pass to next navigation destination
+                Bundle args = makeNewBundle(getArguments());
+                Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
+            } catch (Exception e) {
+                new ErrorDialog(R.string.no_s_date).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+            }
 
-            Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
         });
         TextView dateButton = view.findViewById(R.id.date_display_textview);
         dateButton.setOnClickListener(v -> showDatePickerDialog());

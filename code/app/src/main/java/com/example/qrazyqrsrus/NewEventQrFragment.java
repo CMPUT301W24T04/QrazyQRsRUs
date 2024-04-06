@@ -87,15 +87,9 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
         //we define the activity to launch where the user will select a qr code from their gallery
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    // Callback is invoked after the user selects a media item or closes the
-                    // photo picker.
                     if (uri != null) {
-//                        Log.d("PhotoPicker", "Selected URI: " + uri);
                         //as long as the user selected an image, we invoke our function to update the imageView to display the uploaded poster, and save the event's poster
-                        //imageView = (ImageView) view.findViewById(R.id.new_event_display_qr_code);
                         imageUploaded(uri);
-                    } else {
-//                        Log.d("PhotoPicker", "No media selected");
                     }
                 });
 
@@ -119,33 +113,10 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
             } catch (Exception e) {
                 new ErrorDialog(R.string.no_qr_code).show(getActivity().getSupportFragmentManager(), "Error Dialog");
             }
-//            Event event = modifyEvent(this.checkInQRContent, (Event) args.getSerializable("event"));
-//            args.putSerializable("event", event);
-//            String name = (String) args.getSerializable("name");
-//            String organizerId = (String) args.getSerializable("organizerId");
-//            String location = (String) args.getSerializable("location");
-//            String details = (String) args.getSerializable("details");
-//            Integer max_attendees = (Integer) args.getSerializable("max_attendees");
-//            LocalDateTime startDate = (LocalDateTime) args.getSerializable("startDate");
-//            LocalDateTime endDate = (LocalDateTime) args.getSerializable("endDate");
-//            String posterPath = (String) args.getSerializable("posterPath");
-//            Uri uri = (Uri) args.getParcelable("uri");
-//            FirebaseDB.getInstance().uploadImage(uri, posterPath);
-//            String qrCodePromo = (String) args.getSerializable("qrCodePromo");
-//            String qrCode = (String) args.getSerializable("qrCode");
-//            FirebaseDB.getInstance().uploadImage(uri, posterPath);
-//
-//            Event event = new Event(name, organizerId, details, location, startDate, endDate, max_attendees);
-//            event.setPosterPath(posterPath);
-//            event.setQrCodePromo(qrCodePromo);
-//            event.setQrCode(qrCode);
-//            FirebaseDB.getInstance().addEvent(event);
-//            Navigation.findNavController(view).navigate(R.id.action_newEventQrFragment_to_eventList2, args);
         });
         Bundle bundle = getArguments();
         handleArguments(bundle, view);
         createToolbar(view);
-//        FirebaseDB.getInstance().subscribeAttendeeToEventTopic();
         return view;
     }
 
@@ -196,7 +167,6 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
             public void onUnique() {
                 generateBitmap(qrContent, getView());
             }
-
             @Override
             public void onNotUnique() {
                 new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
@@ -211,12 +181,20 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
     private void tryGenerateNewQR(String content){
         String qrContent = content;
         //we check if our qr code is unique
-        QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+        QRCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
-                generateBitmap(qrContent, getView());
+                QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+                    @Override
+                    public void onUnique() {
+                        generateBitmap(qrContent, getView());
+                    }
+                    @Override
+                    public void onNotUnique() {
+                        new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    }
+                });
             }
-
             @Override
             public void onNotUnique() {
                 new ErrorDialog(R.string.qr_not_unique).show(getActivity().getSupportFragmentManager(), "Error Dialog");
@@ -233,7 +211,6 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
         if (bitmap != null){
             ((ImageView) view.findViewById(R.id.new_event_display_qr_code)).setImageBitmap(bitmap);
             checkInQRContent = content;
-            saveImage(bitmap);
         } else{
             Log.d("generateBitmap", "error generating the bitmap");
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");

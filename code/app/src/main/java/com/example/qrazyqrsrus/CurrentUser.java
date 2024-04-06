@@ -13,11 +13,13 @@ public class CurrentUser {
         return instance;
     }
     private Attendee currentUser;
+    private String deviceId;
 
     /**
      * This method is to be called one, when MainActivity is created, to initialize our user
      */
     public void initializeUser(String deviceId) {
+        this.deviceId = deviceId;
         FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
             @Override
             public void onResult(Attendee attendee) {
@@ -37,7 +39,12 @@ public class CurrentUser {
      * This sets the point of access (currentUser) to a new Attendee instance. This should be
      * used when currentUser is updated remotely and we need to update it here too
      */
-    public void setCurrentUser(Attendee currentUser) {
-        this.currentUser = currentUser;
+    public void Update() {
+        FirebaseDB.getInstance().loginUser(this.deviceId, new FirebaseDB.GetAttendeeCallBack() {
+            @Override
+            public void onResult(Attendee attendee) {
+                CurrentUser.this.currentUser = attendee;
+            }
+        });
     }
 }
