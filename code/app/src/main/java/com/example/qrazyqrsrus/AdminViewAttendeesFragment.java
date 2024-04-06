@@ -167,7 +167,7 @@ public class AdminViewAttendeesFragment extends Fragment {
         }
 
         if (currentAttendee.getProfilePicturePath() == null){
-            //TODO: nothing?
+            imageView.setImageBitmap(InitialsPictureGenerator.createInitialsImage(InitialsPictureGenerator.getInitials(currentAttendee.getName())));
         } else{
             FirebaseDB.getInstance().retrieveImage(currentAttendee, new FirebaseDB.GetBitmapCallBack() {
                 @Override

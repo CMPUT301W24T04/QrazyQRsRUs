@@ -71,7 +71,7 @@ public class PushNotificationService extends FirebaseMessagingService {
                 // Use the event object here
 
             } catch (Exception e) {
-                Log.d("PoopyDoopy", e.getMessage());
+                Log.d("bad exception when generating notification", e.getMessage());
             }
         }else {
             Log.d("NotificationService", "It doesn't:(");

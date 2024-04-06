@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -41,13 +42,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         @Override
         public void onPromoResult(Event matchingEvent) {
-            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
+            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, CurrentUser.getInstance().getCurrentUser(), false));
 
         }
 
         @Override
         public void onCheckInResult(Event event) {
-            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), CurrentUser.getInstance().getCurrentUser().getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                 @Override
                 public void onResult(boolean isUnique, CheckIn checkIn) {
                     LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         public void onResult(double longitude, double latitude) {
                             if (isUnique){
                                 //if the user has not yet chcked into the event, we make a new one
-                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                CheckIn newCheckIn = new CheckIn(CurrentUser.getInstance().getCurrentUser().getDocumentId(), event.getDocumentId(), longitude, latitude);
                                 FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
                             } else{
                                 //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
@@ -69,14 +70,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     });
                 }
             });
-            ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
+            ChangeFragment(EventDetailsFragment.newInstance(event, CurrentUser.getInstance().getCurrentUser(), true));
 
         }
 
         @Override
         public void onNoResult(@Nullable Event event, int errorNumber){
             if (event != null){
-                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false));
+                ChangeFragment(EventDetailsFragment.newInstance(event, CurrentUser.getInstance().getCurrentUser(), false));
                 new ErrorDialog(R.string.not_signed_up_error).show(getSupportFragmentManager(), "QR Error Dialog");
             } else{
                 new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");

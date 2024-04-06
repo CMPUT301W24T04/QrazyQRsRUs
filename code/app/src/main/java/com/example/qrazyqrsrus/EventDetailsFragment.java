@@ -109,8 +109,11 @@ public class EventDetailsFragment extends Fragment {
 
         }
 
-        if (this.event.getGeolocationOn()) {
-            viewLocations.setVisibility(View.VISIBLE);
+        if (this.event.getGeolocationOn() != null) {
+            if (this.event.getGeolocationOn()){
+                viewLocations.setVisibility(View.VISIBLE);
+            }
+
         }
         //we check if attendee is set, logging in the user if not
         //then we update the images that are displayed, and the visibility of the signup button once we have the attendee
