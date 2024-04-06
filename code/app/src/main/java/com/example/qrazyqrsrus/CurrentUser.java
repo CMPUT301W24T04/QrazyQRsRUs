@@ -23,6 +23,11 @@ public class CurrentUser {
             public void onResult(Attendee attendee) {
                 CurrentUser.this.currentUser = attendee;
             }
+
+            @Override
+            public void onNoResult() {
+                CurrentUser.this.currentUser = null;
+            }
         });
     }
 

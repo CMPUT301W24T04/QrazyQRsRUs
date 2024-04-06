@@ -126,6 +126,11 @@ public class EventDetailsFragment extends Fragment {
                     setImages(posterView, promoQRView, checkInQRView);
                     setButtonVisibility(signUpEvent, viewAttendeesButton, EventDetailsFragment.this.event);
                 }
+
+                @Override
+                public void onNoResult() {
+                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                }
             });
         } else{
             setImages(posterView, promoQRView, checkInQRView);

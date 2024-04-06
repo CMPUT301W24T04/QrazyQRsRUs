@@ -84,6 +84,11 @@ public class HomeFragment extends Fragment{
                     FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
                     FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
+
+                @Override
+                public void onNoResult() {
+                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("user");

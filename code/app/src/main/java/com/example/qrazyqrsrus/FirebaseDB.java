@@ -73,6 +73,8 @@ public class FirebaseDB {
 
     public interface GetAttendeeCallBack {
         void onResult(Attendee attendee);
+
+        void onNoResult();
     }
     public interface GetAllEventsCallBack {
         void onResult(ArrayList<Event> events);

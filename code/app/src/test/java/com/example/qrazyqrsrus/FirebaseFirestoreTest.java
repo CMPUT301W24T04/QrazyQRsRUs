@@ -15,6 +15,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
@@ -55,10 +56,19 @@ public class FirebaseFirestoreTest{
     DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
 
     @Mock
+    Query mockQuery = Mockito.mock(Query.class);
+
+    @Mock
+    DocumentSnapshot mockDocumentSnapshot = Mockito.mock(DocumentSnapshot.class);
+
+    @Mock
     Task<DocumentReference> mockTask = (Task<DocumentReference>) Mockito.mock(Task.class);
 
     @Mock
     Task<Void> mockTaskVoid = (Task<Void>) Mockito.mock(Task.class);
+
+    @Mock
+    Task<QuerySnapshot> mockTaskQuery = (Task<QuerySnapshot>) Mockito.mock(Task.class);
 
     @Mock
     Void mockVoid = Mockito.mock(Void.class);
@@ -96,6 +106,16 @@ public class FirebaseFirestoreTest{
             return mockTaskVoid;
         });
 
+        when(mockQuery.get()).thenReturn(mockTaskQuery);
+
+        when(mockTaskQuery.addOnCompleteListener(Mockito.any())).thenAnswer(invocation -> {
+            // Get the onSuccess listener
+            OnCompleteListener<QuerySnapshot> listener = invocation.getArgument(0);
+            // Call the onSuccess method with a mock DocumentReference
+            listener.onComplete(mockTaskQuery);
+            return mockTask;
+        });
+
 //        doNothing().when(mockTaskVoid).addOnFailureListener(Mockito.any());
     }
 
@@ -122,5 +142,36 @@ public class FirebaseFirestoreTest{
                 "email", "testEmail",
                 "geolocationOn", false,
                 "profilePicturePath", "testPath", "documentId", "testDocumentId");
+    }
+
+
+
+    @Test
+    public void testLoginUser_AlreadyExists(){
+        Attendee user = new Attendee("testId", null, "john t", "testEmail", "testPath", false);
+
+        when(mockUserCollection.whereEqualTo("id", "testId")).thenReturn(mockQuery);
+        when(mockTaskQuery.isSuccessful()).thenReturn(true);
+        //when user already exists, task.getResult should return a document snapshot
+//        when(mockTaskQuery.getResult()).thenReturn(mockDocumentSnapshot)
+        doNothing().when(firebaseDBSpy).addUser(Mockito.any());
+
+        firebaseDBSpy.loginUser("testId", new FirebaseDB.GetAttendeeCallBack() {
+            @Override
+            public void onResult(Attendee attendee) {
+//                asser
+            }
+
+            @Override
+            public void onNoResult() {
+
+            }
+        });
+
+
+        FirebaseDB mockFirebaseDb = Mockito.mock(FirebaseDB.class);
+
+
+
     }
 }
