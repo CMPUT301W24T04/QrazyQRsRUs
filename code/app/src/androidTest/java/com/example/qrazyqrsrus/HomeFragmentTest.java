@@ -9,7 +9,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.testing.FragmentScenario;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.rule.UiThreadTestRule;
 
 
 import org.junit.Rule;
@@ -28,7 +30,7 @@ public class HomeFragmentTest {
         Bundle bundle = getBundle();
 
         // Launch the fragment with the provided bundle
-        FragmentScenario<HomeFragment> scenario =  FragmentScenario.launchInContainer(HomeFragment.class, bundle);
+        FragmentScenario<HomeFragment> scenario =  FragmentScenario.launchInContainer(HomeFragment.class, bundle, R.style.Base_Theme_QrazyQRsRUs);
 
         scenario.onFragment(new FragmentScenario.FragmentAction<HomeFragment>() {
             @Override

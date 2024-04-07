@@ -110,11 +110,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         CurrentUser.getInstance().initializeUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
 
-        // Apparently this is not good practice, but if it works, it works.
-//        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
-//        Log.d("test", deviceId);
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Announcements";
