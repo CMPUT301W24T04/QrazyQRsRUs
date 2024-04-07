@@ -50,9 +50,48 @@ public class SignUpsListUITest {
 //    @Rule
 //    public ActivityScenarioRule<MainActivity> rule =
 //            new ActivityScenarioRule<>(MainActivity.class);
+@Test
+public void canDisplay() {
+
+
+    Bundle bundle = getBundle();
+    Mockito.doAnswer(new Answer() {
+        @Override
+        public Object answer(InvocationOnMock invocation) throws Throwable {
+            Object[] args = invocation.getArguments();
+            ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
+            AttendeeSignUpsListAdapter attendeeListAdapter = (AttendeeSignUpsListAdapter) args[2];
+
+//            attendeeDataList.add(mockAttendee());
+//                MockAttendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
+            attendeeListAdapter.notifyDataSetChanged();
+            return null;
+        }
+    }).when(mockFirebaseDB).getEventSignedUpUsers(Mockito.any(),Mockito.any(),Mockito.any());
+
+    // Launch the fragment with the provided bundle
+    FragmentScenario<AttendeeSignupsList> scenario =  FragmentScenario.launchInContainer(AttendeeSignupsList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
+
+    scenario.onFragment(fragment ->
+            fragment.setFirebaseDB(mockFirebaseDB)
+    );
+    scenario.onFragment(fragment ->
+            scenario.moveToState(Lifecycle.State.RESUMED)
+    );
+
+    onView(withId(R.id.button_back_signups)).check(matches(isDisplayed()));
+    onView(withId(R.id.app_title)).check(matches(isDisplayed()));
+    onView(withId(R.id.attendee_signups_list_view)).check(matches(isDisplayed()));
+
+    onView(withId(R.id.attendee_signups_list_view)).check(matches(isDisplayed()));
+
+    onView(withId(R.id.attendee_signups_list_view)).check(matches(hasChildCount(0)));
+
+
+}
 
     @Test
-    public void testFragmentDisplayed() {
+    public void testFragmentDisplayedAddAttendee() {
 
 
         Bundle bundle = getBundle();
@@ -80,8 +119,6 @@ public class SignUpsListUITest {
                 scenario.moveToState(Lifecycle.State.RESUMED)
         );
 
-
-        mockAttendee().setCheckins(8);
         onView(withId(R.id.button_back_signups)).check(matches(isDisplayed()));
         onView(withId(R.id.app_title)).check(matches(isDisplayed()));
         onView(withId(R.id.attendee_signups_list_view)).check(matches(isDisplayed()));

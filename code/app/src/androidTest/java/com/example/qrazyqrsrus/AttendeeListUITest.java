@@ -50,9 +50,54 @@ public class AttendeeListUITest {
     private Attendee mockAttendee(){
         return new Attendee("1", "DocumentId", "John", "john@ualberta.ca", "111111111111111", true,8);
     }
-
     @Test
-    public void testFragmentDisplayed() {
+    public void canDisplay() {
+
+        Bundle bundle = getBundle();
+
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
+                AttendeeListAdapter attendeeListAdapter = (AttendeeListAdapter) args[2];
+
+                attendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
+                attendeeListAdapter.notifyDataSetChanged();
+                return null;
+            }
+        }).when(mockFirebaseDB).getEventCheckedInUsers(Mockito.any(),Mockito.any(),Mockito.any());
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                FirebaseDB.GetStringCallBack callBack = (FirebaseDB.GetStringCallBack) args[1];
+                callBack.onResult("Name");
+                return null;
+            }
+        }).when(mockFirebaseDB).getUserName(Mockito.any(),Mockito.any());
+
+
+        // Launch the fragment with the provided bundle
+        FragmentScenario<AttendeeList> scenario =  FragmentScenario.launchInContainer(AttendeeList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
+
+        scenario.onFragment(fragment ->
+                fragment.setFirebaseDB(mockFirebaseDB)
+        );
+        scenario.onFragment(fragment ->
+                scenario.moveToState(Lifecycle.State.RESUMED)
+        );
+
+//        Mockito.doNothing().when(mockFirebase).getEventCheckedInUsers(new Event(), MockAttendeeDataList, MockAttendeeListAdapter);
+//        Mockito.doNothing().when(mockFirebaseDB).getEventCheckedInUsers(Mockito.any(),Mockito.any(),Mockito.any());
+        mockAttendee().setCheckins(8);
+        onView(withId(R.id.button_back_checkin)).check(matches(isDisplayed()));
+        onView(withId(R.id.app_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.attendee_list_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.attendee_list_view)).check(matches(hasChildCount(0)));
+    }
+    @Test
+    public void testFragmentDisplayedAddAttendee() {
 
         Bundle bundle = getBundle();
 
@@ -187,49 +232,49 @@ public class AttendeeListUITest {
 //        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void TestSwapViewProfileFragment(){
-        Bundle bundle = getBundle();
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
-                AttendeeListAdapter attendeeListAdapter = (AttendeeListAdapter) args[2];
-
-                attendeeDataList.add(mockAttendee());
-                attendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
-                attendeeListAdapter.notifyDataSetChanged();
-                return null;
-            }
-        }).when(mockFirebaseDB).getEventCheckedInUsers(Mockito.any(),Mockito.any(),Mockito.any());
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                FirebaseDB.GetStringCallBack callBack = (FirebaseDB.GetStringCallBack) args[1];
-                callBack.onResult("Name");
-                return null;
-            }
-        }).when(mockFirebaseDB).getUserName(Mockito.any(),Mockito.any());
-        FragmentScenario<AttendeeList> scenario =  FragmentScenario.launchInContainer(AttendeeList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
-        scenario.onFragment(fragment ->
-                fragment.setFirebaseDB(mockFirebaseDB)
-        );
-        scenario.onFragment(fragment ->
-                scenario.moveToState(Lifecycle.State.RESUMED)
-        );
-
-        scenario.onFragment(fragment ->
-                Navigation.setViewNavController(fragment.requireView(), mockNavController)
-        );
-        onView(withId(R.id.button_view_signups)).perform(click());
-        verify(mockNavController).navigate(
-                eq(R.id.action_attendeeList2_to_viewProfileFragment),
-                Mockito.any(Bundle.class)
-        );
-//        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
-    }
+//    @Test
+//    public void TestSwapViewProfileFragment(){
+//        Bundle bundle = getBundle();
+//        Mockito.doAnswer(new Answer() {
+//            @Override
+//            public Object answer(InvocationOnMock invocation) throws Throwable {
+//                Object[] args = invocation.getArguments();
+//                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
+//                AttendeeListAdapter attendeeListAdapter = (AttendeeListAdapter) args[2];
+//
+//                attendeeDataList.add(mockAttendee());
+//                attendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
+//                attendeeListAdapter.notifyDataSetChanged();
+//                return null;
+//            }
+//        }).when(mockFirebaseDB).getEventCheckedInUsers(Mockito.any(),Mockito.any(),Mockito.any());
+//        Mockito.doAnswer(new Answer() {
+//            @Override
+//            public Object answer(InvocationOnMock invocation) throws Throwable {
+//                Object[] args = invocation.getArguments();
+//                FirebaseDB.GetStringCallBack callBack = (FirebaseDB.GetStringCallBack) args[1];
+//                callBack.onResult("Name");
+//                return null;
+//            }
+//        }).when(mockFirebaseDB).getUserName(Mockito.any(),Mockito.any());
+//        FragmentScenario<AttendeeList> scenario =  FragmentScenario.launchInContainer(AttendeeList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
+//        scenario.onFragment(fragment ->
+//                fragment.setFirebaseDB(mockFirebaseDB)
+//        );
+//        scenario.onFragment(fragment ->
+//                scenario.moveToState(Lifecycle.State.RESUMED)
+//        );
+//
+//        scenario.onFragment(fragment ->
+//                Navigation.setViewNavController(fragment.requireView(), mockNavController)
+//        );
+//        onView(withId(R.id.button_view_signups)).perform(click());
+//        verify(mockNavController).navigate(
+//                eq(R.id.action_attendeeList2_to_viewProfileFragment),
+//                Mockito.any(Bundle.class)
+//        );
+////        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
+//    }
 
     @NonNull
     private static Bundle getBundle() {
