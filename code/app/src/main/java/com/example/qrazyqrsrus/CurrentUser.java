@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// This class gets the currend user accessing an event
 import android.provider.Settings;
 
 public class CurrentUser {

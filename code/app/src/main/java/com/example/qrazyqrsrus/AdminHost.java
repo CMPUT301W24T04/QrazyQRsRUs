@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// This fragment holds the location for AdminHomeFragment to be displayed
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -36,16 +36,13 @@ android {
 dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     debugImplementation("androidx.fragment:fragment-testing:1.6.2")
-    androidTestImplementation("androidx.test:runner:1.5.2")
-    androidTestImplementation("androidx.test:rules:1.5.0")
+
     //Navigation
     //from https://developer.android.com/guide/navigation#kts on Feb. 19, 2024
     val nav_version = "2.7.7"
@@ -74,8 +71,14 @@ dependencies {
     //photo picker
     implementation("androidx.activity:activity:1.8.2")
 
-    //maybe need, probably do no need
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation ("org.mockito:mockito-android:5.11.0")
     testImplementation("org.mockito:mockito-core:5.11.0")
+    //maybe need, probably do no need
     testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
     testImplementation("org.powermock:powermock-module-junit4:2.0.9")
     testImplementation("org.testng:testng:7.4.0")
@@ -96,5 +99,12 @@ dependencies {
     //for converting objects to json
     implementation("com.google.code.gson:gson:2.10.1")
 
-}
+    // ADDED FOR UI TESTING
+    debugImplementation("androidx.fragment:fragment-testing:1.1.0-beta01")
+    debugImplementation("androidx.fragment:fragment-ktx:1.1.0-beta01")
+    debugImplementation("androidx.test:core:1.2.0")
+    debugImplementation("androidx.test:rules:1.2.0")
+    debugImplementation("androidx.test:runner:1.2.0")
 
+    androidTestImplementation("org.mockito:mockito-android:5.11.0")
+}

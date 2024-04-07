@@ -1,3 +1,4 @@
+// Shows all the attendees
 package com.example.qrazyqrsrus;
 
 import android.graphics.Bitmap;

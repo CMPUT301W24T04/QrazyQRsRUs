@@ -9,14 +9,13 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
-public class HomeCheckedInListAdapterTest {
+public class HomeSignedUpListAdapterTest {
     ArrayList<Attendee> MockAttendeeDataList = new ArrayList<>();
     Attendee mockAttendee = Mockito.mock(Attendee.class);
 
     private Attendee mockAttendee(){
-        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true, 8);
+        return new Attendee("1", "ewifnkw", "John", "john@ualberta.ca", "111111111111111", true);
     }
-
     /**
      * Checks if the list can have the right object added to it
      */
@@ -40,6 +39,5 @@ public class HomeCheckedInListAdapterTest {
         assertEquals(MockAttendeeDataList.get(0).getProfilePicturePath(), "111111111111111");
         assertEquals(MockAttendeeDataList.get(0).getGeolocationOn(), true);
         assertEquals(MockAttendeeDataList.get(0).getName(), "John");
-        assertEquals(MockAttendeeDataList.get(0).getCheckins(), 8);
     }
 }

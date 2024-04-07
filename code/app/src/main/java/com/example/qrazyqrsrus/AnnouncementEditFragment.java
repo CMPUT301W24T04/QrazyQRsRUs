@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// This fragment allows announcements to be edited
 import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.app.NotificationChannel;

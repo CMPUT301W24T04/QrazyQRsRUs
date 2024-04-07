@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// This fragment holds the API used for sending notifications to users
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;

@@ -217,16 +217,17 @@
                 app:layout_constraintTop_toBottomOf="@id/view_announcements_button"
                 app:layout_constraintWidth_percent="0.9" />
 
+
             <TextView
                 android:id="@+id/promo_qr_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="24dp"
                 android:text="Invite your friends:"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.505"
+                app:layout_constraintHorizontal_bias="0.441"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/sign_up_button" />
 
@@ -234,14 +235,13 @@
                 android:id="@+id/promo_qr_view"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="12dp"
                 android:src="@drawable/no_image_source"
                 app:layout_constraintEnd_toEndOf="parent"
 
-                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintHorizontal_bias="0.459"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/promo_qr_text" />
-
 
             <Button
                 android:id="@+id/promo_share_button"
@@ -259,11 +259,12 @@
                 android:id="@+id/check_in_qr_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:text="Scan to Check-In:"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.425"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/promo_qr_view" />
 
@@ -273,10 +274,12 @@
                 android:layout_height="100dp"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/no_image_source"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_bias="0.459"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/check_in_qr_text" />
+                app:layout_constraintTop_toBottomOf="@id/check_in_qr_text"
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/check_in_share_button"
