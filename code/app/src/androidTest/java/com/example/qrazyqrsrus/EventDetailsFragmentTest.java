@@ -33,6 +33,7 @@ public class EventDetailsFragmentTest{
     public ActivityScenarioRule<MainActivity> rule =
            new ActivityScenarioRule<>(MainActivity.class);
 
+
     @Test
     public void testFragmentDisplayed() {
 
