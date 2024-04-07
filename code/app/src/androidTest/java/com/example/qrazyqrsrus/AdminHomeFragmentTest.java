@@ -1,10 +1,12 @@
 package com.example.qrazyqrsrus;
 
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +23,14 @@ public class AdminHomeFragmentTest {
     // Use ActivityScenarioRule to launch the container activity for your fragment
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
+
+    @Before
+    public void setup() {
+        // Launch MainActivity
+        ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
+
+        // trigger the condition that leads to the display of AdminHomeFragment
+    }
 
     @Test
     public void testNavigationToAdminViewEventsFragment() {
