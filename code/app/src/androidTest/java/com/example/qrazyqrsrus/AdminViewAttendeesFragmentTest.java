@@ -28,6 +28,9 @@ import static org.hamcrest.Matchers.not;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RunWith(AndroidJUnit4.class)
 public class AdminViewAttendeesFragmentTest {
@@ -37,17 +40,26 @@ public class AdminViewAttendeesFragmentTest {
 
     @Before
     public void setup() {
+        List<Attendee> allAttendees = new ArrayList<>();
+        Attendee attendee1 = new Attendee("1", "doc1", "John Doe", "john.doe@example.com", "/path/to/profile1.jpg", true);
+        Attendee attendee2 = new Attendee("2", "doc2", "Jane Smith", "jane.smith@example.com", "/path/to/profile2.jpg", false);
+        Attendee attendee3 = new Attendee("3", "doc3", "Alex Johnson", "alex.johnson@example.com", "/path/to/profile3.jpg", true);
+        allAttendees.add(attendee1);
+        allAttendees.add(attendee2);
+        allAttendees.add(attendee3);
+
         // Launch MainActivity
         ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
 
         // trigger the condition that leads to the display of AdminHomeFragment
-        // also supply 2-3 Attendees as args to the fragment
+        // also supply allAttendees to the fragment instance
     }
 
     @Test
     public void testNavigationBackButton() {
+        // this is the FAB
         onView(withId(R.id.back_button)).perform(click());
-        // You would add a way to check if you navigated back successfully.
+        // add check for previous event display
     }
 
     @Test
@@ -68,7 +80,6 @@ public class AdminViewAttendeesFragmentTest {
     public void testGeolocationSwitchReflectsAttendeeStatus() {
         // Assuming you have a way to set an attendee with geolocation ON.
         onView(withId(R.id.switchGeolocation)).check(matches(isChecked()));
-        // Toggle to check interaction, if applicable.
     }
 
     @Test
