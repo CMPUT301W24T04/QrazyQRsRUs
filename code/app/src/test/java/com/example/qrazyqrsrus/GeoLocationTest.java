@@ -68,11 +68,11 @@ public class GeoLocationTest {
     /**
      * Checks if the firebase function used in the class can be called
      */
-//    @Test
-//    public void TestFirebaseCalls(){
-//        //https://stackoverflow.com/questions/9841623/mockito-how-to-verify-method-was-called-on-an-object-created-within-a-method
-//        //accessed 4/6/2024
-//        mockFirebase.getGeolocations(mockEvent, GetMapMarkersCallback);
-//        verify(mockFirebase).getGeolocations(mockEvent, GetMapMarkersCallback);
-//    }
+    @Test
+    public void TestFirebaseCalls(){
+        //https://stackoverflow.com/questions/9841623/mockito-how-to-verify-method-was-called-on-an-object-created-within-a-method
+        //accessed 4/6/2024
+        mockFirebase.getGeolocations(mockEvent, Mockito.any(FirebaseDB.GetMapMarkersCallback.class));
+        verify(mockFirebase).getGeolocations(mockEvent, Mockito.any(FirebaseDB.GetMapMarkersCallback.class));
+    }
 }

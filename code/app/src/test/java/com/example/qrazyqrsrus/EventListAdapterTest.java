@@ -36,9 +36,29 @@ public class EventListAdapterTest{
         MockEventDataList.add(mockEvent());
 
         assertNotNull(MockEventDataList);
-
+    }
+    /**
+     * Test if the right attributes are being taken from the event list
+     */
+    @Test
+    public void TestObjectAttributes(){
+        MockEventDataList.add(mockEvent());
         assertEquals(MockEventDataList.get(0).getName(), "John");
         assertEquals(MockEventDataList.get(0).getDocumentId(), "1111111");
+        assertEquals(MockEventDataList.get(0).getOrganizerId(), "222222222");
+        assertEquals(MockEventDataList.get(0).getDetails(), "This is an event");
+        assertEquals(MockEventDataList.get(0).getLocation(), "Edmonton");
+        assertEquals(MockEventDataList.get(0).getStartDate(), "4/6/2024");
+        assertEquals(MockEventDataList.get(0).getEndDate(), "4/8/2024");
+        assertEquals(MockEventDataList.get(0).getGeolocationOn(), true);
+        assertEquals(MockEventDataList.get(0).getPosterPath(), "path");
+        assertEquals(MockEventDataList.get(0).getQrCode(), "qrCode");
+        assertEquals(MockEventDataList.get(0).getQrCodePromo(), "promoQr");
+        assertEquals(MockEventDataList.get(0).getOrganizerToken(), "organizerToken");
+        assertEquals(MockEventDataList.get(0).getAnnouncements(), announcements);
+        assertEquals(MockEventDataList.get(0).getSignUps(), signUps);
+        assertEquals(MockEventDataList.get(0).getCheckIns(), checkIns);
+//        assertEquals(MockEventDataList.get(0).getMaxAttendees(), 10);
 
     }
 }
