@@ -39,7 +39,7 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment{
     ListView checkedIn;
     ListView signedUp;
-    private Attendee attendee;
+    private Attendee[] attendee;
 
     com.example.qrazyqrsrus.HomeCheckedInListAdapter checkedInListAdapter;
     com.example.qrazyqrsrus.HomeSignedUpListAdapter signedUpListAdapter;
@@ -93,10 +93,23 @@ public class HomeFragment extends Fragment{
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("user");
             if (attendee == null){
-                attendee = CurrentUser.getInstance().getCurrentUser();
+
+                FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        HomeFragment.this.attendee[0] = attendee;
+                    }
+
+                    @Override
+                    public void onNoResult() {
+
+                    }
+                });
+            } else{
+                this.attendee[0] = attendee;
             }
-            FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
-            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+            FirebaseDB.getInstance().getEventsCheckedIn(this.attendee[0], checkedInEvents, homeCheckedInListAdapter);
+            FirebaseDB.getInstance().getAttendeeSignedUpEvents(this.attendee[0], signedUpEvents, homeSignedUpListAdapter);
         }
 
         checkedIn.setAdapter(homeCheckedInListAdapter);

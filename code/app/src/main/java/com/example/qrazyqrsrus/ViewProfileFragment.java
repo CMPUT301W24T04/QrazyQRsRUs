@@ -40,6 +40,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.checkerframework.checker.units.qual.Current;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -149,8 +151,8 @@ public class ViewProfileFragment extends Fragment {
         if (args != null && args.containsKey("attendee")) {
             Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
             if (attendeeClicked != null) {
-                Log.d("profile_error", "User ID: " + userId);
-                Log.d("profile_error", "Attendee ID: " + attendeeClicked.getId());
+//                Log.d("profile_error", "User ID: " + userId);
+//                Log.d("profile_error", "Attendee ID: " + attendeeClicked.getId());
 
                 if (!Objects.equals(userId, attendeeClicked.getId())) {
                     restrictEdits();
