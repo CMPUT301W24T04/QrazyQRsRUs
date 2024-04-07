@@ -105,7 +105,6 @@ public class HomeFragmentTest {
 
     @Test
     public void testBrowseButton() {
-        closeSoftKeyboard();
         onView(withId(R.id.browse_events_button)).perform(click());
 
         verify(mockNavController).navigate(eq(R.id.action_homeFragment_to_eventList3));
