@@ -21,6 +21,7 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
     private ArrayList<Attendee> attendees;
     private Context context;
+    private FirebaseDB firebaseDB;
 
     /**
      * Constructor to hold the attendee content
@@ -55,6 +56,11 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         if(view == null){
             view = LayoutInflater.from(context).inflate(R.layout.attendee_list_content, parent,false);
         }
+
+        if(firebaseDB == null){
+            firebaseDB = FirebaseDB.getInstance();
+        }
+
         // get position of the attendee
         Attendee attendee = attendees.get(position);
 
@@ -64,7 +70,7 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
 
         // change value of name and num_checkins from content value
-        FirebaseDB.getInstance().getUserName(attendee.getId(), new FirebaseDB.GetStringCallBack() {
+        firebaseDB.getUserName(attendee.getId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
                 attendee.setName(string);
@@ -78,10 +84,9 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
             }
         });
 
-
-
-
         return view;
     }
-    //
+    public void setAdapterFirebaseDB(FirebaseDB instance){
+        this.firebaseDB = instance;
+    }
 }

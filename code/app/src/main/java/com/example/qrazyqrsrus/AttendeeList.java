@@ -43,6 +43,7 @@ public class AttendeeList extends Fragment {
     ListView attendeeList;
     ArrayList<Attendee> attendeeDataList;
     AttendeeListAdapter attendeeListAdapter;
+    private FirebaseDB firebaseDB;
 
     /**
      * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
@@ -59,6 +60,10 @@ public class AttendeeList extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // if not in test use firebase
+        if(firebaseDB == null){
+            firebaseDB = FirebaseDB.getInstance();
+        }
         // DEFINE VIEW
         View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_list, container, false);
         //**************************************************************************************************************
@@ -75,7 +80,10 @@ public class AttendeeList extends Fragment {
         //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
-        FirebaseDB.getInstance().getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
+
+
+//        FirebaseDB.getInstance().getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
+        firebaseDB.getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
 //        for(int i = 0; i < attendeeDataList.size();i++){yeah
 //            Attendee current_attendee = attendeeDataList.get(i);
 //            FirebaseDB.getInstance().getUserName(current_attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
@@ -131,5 +139,8 @@ public class AttendeeList extends Fragment {
         return attendeeListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
 
 
+    }
+    public void setFirebaseDB(FirebaseDB instance){
+        this.firebaseDB = instance;
     }
 }
