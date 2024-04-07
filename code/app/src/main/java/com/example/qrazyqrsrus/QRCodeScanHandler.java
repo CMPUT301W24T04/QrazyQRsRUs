@@ -36,6 +36,9 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Executes the actions when a Qr code is scanned
+ */
 public class QRCodeScanHandler{
 
     //the error if an error occurs

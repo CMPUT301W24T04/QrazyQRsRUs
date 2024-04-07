@@ -1,3 +1,4 @@
+// This fragment displays a list of the events
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 /**
- * Gets database information about event attendee is signed up for and displays it
+ * Gets database information about events an attendee is signed up for and displays it
  */
 public class EventList extends Fragment {  // FIX LATER
 

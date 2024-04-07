@@ -99,5 +99,12 @@ dependencies {
     //for converting objects to json
     implementation("com.google.code.gson:gson:2.10.1")
 
-}
+    // ADDED FOR UI TESTING
+    debugImplementation("androidx.fragment:fragment-testing:1.1.0-beta01")
+    debugImplementation("androidx.fragment:fragment-ktx:1.1.0-beta01")
+    debugImplementation("androidx.test:core:1.2.0")
+    debugImplementation("androidx.test:rules:1.2.0")
+    debugImplementation("androidx.test:runner:1.2.0")
 
+    androidTestImplementation("org.mockito:mockito-android:5.11.0")
+}

@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class shows a list of events created by the user
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;

@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// THis class displays the events created by the user
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

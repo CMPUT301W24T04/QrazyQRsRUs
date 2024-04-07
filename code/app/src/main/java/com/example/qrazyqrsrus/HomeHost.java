@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This fragment hosts the starting view when the user opens the app
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

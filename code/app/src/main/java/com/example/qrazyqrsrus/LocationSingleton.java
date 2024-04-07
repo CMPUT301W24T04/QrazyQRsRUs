@@ -1,5 +1,7 @@
 package com.example.qrazyqrsrus;
 
+// This class gets the device location of users who scan check in QR code
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationManager;
