@@ -28,14 +28,21 @@ import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 
-public class AttendeeListUITest {
+public class EventListUITest {
 
     FirebaseDB mockFirebaseDB = Mockito.mock(FirebaseDB.class);
     ArrayList<Attendee> MockAttendeeDataList = new ArrayList<>();
     AttendeeListAdapter MockAttendeeListAdapter;
+    ArrayList<String> announcements = new ArrayList<>();
+    ArrayList<String> signUps = new ArrayList<>();
+    ArrayList<String> checkIns = new ArrayList<>();
 
-    private Attendee mockAttendee(){
-        return new Attendee("1", "DocumentId", "John", "john@ualberta.ca", "111111111111111", true,8);
+    private Event mockEvent(){
+        return new Event("1111111", "John", "222222222", "This is an event",
+                "Edmonton", "4/6/2024", "4/8/2024",
+                true, "path", "qrCode",
+                "promoQr", "organizerToken",announcements,signUps,
+                checkIns, 10);
     }
 
     @Test
@@ -47,28 +54,17 @@ public class AttendeeListUITest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
-                AttendeeListAdapter attendeeListAdapter = (AttendeeListAdapter) args[2];
+                ArrayList<Event> eventDataList = (ArrayList<Event>) args[0];
+                EventListAdapter eventListAdapter = (EventListAdapter) args[1];
 
-                attendeeDataList.add(mockAttendee());
-                attendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
-                attendeeListAdapter.notifyDataSetChanged();
+                eventDataList.add(mockEvent());
+                eventListAdapter.notifyDataSetChanged();
                 return null;
             }
-        }).when(mockFirebaseDB).getEventCheckedInUsers(Mockito.any(),Mockito.any(),Mockito.any());
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                FirebaseDB.GetStringCallBack callBack = (FirebaseDB.GetStringCallBack) args[1];
-                callBack.onResult("Name");
-                return null;
-            }
-        }).when(mockFirebaseDB).getUserName(Mockito.any(),Mockito.any());
-
+        }).when(mockFirebaseDB).getAllEvents(Mockito.any(),Mockito.any());
 
         // Launch the fragment with the provided bundle
-        FragmentScenario<AttendeeList> scenario =  FragmentScenario.launchInContainer(AttendeeList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
+        FragmentScenario<EventList> scenario =  FragmentScenario.launchInContainer(EventList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
 
         scenario.onFragment(fragment ->
                 fragment.setFirebaseDB(mockFirebaseDB)
@@ -79,13 +75,11 @@ public class AttendeeListUITest {
 
 //        Mockito.doNothing().when(mockFirebase).getEventCheckedInUsers(new Event(), MockAttendeeDataList, MockAttendeeListAdapter);
 //        Mockito.doNothing().when(mockFirebaseDB).getEventCheckedInUsers(Mockito.any(),Mockito.any(),Mockito.any());
-        mockAttendee().setCheckins(8);
-        onView(withId(R.id.button_back_checkin)).check(matches(isDisplayed()));
-        onView(withId(R.id.app_title)).check(matches(isDisplayed()));
-        onView(withId(R.id.attendee_list_view)).check(matches(isDisplayed()));
-        onView(withText("Name")).check(matches(isDisplayed()));
-        onView(withText("# Check Ins: 8")).check(matches(isDisplayed()));
-        onView(withId(R.id.attendee_list_view)).check(matches(hasChildCount(1)));
+//        mockAttendee().setCheckins(8);
+        onView(withId(R.id.event_list_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.event_list_view)).check(matches(isDisplayed()));
+//        onView(withText("Name")).check(matches(isDisplayed()));
+        onView(withId(R.id.event_list_view)).check(matches(hasChildCount(1)));
     }
 
     @NonNull
