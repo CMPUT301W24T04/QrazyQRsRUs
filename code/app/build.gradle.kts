@@ -36,12 +36,12 @@ android {
 dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
 
     //Navigation
     //from https://developer.android.com/guide/navigation#kts on Feb. 19, 2024
@@ -76,7 +76,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-
+    androidTestImplementation ("org.mockito:mockito-android:5.11.0")
     testImplementation("org.mockito:mockito-core:5.11.0")
     //maybe need, probably do no need
     testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
