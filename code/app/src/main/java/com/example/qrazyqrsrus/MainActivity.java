@@ -149,11 +149,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         });
 
-        // Apparently this is not good practice, but if it works, it works.
-//        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
-//        Log.d("test", deviceId);
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Announcements";
@@ -166,30 +161,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-
-
-//        String eventId = getIntent().getStringExtra("eventId");
-//
-//        if (eventId != null) {
-//            Log.d("eventId", "YAY NOT NULL");
-//            FirebaseDB.getEventById(eventId, new FirebaseDB.GetEventCallback() {
-//                @Override
-//                public void onSuccess(Event event) {
-//                    Log.d("eventIdFirebaseFunction", "Holy shit it works?");
-//                    ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false)); //THIS IS JUST A TEST, I DONT KNOW HOW ELSE TO IMPLEMENT IT
-//                }
-//
-//                @Override
-//                public void onFailure(String errorMessage) {
-//                    // ERROR HANDLING
-//                    Log.d("eventIdFirebaseFunction", "Nope");
-//                }
-//            });
-//        }else {
-//            Log.d("eventId", "man i'm tired");
-//        }
-
-
 
         //we don't need to getToken, this is just for testing
         //FirebaseDB.getInstance().getToken();
