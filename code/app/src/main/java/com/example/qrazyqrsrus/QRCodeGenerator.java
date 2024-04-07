@@ -20,6 +20,10 @@ import java.util.Date;
  */
 public class QRCodeGenerator {
 
+    private FirebaseDB firebaseDB;
+
+    private BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+
     private static Bitmap bitmap = null;
 
     public interface UniqueQRCheckCallBack {
@@ -34,7 +38,10 @@ public class QRCodeGenerator {
      * @param callback The UniqueQRCheckCallBack that will handle the two cases: the qr code we are generating is unique (no problem), or the qr code we are generating is already in use (problem)
      */
     public void checkUnique (String content, int mode, UniqueQRCheckCallBack callback){
-        FirebaseDB.getInstance().checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
+        if (firebaseDB == null){
+            firebaseDB = FirebaseDB.getInstance();
+        }
+        firebaseDB.checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
             @Override
             public void onResult(boolean isUnique) {
                 //if the qr code is not unique,
@@ -54,7 +61,7 @@ public class QRCodeGenerator {
      */
     public Bitmap generateBitmap(String content){
         Bitmap qrBitmap = null;
-        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+
         //we try to generate a bitmap that encodes the content field, and catch a possible exception
         try {
             qrBitmap = barcodeEncoder.encodeBitmap(content, BarcodeFormat.QR_CODE, 400, 400);
@@ -67,5 +74,13 @@ public class QRCodeGenerator {
     }
 
     public QRCodeGenerator(){
+    }
+
+    public void setFirebaseDB(FirebaseDB firebaseDB) {
+        this.firebaseDB = firebaseDB;
+    }
+
+    public void setBarcodeEncoder(BarcodeEncoder barcodeEncoder) {
+        this.barcodeEncoder = barcodeEncoder;
     }
 }
