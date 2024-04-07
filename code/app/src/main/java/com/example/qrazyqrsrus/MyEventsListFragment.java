@@ -54,6 +54,11 @@ public class MyEventsListFragment extends Fragment {
                     setAttendee(attendee);
 //                    FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
+
+                @Override
+                public void onNoResult() {
+                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
