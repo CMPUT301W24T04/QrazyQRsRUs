@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!-- Base application theme. -->
+<style name="Base.Theme.QrazyQRsRUs" parent="Theme.MaterialComponents.NoActionBar">
+    <!-- Customize your theme here. -->
+    <!-- Your existing customization, like textColor, can go here. -->
+    <!-- Example color customization -->
+    <!-- Since textColor was empty in your default_style, add it if needed -->
+</style>
+
+<!-- You might want to define other styles here. -->
+</resources>

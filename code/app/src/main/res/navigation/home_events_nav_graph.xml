@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_events_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.qrazyqrsrus.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_eventDetailsFragment3"
+            app:destination="@id/eventDetailsFragment3" />
+        <action
+            android:id="@+id/action_homeFragment_to_eventList3"
+            app:destination="@id/eventList3" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventDetailsFragment3"
+        android:name="com.example.qrazyqrsrus.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details" >
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementEditFragment"
+            app:destination="@id/announcementEditFragment" />
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_AnnouncementsFragment"
+            app:destination="@id/announcementsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventList3"
+        android:name="com.example.qrazyqrsrus.EventList"
+        android:label="fragment_event_list"
+        tools:layout="@layout/fragment_event_list" >
+        <action
+            android:id="@+id/action_eventList3_to_eventDetailsFragment3"
+            app:destination="@id/eventDetailsFragment3" />
+    </fragment>
+    <fragment
+        android:id="@+id/announcementsFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementsFragment"
+        android:label="AnnouncementsFragment" />
+    <fragment
+        android:id="@+id/announcementEditFragment"
+        android:name="com.example.qrazyqrsrus.AnnouncementEditFragment"
+        android:label="AnnouncementEditFragment" />
+</navigation>
