@@ -165,7 +165,7 @@ public class QRCodeScanHandler{
      * @param uri The Uri of the image the user selected to upload
      * @return The content of the uploaded QR code, null if there was a error.
      */
-    public static String scanImage(ContentResolver cr, Uri uri){
+    public String scanImage(ContentResolver cr, Uri uri){
         Bitmap bitmap;
         String contents = null;
         try{
@@ -199,6 +199,9 @@ public class QRCodeScanHandler{
             return null;
         }
         return contents;
+    }
+
+    public QRCodeScanHandler(){
     }
 
 

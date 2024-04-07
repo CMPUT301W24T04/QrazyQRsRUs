@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notification_nav_graph"
+    app:startDestination="@id/eventDetailsFragment4">
+
+    <fragment
+        android:id="@+id/eventDetailsFragment4"
+        android:name="com.example.qrazyqrsrus.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details" />
+    <fragment
+        android:id="@+id/announcementEditFragment2"
+        android:name="com.example.qrazyqrsrus.AnnouncementEditFragment"
+        android:label="AnnouncementEditFragment" />
+    <fragment
+        android:id="@+id/announcementsFragment3"
+        android:name="com.example.qrazyqrsrus.AnnouncementsFragment"
+        android:label="AnnouncementsFragment" />
+    <fragment
+        android:id="@+id/attendeeList3"
+        android:name="com.example.qrazyqrsrus.AttendeeList"
+        android:label="AttendeeList" />
+    <fragment
+        android:id="@+id/geoLocation2"
+        android:name="com.example.qrazyqrsrus.GeoLocation"
+        android:label="fragment_geo_location"
+        tools:layout="@layout/fragment_geo_location" />
+</navigation>

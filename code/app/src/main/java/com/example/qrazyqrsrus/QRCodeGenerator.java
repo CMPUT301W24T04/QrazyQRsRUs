@@ -20,6 +20,10 @@ import java.util.Date;
  */
 public class QRCodeGenerator {
 
+    private FirebaseDB firebaseDB;
+
+    private BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+
     private static Bitmap bitmap = null;
 
     public interface UniqueQRCheckCallBack {
@@ -33,8 +37,11 @@ public class QRCodeGenerator {
      * @param mode The kind of qr code we are checking. 0 - promo   1 - checkin
      * @param callback The UniqueQRCheckCallBack that will handle the two cases: the qr code we are generating is unique (no problem), or the qr code we are generating is already in use (problem)
      */
-    public static void checkUnique (String content, int mode, UniqueQRCheckCallBack callback){
-        FirebaseDB.getInstance().checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
+    public void checkUnique (String content, int mode, UniqueQRCheckCallBack callback){
+        if (firebaseDB == null){
+            firebaseDB = FirebaseDB.getInstance();
+        }
+        firebaseDB.checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
             @Override
             public void onResult(boolean isUnique) {
                 //if the qr code is not unique,
@@ -52,9 +59,9 @@ public class QRCodeGenerator {
      * @param content The content field of the QR code to be generated
      * @return The bitmap of the QR code image that encodes the content parameter. Null if there was an error generating a QR code.
      */
-    public static Bitmap generateBitmap(String content){
+    public Bitmap generateBitmap(String content){
         Bitmap qrBitmap = null;
-        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+
         //we try to generate a bitmap that encodes the content field, and catch a possible exception
         try {
             qrBitmap = barcodeEncoder.encodeBitmap(content, BarcodeFormat.QR_CODE, 400, 400);
@@ -64,5 +71,16 @@ public class QRCodeGenerator {
         }
         //then we check if the content field is already in use
         return qrBitmap;
+    }
+
+    public QRCodeGenerator(){
+    }
+
+    public void setFirebaseDB(FirebaseDB firebaseDB) {
+        this.firebaseDB = firebaseDB;
+    }
+
+    public void setBarcodeEncoder(BarcodeEncoder barcodeEncoder) {
+        this.barcodeEncoder = barcodeEncoder;
     }
 }

@@ -1,6 +1,6 @@
 package com.example.qrazyqrsrus;
 
-// This fragment holds the logic for QR code scanning
+// This fragment holds the logic for QR code scanning and acts as a host for the Notifications
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,18 +39,29 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private Activity activity = this;
 
     Attendee[] user = new Attendee[1];
+    /**
+     * Uses a callback to do actions when user scans a QR code
+     */
     private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
         //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
 
+        /**
+         * Holds logic for when a promo QR code is scanned
+         * @param matchingEvent the event that has this QR code as it's promotional QR
+         */
         @Override
         public void onPromoResult(Event matchingEvent) {
-            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, CurrentUser.getInstance().getCurrentUser(), false));
+            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
 
         }
 
+        /**
+         * Checks in a user to the event when they scan the check in QR code
+         * @param event the event that has this QR code as it's check-in QR
+         */
         @Override
         public void onCheckInResult(Event event) {
-            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), CurrentUser.getInstance().getCurrentUser().getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                 @Override
                 public void onResult(boolean isUnique, CheckIn checkIn) {
                     LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
@@ -58,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         public void onResult(double longitude, double latitude) {
                             if (isUnique){
                                 //if the user has not yet chcked into the event, we make a new one
-                                CheckIn newCheckIn = new CheckIn(CurrentUser.getInstance().getCurrentUser().getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
                                 FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
                             } else{
                                 //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
@@ -72,27 +83,36 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     });
                 }
             });
-            ChangeFragment(EventDetailsFragment.newInstance(event, CurrentUser.getInstance().getCurrentUser(), true));
+            ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
 
         }
 
+        /**
+         * Show error when something goes wrong when scanning the QR code
+         * @param event the event of the scanned qr code that is throwing an error. this parameter can be null depending on what kind of error there is
+         * @param errorNumber the error encountered while trying to scan a QR code. (1: no event has this qr code, 2: no qr code successfully scanned, 3: more than one event has this QR code as their promotional qr code, 4: more than one event has this QR code as their check-in qr code, 5: user scanned check-in QR code but they are not signed up
+         */
         @Override
         public void onNoResult(@Nullable Event event, int errorNumber){
             if (event != null){
-                ChangeFragment(EventDetailsFragment.newInstance(event, CurrentUser.getInstance().getCurrentUser(), false));
+                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false));
                 new ErrorDialog(R.string.not_signed_up_error).show(getSupportFragmentManager(), "QR Error Dialog");
             } else{
                 new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
             }
         }
 
-        //if the user scanned the admin qr
+        /**
+         * Changes fragment to the admin when the user scans the admin QR code
+         */
         public void onSpecialResult(){
             ChangeFragment(AdminHost.newInstance());
         }
 
     });
-
+    /**
+     * Ask for permission for the user to recieve push notification
+     */
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -104,13 +124,30 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
 //    qrHandler =
 
+    /**
+     * Manages notifications in the server
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        CurrentUser.getInstance().initializeUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+            @Override
+            public void onResult(Attendee attendee) {
+                user[0] = attendee;
+            }
+
+            @Override
+            public void onNoResult() {
+                Log.d("sad face", ":(");
+            }
+        });
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -140,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-        //CurrentUser.getInstance().initializeUser(deviceId);
 
         //Attendee[] user = new Attendee[1];
 
@@ -176,12 +212,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch(CurrentUser.getInstance().getCurrentUser());
+                qrHandler.launch(user[0]);
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
                 //create a new instance of the ViewProfileFragment fragment, with the attendee that was obtained by logging in the user
-                ChangeFragment(ViewProfileFragment.newInstance(CurrentUser.getInstance().getCurrentUser()));
+                ChangeFragment(ViewProfileFragment.newInstance(user[0]));
             }
 
             return true;

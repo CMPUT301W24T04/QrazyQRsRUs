@@ -52,6 +52,9 @@ public class EventDetailsFragment extends Fragment {
     private Bitmap checkInBitmap;
     private Boolean isCheckedIn;
     private FirebaseDB firebaseDB;
+    private QRCodeGenerator qrCodeGenerator;
+    private QRCodeScanHandler qrCodeScanHandler;
+  
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -61,6 +64,9 @@ public class EventDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (qrCodeGenerator == null) {
+            qrCodeGenerator = new QRCodeGenerator();
+        }
     }
 
     /**
@@ -121,6 +127,11 @@ public class EventDetailsFragment extends Fragment {
                     setAttendee(attendee);
                     setImages(posterView, promoQRView, checkInQRView);
                     setButtonVisibility(signUpEvent, viewAttendeesButton, viewLocations, EventDetailsFragment.this.event, rootView);
+                }
+
+                @Override
+                public void onNoResult() {
+                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
                 }
             });
         } else{
@@ -322,14 +333,14 @@ public class EventDetailsFragment extends Fragment {
                 }
             });
         }
-        this.promoBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCodePromo());
+        this.promoBitmap = qrCodeGenerator.generateBitmap(this.event.getQrCodePromo());
         if (this.promoBitmap == null){
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
         } else{
             promoQRView.setImageBitmap(this.promoBitmap);
         }
 
-        this.checkInBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCode());
+        this.checkInBitmap = qrCodeGenerator.generateBitmap(this.event.getQrCode());
         if (this.checkInBitmap == null){
             Log.d("checkInBitmap", "failure");
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
@@ -349,6 +360,10 @@ public class EventDetailsFragment extends Fragment {
             Log.e("ShareQRCode", "Failed to create Uri from bitmap");
         }
         return uri;
+    }
+
+    public void setQrCodeGenerator(QRCodeGenerator instance){
+        this.qrCodeGenerator = instance;
     }
 
 }
