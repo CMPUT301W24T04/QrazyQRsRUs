@@ -98,12 +98,6 @@ public class NewEventImageFragmentTest {
      */
     @Test
     public void testImageButtonClick(){
-        // Set up an ActivityResultCallback to return a mock image URI
-//        InstrumentationRegistry.getInstrumentation().addMonitor(
-//                MediaStore.ACTION_PICK_IMAGES,
-//                new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData),
-//                true
-//        );
         //we tell the photopicker to return our result with an image
         Intent resultData = new Intent();
         resultData.setData(imageUri);

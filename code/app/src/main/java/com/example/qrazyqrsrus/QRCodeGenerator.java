@@ -33,7 +33,7 @@ public class QRCodeGenerator {
      * @param mode The kind of qr code we are checking. 0 - promo   1 - checkin
      * @param callback The UniqueQRCheckCallBack that will handle the two cases: the qr code we are generating is unique (no problem), or the qr code we are generating is already in use (problem)
      */
-    public static void checkUnique (String content, int mode, UniqueQRCheckCallBack callback){
+    public void checkUnique (String content, int mode, UniqueQRCheckCallBack callback){
         FirebaseDB.getInstance().checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
             @Override
             public void onResult(boolean isUnique) {
@@ -52,7 +52,7 @@ public class QRCodeGenerator {
      * @param content The content field of the QR code to be generated
      * @return The bitmap of the QR code image that encodes the content parameter. Null if there was an error generating a QR code.
      */
-    public static Bitmap generateBitmap(String content){
+    public Bitmap generateBitmap(String content){
         Bitmap qrBitmap = null;
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
         //we try to generate a bitmap that encodes the content field, and catch a possible exception
@@ -64,5 +64,8 @@ public class QRCodeGenerator {
         }
         //then we check if the content field is already in use
         return qrBitmap;
+    }
+
+    public QRCodeGenerator(){
     }
 }
