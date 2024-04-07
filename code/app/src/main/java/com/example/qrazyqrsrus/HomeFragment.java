@@ -40,9 +40,10 @@ public class HomeFragment extends Fragment{
     ListView checkedIn;
     ListView signedUp;
     private Attendee attendee;
+    private FirebaseDB firebaseDB;
 
-    com.example.qrazyqrsrus.HomeCheckedInListAdapter checkedInListAdapter;
-    com.example.qrazyqrsrus.HomeSignedUpListAdapter signedUpListAdapter;
+    HomeCheckedInListAdapter homeCheckedInListAdapter;
+    HomeSignedUpListAdapter homeSignedUpListAdapter;
 
     ArrayList<Event> checkedInEvents = new ArrayList<>();
     ArrayList<Event> signedUpEvents = new ArrayList<>();
@@ -65,24 +66,26 @@ public class HomeFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         // Inflate the layout for this fragment
 
-
-        ListView checkedIn = rootView.findViewById(R.id.checked_in_events_listview);
-        ListView signedUp = rootView.findViewById(R.id.signed_up_events_listview);
+        if (this.firebaseDB == null) {
+            firebaseDB = FirebaseDB.getInstance();
+        }
+        checkedIn = rootView.findViewById(R.id.checked_in_events_listview);
+        signedUp = rootView.findViewById(R.id.signed_up_events_listview);
         browseEvents = rootView.findViewById(R.id.browse_events_button);
 
-        ArrayList<Event> checkedInEvents = new ArrayList<>();
-        ArrayList<Event> signedUpEvents = new ArrayList<>();
-        HomeCheckedInListAdapter homeCheckedInListAdapter = new HomeCheckedInListAdapter(getContext(), checkedInEvents);
-        HomeSignedUpListAdapter homeSignedUpListAdapter = new HomeSignedUpListAdapter(getContext(), signedUpEvents);
+        checkedInEvents = new ArrayList<>();
+        signedUpEvents = new ArrayList<>();
+        homeCheckedInListAdapter = new HomeCheckedInListAdapter(getContext(), checkedInEvents);
+        homeSignedUpListAdapter = new HomeSignedUpListAdapter(getContext(), signedUpEvents);
 
         //if the attendee is not passed, we must get the attendee to display only the events they are in.
         if (getArguments() == null){
 
-            FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+            firebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
-                    FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+                    firebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
+                    firebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
             });
         } else{
@@ -90,8 +93,8 @@ public class HomeFragment extends Fragment{
             if (attendee == null){
                 attendee = CurrentUser.getInstance().getCurrentUser();
             }
-            FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
-            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+            firebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
+            firebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
         }
 
         checkedIn.setAdapter(homeCheckedInListAdapter);
@@ -124,6 +127,10 @@ public class HomeFragment extends Fragment{
         });
 
         return rootView;
+    }
+
+    public void setFirebaseDB(FirebaseDB firebaseDB) {
+        this.firebaseDB = firebaseDB;
     }
 
     public static HomeFragment newInstance(Attendee attendee){
