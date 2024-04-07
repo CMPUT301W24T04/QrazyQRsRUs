@@ -1,11 +1,15 @@
 package com.example.qrazyqrsrus;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 import android.os.Bundle;
 import android.widget.ListView;
@@ -13,6 +17,8 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.lifecycle.Lifecycle;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -34,6 +40,8 @@ public class SignUpsListUITest {
     FirebaseDB mockFirebaseDB = Mockito.mock(FirebaseDB.class);
     ArrayList<Attendee> attendeeDataList = new ArrayList<>();
     AttendeeSignUpsListAdapter attendeeListAdapter;
+    @Mock
+    NavController mockNavController = Mockito.mock(NavController.class);
 
     private Attendee mockAttendee(){
         return new Attendee("1", "DocumentId", "John", "john@ualberta.ca", "111111111111111", true);
@@ -87,8 +95,74 @@ public class SignUpsListUITest {
     }
 
     @Test
-    public void TestListContents(){
+    public void TestSwapViewBackButton(){
+        Bundle bundle = getBundle();
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
+                AttendeeSignUpsListAdapter attendeeListAdapter = (AttendeeSignUpsListAdapter) args[2];
 
+                attendeeDataList.add(mockAttendee());
+//                MockAttendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
+                attendeeListAdapter.notifyDataSetChanged();
+                return null;
+            }
+        }).when(mockFirebaseDB).getEventSignedUpUsers(Mockito.any(),Mockito.any(),Mockito.any());
+
+        FragmentScenario<AttendeeSignupsList> scenario =  FragmentScenario.launchInContainer(AttendeeSignupsList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
+        scenario.onFragment(fragment ->
+                fragment.setFirebaseDB(mockFirebaseDB)
+        );
+        scenario.onFragment(fragment ->
+                scenario.moveToState(Lifecycle.State.RESUMED)
+        );
+
+        scenario.onFragment(fragment ->
+                Navigation.setViewNavController(fragment.requireView(), mockNavController)
+        );
+        onView(withId(R.id.button_back_signups)).perform(click());
+        verify(mockNavController).navigate(
+                eq(R.id.action_attendeeSignupsList_to_eventDetailsFragment),
+                Mockito.any(Bundle.class)
+        );
+//        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
+    }
+    @Test
+    public void TestSwapViewCheckinsButton(){
+        Bundle bundle = getBundle();
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
+                AttendeeSignUpsListAdapter attendeeListAdapter = (AttendeeSignUpsListAdapter) args[2];
+
+                attendeeDataList.add(mockAttendee());
+//                MockAttendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
+                attendeeListAdapter.notifyDataSetChanged();
+                return null;
+            }
+        }).when(mockFirebaseDB).getEventSignedUpUsers(Mockito.any(),Mockito.any(),Mockito.any());
+
+        FragmentScenario<AttendeeSignupsList> scenario =  FragmentScenario.launchInContainer(AttendeeSignupsList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
+        scenario.onFragment(fragment ->
+                fragment.setFirebaseDB(mockFirebaseDB)
+        );
+        scenario.onFragment(fragment ->
+                scenario.moveToState(Lifecycle.State.RESUMED)
+        );
+
+        scenario.onFragment(fragment ->
+                Navigation.setViewNavController(fragment.requireView(), mockNavController)
+        );
+        onView(withId(R.id.button_view_checkins)).perform(click());
+        verify(mockNavController).navigate(
+                eq(R.id.action_attendeeSignupsList_to_attendeeList2),
+                Mockito.any(Bundle.class)
+        );
+//        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
     }
 
     @NonNull
