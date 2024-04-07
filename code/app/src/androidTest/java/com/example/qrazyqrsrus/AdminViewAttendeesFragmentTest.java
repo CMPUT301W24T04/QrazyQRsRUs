@@ -35,12 +35,14 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class AdminViewAttendeesFragmentTest {
 
+    private List<Attendee> allAttendees;
+
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
     public void setup() {
-        List<Attendee> allAttendees = new ArrayList<>();
+        allAttendees = new ArrayList<>();
         Attendee attendee1 = new Attendee("1", "doc1", "John Doe", "john.doe@example.com", "/path/to/profile1.jpg", true);
         Attendee attendee2 = new Attendee("2", "doc2", "Jane Smith", "jane.smith@example.com", "/path/to/profile2.jpg", false);
         Attendee attendee3 = new Attendee("3", "doc3", "Alex Johnson", "alex.johnson@example.com", "/path/to/profile3.jpg", true);
