@@ -108,22 +108,21 @@ public class EventDetailsFragment extends Fragment {
             this.isCheckedIn = (Boolean) getArguments().get("isCheckedIn");
 
         }
-
         //we check if attendee is set, logging in the user if not
         //then we update the images that are displayed, and the visibility of the signup button once we have the attendee
         if (this.attendee == null){
             String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            FirebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+            FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
                     setAttendee(attendee);
                     setImages(posterView, promoQRView, checkInQRView);
-                    setButtonVisibility(signUpEvent, viewAttendeesButton, EventDetailsFragment.this.event);
+                    setButtonVisibility(signUpEvent, viewAttendeesButton, viewLocations, EventDetailsFragment.this.event, rootView);
                 }
             });
         } else{
             setImages(posterView, promoQRView, checkInQRView);
-            setButtonVisibility(signUpEvent, viewAttendeesButton, this.event);
+            setButtonVisibility(signUpEvent, viewAttendeesButton, viewLocations, this.event, rootView);
         }
 
         //Change view to attendee list when click on view attendees button
@@ -168,8 +167,8 @@ public class EventDetailsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 event.addSignUp(attendee.getDocumentId());
-                FirebaseDB.updateEvent(event);
-                FirebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
+                FirebaseDB.getInstance().updateEvent(event);
+                FirebaseDB.getInstance().subscribeAttendeeToEventTopic(event.getDocumentId());
                 signUpEvent.setVisibility(View.GONE);
             }
         });
@@ -223,7 +222,7 @@ public class EventDetailsFragment extends Fragment {
 
         String nameString = ""+event.getName();
         //String organizerString = "Organized by: ";
-        FirebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
+        FirebaseDB.getInstance().getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
                 updateOrganizerString(string, rootView);
@@ -270,26 +269,37 @@ public class EventDetailsFragment extends Fragment {
      * This function hides the signup button if the user is the organizer of the event, or has already signed up for the event
      * @param signUpButton The button to hide
      */
-    private void setButtonVisibility(Button signUpButton, Button viewAttendees, Event event){
+    private void setButtonVisibility(Button signUpButton, Button viewAttendees, Button viewLocations, Event event, View view){
         if (Objects.equals(this.attendee.getDocumentId(), event.getOrganizerId())) {
+            //leave early, we should not show signup button if person viewing is owner
             viewAttendees.setVisibility(View.VISIBLE);
-        }
-        FirebaseDB.userCheckedIntoEvent(this.attendee, this.event, new FirebaseDB.UniqueCheckCallBack() {
-            @Override
-            public void onResult(boolean isUnique) {
-                if (isUnique) {
-                    return;
-                }
-                else if (event.getSignUps().contains(EventDetailsFragment.this.attendee.getDocumentId())){
-                    return;
-                } else if (Objects.equals(event.getOrganizerId(), EventDetailsFragment.this.attendee.getDocumentId())) {
-                    return;
-                }
-                else {
-                    signUpButton.setVisibility(View.VISIBLE);
-                }
+            if (this.event.getGeolocationOn()) {
+                viewLocations.setVisibility(View.VISIBLE);
             }
-        });
+            return;
+        }
+        else {
+            ((ImageView) view.findViewById(R.id.check_in_qr_view)).setVisibility(View.GONE);
+            ((Button) view.findViewById(R.id.check_in_share_button)).setVisibility(View.GONE);
+            ((TextView) view.findViewById(R.id.check_in_qr_text)).setVisibility(View.GONE);
+        }
+
+        if (event.getSignUps().contains(this.attendee.getDocumentId())){
+            //we shouldn't show signup button to those already signed up
+            return;
+        }
+
+        if (event.getMaxAttendees() != null){
+            if (event.getAttendeeCount() >= event.getMaxAttendees()){
+                //we shouldn't show signup if the event is full
+                return;
+            }
+        }
+        if (this.isCheckedIn != null && this.isCheckedIn) {
+            //we shouldn't show signup button to those already checked in
+            return;
+        }
+        signUpButton.setVisibility(View.VISIBLE);
 
     }
 
@@ -301,18 +311,15 @@ public class EventDetailsFragment extends Fragment {
      */
     private void setImages(ImageView posterView, ImageView promoQRView, ImageView checkInQRView){
         if (this.event.getPosterPath() != null) {
-            FirebaseDB.retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
+            FirebaseDB.getInstance().retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
                 @Override
                 public void onResult(Bitmap bitmap) {
                     posterView.setImageBitmap(bitmap);
                 }
             });
         }
-        Log.d("setImages", this.event.getQrCodePromo());
-        Log.d("setImages", this.event.getQrCode());
         this.promoBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCodePromo());
         if (this.promoBitmap == null){
-            Log.d("promoBitmap", "failure");
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
         } else{
             promoQRView.setImageBitmap(this.promoBitmap);

@@ -77,11 +77,13 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         View view = inflater.inflate(R.layout.new_event_end_time_fragment, container, false);
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
+            try {
+                Bundle args = makeNewBundle(getArguments());
+                Navigation.findNavController(view).navigate(R.id.action_newEventEndTimeFragment_to_newEventImageFragment, args);
+            } catch (Exception e) {
+                new ErrorDialog(R.string.no_e_date).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+            }
 
-            Bundle args =  makeNewBundle(getArguments());
-
-
-            Navigation.findNavController(view).navigate(R.id.action_newEventEndTimeFragment_to_newEventImageFragment, args);
         });
         TextView dateButton = view.findViewById(R.id.date_display_textview);
         dateButton.setOnClickListener(v -> showDatePickerDialog());

@@ -58,6 +58,7 @@ import kotlin.DslMarker;
 
 public class GeoLocation extends Fragment {
     private MapView mapView;
+    ArrayList<Attendee> attendeeDataList;
     private  FloatingActionButton floatingActionButton;
     // Initialize the image
     private  ImageHolder image;
@@ -126,7 +127,7 @@ public class GeoLocation extends Fragment {
                 // get all checked-in attendees in a list with their geolocation on
 //                FirebaseDB.getEventCheckedInUsersGeoLocation(event, attendeeDataList, latitudeList, longitudeList);
 
-                FirebaseDB.getGeolocations(event, new FirebaseDB.GetMapMarkersCallback() {
+                FirebaseDB.getInstance().getGeolocations(event, new FirebaseDB.GetMapMarkersCallback() {
                     @Override
                     public void onResult(ArrayList<CheckIn> checks, ArrayList<String> names) {
                         for(int i = 0; i < checks.size();i++){
@@ -141,11 +142,10 @@ public class GeoLocation extends Fragment {
                     }
                 });
 
-
-                attendee_location = Point.fromLngLat( -90.0000, 53.5281);
-                // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
-                ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
-                mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);
+//                attendee_location = Point.fromLngLat( -90.0000, 53.5281);
+//                // https://docs.mapbox.com/android/maps/guides/annotations/view-annotations/
+//                ViewAnnotationOptions viewAnnotationOptions = ViewAnnotationOptionsKtxKt.geometry(new ViewAnnotationOptions.Builder(),attendee_location).build();
+//                mapView.getViewAnnotationManager().addViewAnnotation(R.layout.marker_layout,viewAnnotationOptions);
 
             }
         });

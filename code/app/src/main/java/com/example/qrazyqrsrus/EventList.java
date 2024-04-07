@@ -89,16 +89,15 @@ public class EventList extends Fragment {  // FIX LATER
         eventList.setAdapter(eventListAdapter);
 
         // we get all events from the database, and have it populate the datalist and listadapter
-        FirebaseDB.getAllEvents(eventDataList, eventListAdapter);
+        FirebaseDB.getInstance().getAllEvents(eventDataList, eventListAdapter);
 
         //set the header to say "browse all events"
         TextView header = eventListLayout.findViewById(R.id.event_list_title);
         header.setText(R.string.browse_events_header);
 
-//        FloatingActionButton fab = eventListLayout.findViewById(R.id.new_event_button);
-//        fab.setOnClickListener(v -> {
-//            Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList2_to_newEventTextFragment);
-//        });
+        //hide the fab from the signed up event list layout
+        FloatingActionButton fab = eventListLayout.findViewById(R.id.new_event_button);
+        fab.setVisibility(View.GONE);
 
         // When list is clicked, go to event view with event information
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

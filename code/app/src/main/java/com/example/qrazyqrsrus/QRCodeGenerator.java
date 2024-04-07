@@ -30,7 +30,7 @@ public class QRCodeGenerator {
      * @param callback The UniqueQRCheckCallBack that will handle the two cases: the qr code we are generating is unique (no problem), or the qr code we are generating is already in use (problem)
      */
     public static void checkUnique (String content, int mode, UniqueQRCheckCallBack callback){
-        FirebaseDB.checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
+        FirebaseDB.getInstance().checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
             @Override
             public void onResult(boolean isUnique) {
                 //if the qr code is not unique,

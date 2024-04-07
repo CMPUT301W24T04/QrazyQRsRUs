@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -70,7 +71,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
 
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            FirebaseDB.getToken(new FirebaseDB.GetTokenCallback() {
+            FirebaseDB.getInstance().getToken(new FirebaseDB.GetTokenCallback() {
                 @Override
                 public void onResult(String token) {
                     Log.d("newEventTextFragment", token);
@@ -91,7 +92,6 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
                 maxAttendeesEditText.setText("");
             }
         });
-
         Bundle args = getArguments();
         handleArguments(args, view);
         createToolbar(view);
@@ -131,6 +131,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         builder.setLocation(((EditText) view.findViewById(R.id.event_location_edit_text)).getText().toString());
         builder.setDetails(((EditText) view.findViewById(R.id.event_details_edit_text)).getText().toString());
         builder.setOrganizerId(((Attendee) bundle.getSerializable("attendee")).getDocumentId());
+        builder.setGeolocationOn(((SwitchCompat) view.findViewById(R.id.geolocation_toggle)).isChecked());
         builder.setOrganizerToken(organizerToken);
 
         String maxAttendeesString = ((EditText) view.findViewById(R.id.max_attendees_edit_text)).getText().toString();
@@ -145,6 +146,9 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         }
 
         builder.setMaxAttendees(maxAttendees);
+
+        SwitchCompat geolocationOn = (SwitchCompat) view.findViewById(R.id.geolocation_toggle);
+        builder.setGeolocationOn(geolocationOn.isChecked());
         //we put the updates builder back into the bundle
         bundle.putSerializable("builder", builder);
 

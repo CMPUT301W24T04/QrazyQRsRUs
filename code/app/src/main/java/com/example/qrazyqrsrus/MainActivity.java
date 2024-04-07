@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -41,13 +42,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         @Override
         public void onPromoResult(Event matchingEvent) {
-            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
+            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, CurrentUser.getInstance().getCurrentUser(), false));
 
         }
 
         @Override
         public void onCheckInResult(Event event) {
-            FirebaseDB.checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), CurrentUser.getInstance().getCurrentUser().getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                 @Override
                 public void onResult(boolean isUnique, CheckIn checkIn) {
                     LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
@@ -55,28 +56,28 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         public void onResult(double longitude, double latitude) {
                             if (isUnique){
                                 //if the user has not yet chcked into the event, we make a new one
-                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
-                                FirebaseDB.addCheckInToEvent(newCheckIn, event);
+                                CheckIn newCheckIn = new CheckIn(CurrentUser.getInstance().getCurrentUser().getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
                             } else{
                                 //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
                                 checkIn.setLongitude(longitude);
                                 checkIn.setLatitude(latitude);
                                 checkIn.incrementCheckIn();
-                                FirebaseDB.updateCheckIn(checkIn);
+                                FirebaseDB.getInstance().updateCheckIn(checkIn);
                             }
 
                         }
                     });
                 }
             });
-            ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
+            ChangeFragment(EventDetailsFragment.newInstance(event, CurrentUser.getInstance().getCurrentUser(), true));
 
         }
 
         @Override
         public void onNoResult(@Nullable Event event, int errorNumber){
             if (event != null){
-                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false));
+                ChangeFragment(EventDetailsFragment.newInstance(event, CurrentUser.getInstance().getCurrentUser(), false));
                 new ErrorDialog(R.string.not_signed_up_error).show(getSupportFragmentManager(), "QR Error Dialog");
             } else{
                 new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
@@ -107,15 +108,54 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Apparently this is not good practice, but if it works, it works.
-        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        CurrentUser.getInstance().initializeUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
 
-        Log.d("test", deviceId);
+        // Apparently this is not good practice, but if it works, it works.
+//        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+//        Log.d("test", deviceId);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Event Announcements";
+            String description = "Receive push notifications from event organizers";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system. You can't change the importance
+            // or other notification behaviors after this.
+            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+
+//        String eventId = getIntent().getStringExtra("eventId");
+//
+//        if (eventId != null) {
+//            Log.d("eventId", "YAY NOT NULL");
+//            FirebaseDB.getEventById(eventId, new FirebaseDB.GetEventCallback() {
+//                @Override
+//                public void onSuccess(Event event) {
+//                    Log.d("eventIdFirebaseFunction", "Holy shit it works?");
+//                    ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false)); //THIS IS JUST A TEST, I DONT KNOW HOW ELSE TO IMPLEMENT IT
+//                }
+//
+//                @Override
+//                public void onFailure(String errorMessage) {
+//                    // ERROR HANDLING
+//                    Log.d("eventIdFirebaseFunction", "Nope");
+//                }
+//            });
+//        }else {
+//            Log.d("eventId", "man i'm tired");
+//        }
+
+
 
         //we don't need to getToken, this is just for testing
-        //FirebaseDB.getToken();
+        //FirebaseDB.getInstance().getToken();
         //we shouldn't subscribe the user here, this is just for testing
-        //FirebaseDB.subscribeAttendeeToEventTopic("EVENT");
+        //FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Announcements";
             String description = "Receive push notifications from event organizers";
@@ -131,14 +171,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         //Attendee[] user = new Attendee[1];
 
-        FirebaseDB.loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                user[0] = attendee;
-                ChangeFragment(new HomeEventsFragment());
-            }
-        });
+//        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
+//            @Override
+//            public void onResult(Attendee attendee) {
+//                user[0] = attendee;
+//                ChangeFragment(new HomeEventsFragment());
+//            }
+//        });
 
+        ChangeFragment(new HomeEventsFragment());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
             if (!notificationManager.areNotificationsEnabled()){
@@ -149,10 +190,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
 
 
-        if (deviceId == null) {
-            Log.d("deviceId", "super badness");
-            return;
-        }
+//        if (deviceId == null) {
+//            Log.d("deviceId", "super badness");
+//            return;
+//        }
 
         // When the navigation bar is clicked
         binding.BottomNavView.setOnItemSelectedListener(item -> {
@@ -162,12 +203,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch(user[0]);
+                qrHandler.launch(CurrentUser.getInstance().getCurrentUser());
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
                 //create a new instance of the ViewProfileFragment fragment, with the attendee that was obtained by logging in the user
-                ChangeFragment(ViewProfileFragment.newInstance(user[0]));
+                ChangeFragment(ViewProfileFragment.newInstance(CurrentUser.getInstance().getCurrentUser()));
             }
 
             return true;

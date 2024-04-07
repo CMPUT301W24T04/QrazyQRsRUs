@@ -74,11 +74,20 @@ public class AttendeeList extends Fragment {
         //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
-        FirebaseDB.getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
-        //FirebaseDB.getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
+        FirebaseDB.getInstance().getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
+//        for(int i = 0; i < attendeeDataList.size();i++){
+//            Attendee current_attendee = attendeeDataList.get(i);
+//            FirebaseDB.getInstance().getUserName(current_attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
+//                @Override
+//                public void onResult(String string) {
+//                    current_attendee.setName(string);
+//                }
+//            });
+//        }
+        //FirebaseDB.getInstance().getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
 
         // populate the attendees list
-        //FirebaseDB.getAllUsers(attendeeDataList, attendeeListAdapter);
+        //FirebaseDB.getInstance().getAllUsers(attendeeDataList, attendeeListAdapter);
         attendeeList.setAdapter(attendeeListAdapter);
 
         // When the list is clicked, reveal the attendee profile information

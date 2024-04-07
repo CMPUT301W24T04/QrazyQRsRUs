@@ -10,6 +10,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class NotificationSender implements Callback<MessageSentResponse> {
+    //we use Retrofit to create our Java interface out of the HTTP Api defined on the backend
+    //this definition was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
+    //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
     private FcmApi api = new Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080")
             .addConverterFactory(MoshiConverterFactory.create())
@@ -41,10 +44,10 @@ public class NotificationSender implements Callback<MessageSentResponse> {
      * @param eventName a string that represents the title of the notification
      * @param notificationText a string that represents the body of the notification
      */
-    public void sendMessage(Boolean isBroadcast, String to, String topic, String eventName, String notificationText){
-        NotificationBody body = new NotificationBody(eventName, notificationText);
+    public void sendMessage(Boolean isBroadcast, String to, String topic, String eventName, String notificationText, String eventId){
+        NotificationBody body = new NotificationBody(eventName, notificationText, eventId);
 
-        SendMessageDto dto = new SendMessageDto(to, body, topic);
+        SendMessageDto dto = new SendMessageDto(to, body, topic, eventId);
 
         try{
             if (isBroadcast){
@@ -62,11 +65,9 @@ public class NotificationSender implements Callback<MessageSentResponse> {
 
     @Override
     public void onResponse(Call<MessageSentResponse> call, Response<MessageSentResponse> response) {
-        Log.d("hooray", "it should work");
     }
 
     @Override
     public void onFailure(Call<MessageSentResponse> call, Throwable t) {
-        Log.d("huh oh", "it dont work");
     }
 }

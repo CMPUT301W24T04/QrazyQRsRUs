@@ -26,6 +26,7 @@ public class Attendee implements Serializable {
     public Attendee(String id) {
         this.id = id;
         this.name = "Guest24";
+        this.geolocationOn = false;
     }
 
     /**
@@ -58,18 +59,12 @@ public class Attendee implements Serializable {
 
     /**
      * Constructor for attendee with limited information when their info is not full inputted
-     * @param noName
+     * @param name
      * @param documentId
      * @param id
      */
-    public Attendee(String noName, String documentId, String id) {
-        this.name = noName;
-        this.documentId = documentId;
-        this.id = id;
-    }
-
-    public Attendee(String noName, String documentId, String id, long checkins) {
-        this.name = noName;
+    public Attendee(String name, String documentId, String id, long checkins) {
+        this.name = name;
         this.documentId = documentId;
         this.id = id;
         this.checkins = checkins;
@@ -100,7 +95,13 @@ public class Attendee implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name == null || name.isEmpty())
+        {
+            this.name = "GuestT04";
+        }
+        else {
+            this.name = name;
+        }
     }
 
     public String getEmail() {
@@ -108,7 +109,13 @@ public class Attendee implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        if (email == null || email.isEmpty())
+        {
+            this.email = null;
+        }
+        else {
+            this.email = email;
+        }
     }
 
     public String getProfilePicturePath() {
