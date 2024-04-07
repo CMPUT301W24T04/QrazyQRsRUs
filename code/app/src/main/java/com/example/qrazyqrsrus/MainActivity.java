@@ -1,5 +1,7 @@
 package com.example.qrazyqrsrus;
 
+// This fragment holds the logic for QR code scanning
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;

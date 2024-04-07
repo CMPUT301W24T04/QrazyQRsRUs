@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class shows a list of events created by the user
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -39,15 +40,12 @@ public class MyEventsListFragment extends Fragment {
 
 
         ListView eventListView = rootView.findViewById(R.id.event_list_view);
-//        ListView signedUp = rootView.findViewById(R.id.signed_up_events_listview);
-//        browseEvents = rootView.findViewById(R.id.browse_events_button);
+
 
         ArrayList<Event> myEvents = new ArrayList<>();
-//        ArrayList<Event> signedUpEvents = new ArrayList<>();
-        EventListAdapter myEventsListAdapter = new EventListAdapter(getContext(), myEvents);
-//        HomeSignedUpListAdapter homeSignedUpListAdapter = new HomeSignedUpListAdapter(getContext(), signedUpEvents);
 
-        //if the attendee is not passed, we must get the attendee to display only the events they are in.
+        EventListAdapter myEventsListAdapter = new EventListAdapter(getContext(), myEvents);
+
         if (getArguments() == null){
             FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
@@ -90,21 +88,6 @@ public class MyEventsListFragment extends Fragment {
             Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_newEventTextFragment, args);
         });
 
-//        signedUp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Bundle args = new Bundle();
-//                args.putSerializable("event", signedUpEvents.get(i));
-//                args.putSerializable("attendee", attendee);
-////                NavHostFragment navHost = (NavHostgetView().findViewById(R.id.nav_graph_nav_host);
-////                Navigation.findNavController(getView()).navigate(R.id.action_mainMenu_to_eventDetailsFragment, args);
-//                Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
-//            }
-//        });
-//
-//        browseEvents.setOnClickListener(v -> {
-//            Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventList3);
-//        });
 
         return rootView;
     }

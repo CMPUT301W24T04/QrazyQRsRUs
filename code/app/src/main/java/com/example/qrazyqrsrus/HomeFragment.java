@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This fragment allows the user to braows events
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;

@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This fragment contains the profile information to be displayed on the profile view
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Activity;

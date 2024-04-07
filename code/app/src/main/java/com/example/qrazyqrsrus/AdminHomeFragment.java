@@ -1,3 +1,4 @@
+// This fragment displays the initial view for the admin
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;

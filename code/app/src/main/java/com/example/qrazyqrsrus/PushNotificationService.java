@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavDeepLinkBuilder;
 
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
