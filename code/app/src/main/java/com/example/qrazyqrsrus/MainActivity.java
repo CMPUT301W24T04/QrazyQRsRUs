@@ -1,6 +1,6 @@
 package com.example.qrazyqrsrus;
 
-// This fragment holds the logic for QR code scanning
+// This fragment holds the logic for QR code scanning and acts as a host for the Notifications
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,15 +39,26 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private Activity activity = this;
 
     Attendee[] user = new Attendee[1];
+    /**
+     * Uses a callback to do actions when user scans a QR code
+     */
     private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
         //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
 
+        /**
+         * Holds logic for when a promo QR code is scanned
+         * @param matchingEvent the event that has this QR code as it's promotional QR
+         */
         @Override
         public void onPromoResult(Event matchingEvent) {
             ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
 
         }
 
+        /**
+         * Checks in a user to the event when they scan the check in QR code
+         * @param event the event that has this QR code as it's check-in QR
+         */
         @Override
         public void onCheckInResult(Event event) {
             FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
@@ -76,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         }
 
+        /**
+         * Show error when something goes wrong when scanning the QR code
+         * @param event the event of the scanned qr code that is throwing an error. this parameter can be null depending on what kind of error there is
+         * @param errorNumber the error encountered while trying to scan a QR code. (1: no event has this qr code, 2: no qr code successfully scanned, 3: more than one event has this QR code as their promotional qr code, 4: more than one event has this QR code as their check-in qr code, 5: user scanned check-in QR code but they are not signed up
+         */
         @Override
         public void onNoResult(@Nullable Event event, int errorNumber){
             if (event != null){
@@ -86,13 +102,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         }
 
-        //if the user scanned the admin qr
+        /**
+         * Changes fragment to the admin when the user scans the admin QR code
+         */
         public void onSpecialResult(){
             ChangeFragment(AdminHost.newInstance());
         }
 
     });
-
+    /**
+     * Ask for permission for the user to recieve push notification
+     */
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -104,6 +124,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
 //    qrHandler =
 
+    /**
+     * Manages notifications in the server
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

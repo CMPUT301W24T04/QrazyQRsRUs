@@ -17,6 +17,11 @@ public class HomeSignedUpListAdapter extends ArrayAdapter<Event> {
     private ArrayList<Event> events;
     private Context context;
 
+    /**
+     * Constructor for the adapter
+     * @param context
+     * @param events
+     */
     public HomeSignedUpListAdapter(Context context, ArrayList<Event> events){
         super(context,0, events);
         this.events = events;
