@@ -162,6 +162,17 @@ public class ViewProfileFragment extends Fragment {
                 loadInitialAttendee(attendeeClicked);
             } else {
                 Log.e("ViewProfileFragment", "Attendee object not found in arguments.");
+                FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        loadInitialAttendee(attendee);
+                    }
+
+                    @Override
+                    public void onNoResult() {
+                        Log.d("very bad", "badness!");
+                    }
+                });
                 // Handle the case when attendee is not passed in arguments
                 // Show error dialog or toast
 
@@ -193,7 +204,10 @@ public class ViewProfileFragment extends Fragment {
                 restrictEdits();
             }
         }
-        loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
+        if ((Attendee) args.getSerializable("attendee") != null){
+            loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
+        }
+
         //loadUserProfile(userId);
 //        FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
 //            @Override
