@@ -33,7 +33,7 @@ import java.util.Objects;
 public class ViewProfileFragment extends Fragment {
     private Attendee attendee;
     private EditText etFullName, etEmailAddress;
-    private ImageView imgProfilePicture;
+    ImageView imgProfilePicture;
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private Button btnUpdateProfile;
@@ -42,12 +42,12 @@ public class ViewProfileFragment extends Fragment {
     private boolean isProfileLoaded = false;
     private Button btnDone, btnCancel;
     private Boolean imageUpdates = false;
-    private Uri newImageUri;
-    private Boolean imageDeleted = false;
+    Uri newImageUri;
+    Boolean imageDeleted = false;
 
     String userId;
 
-    private ActivityResultLauncher<String> galleryActivityResultLauncher;
+    ActivityResultLauncher<String> galleryActivityResultLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class ViewProfileFragment extends Fragment {
         );
     }
 
-    private void onImageSelected(Uri uri) {
+    void onImageSelected(Uri uri) {
         if (uri != null) {
             imgProfilePicture.setImageURI(uri);
             newImageUri = uri;
@@ -173,12 +173,7 @@ public class ViewProfileFragment extends Fragment {
             }
             imgProfilePicture.setImageBitmap(profileBitmap);
         } else{
-            FirebaseDB.getInstance().retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
-                @Override
-                public void onResult(Bitmap bitmap) {
-                    imgProfilePicture.setImageBitmap(bitmap);
-                }
-            });
+            FirebaseDB.getInstance().retrieveImage(attendee, bitmap -> imgProfilePicture.setImageBitmap(bitmap));
         }
         isProfileLoaded = true;
     }
@@ -367,7 +362,7 @@ public class ViewProfileFragment extends Fragment {
     /**
      * This function updates the state to communicate the user has deleted their profile picture
      */
-    private void deleteProfileImage() {
+    void deleteProfileImage() {
         //we tell the state that the user has deleted their profile picture, so it can delete the old one from firebase if needed
         imageDeleted = true;
         //we remove the user's uploaded profile picture, and change it to the generated one
