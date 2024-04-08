@@ -1,27 +1,20 @@
 package com.example.qrazyqrsrus;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.lifecycle.Lifecycle;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.storage.FirebaseStorage;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
+
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -31,8 +24,6 @@ import java.util.ArrayList;
 public class EventListUITest {
 
     FirebaseDB mockFirebaseDB = Mockito.mock(FirebaseDB.class);
-    ArrayList<Attendee> MockAttendeeDataList = new ArrayList<>();
-    AttendeeListAdapter MockAttendeeListAdapter;
     ArrayList<String> announcements = new ArrayList<>();
     ArrayList<String> signUps = new ArrayList<>();
     ArrayList<String> checkIns = new ArrayList<>();

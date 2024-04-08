@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,7 +111,7 @@ public class GeoLocation extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View mapLayout = inflater.inflate(R.layout.fragment_geo_location, container, false);
-
+        FloatingActionButton backButton = mapLayout.findViewById(R.id.back_button);
         mapView = mapLayout.findViewById(R.id.mapView);
 //        mapDelegateProvider = mapLayout.findViewById(R.id.mapView);
 
@@ -119,6 +120,17 @@ public class GeoLocation extends Fragment {
 
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    Navigation.findNavController(mapLayout).popBackStack();
+                } catch (Exception e){
+                    backButton.setVisibility(View.GONE);
+                }
+            }
+        });
         // Load the mapbox map
         mapView.getMapboxMap().loadStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
             @Override
