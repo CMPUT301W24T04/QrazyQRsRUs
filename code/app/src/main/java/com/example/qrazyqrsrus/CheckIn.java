@@ -74,10 +74,6 @@ public class CheckIn {
         this.attendeeDocId = attendeeDocId;
     }
 
-    public void setEventDocId(String eventDocId) {
-        this.eventDocId = eventDocId;
-    }
-
     public void setNumberOfCheckIns(long numberOfCheckIns) {
         this.numberOfCheckIns = numberOfCheckIns;
     }
