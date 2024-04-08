@@ -96,7 +96,6 @@ public class AnnouncementEditTests {
         onView(withId(R.id.button_add)).perform(click());
 
         // Check if the typed text is added to the list view
-        //onView(withText(typedText)).check(matches(isDisplayed()));
         onData(CoreMatchers.is(CoreMatchers.instanceOf(String.class))).inAdapterView(withId(R.id.list_announcements)).atPosition(0).check(matches((withText(typedText))));
 
     }
