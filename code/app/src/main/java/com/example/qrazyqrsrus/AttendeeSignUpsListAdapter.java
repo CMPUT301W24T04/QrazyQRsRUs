@@ -17,13 +17,11 @@ import java.util.ArrayList;
  */
 public class AttendeeSignUpsListAdapter extends ArrayAdapter<Attendee> {
 
-    private ArrayList<Attendee> attendees;
-    private Context context;
+    private final ArrayList<Attendee> attendees;
+    private final Context context;
 
     /**
      * Constructor to hold the attendee content
-     * @param context
-     * @param attendees
      */
     public AttendeeSignUpsListAdapter(Context context, ArrayList<Attendee> attendees){
         super(context,0, attendees);
@@ -42,7 +40,6 @@ public class AttendeeSignUpsListAdapter extends ArrayAdapter<Attendee> {
      *        always of the right type (see {@link #getViewTypeCount()} and
      *        {@link #getItemViewType(int)}).
      * @param parent The parent that this view will eventually be attached to
-     * @return
      */
     @NonNull
     @Override

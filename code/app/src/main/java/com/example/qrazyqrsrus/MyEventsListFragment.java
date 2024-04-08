@@ -6,7 +6,6 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -77,6 +76,7 @@ public class MyEventsListFragment extends Fragment {
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
             setAttendee(attendee);
+            assert attendee != null;
             FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
 //            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
             if (attendee == null){
@@ -100,14 +100,11 @@ public class MyEventsListFragment extends Fragment {
         eventListView.setAdapter(myEventsListAdapter);
 
 
-        eventListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Bundle args = new Bundle();
-                args.putSerializable("event", myEvents.get(i));
+        eventListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Bundle args = new Bundle();
+            args.putSerializable("event", myEvents.get(i));
 //                args.putSerializable("attendee", attendee);
-                Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_eventDetailsFragment, args);
-            }
+            Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_eventDetailsFragment, args);
         });
 
         FloatingActionButton fab = rootView.findViewById(R.id.new_event_button);
@@ -124,7 +121,6 @@ public class MyEventsListFragment extends Fragment {
 
     /**
      * Creates a bundle for the attendee
-     * @param attendee
      * @return fragment
      */
     public static HomeFragment newInstance(Attendee attendee){
@@ -138,7 +134,6 @@ public class MyEventsListFragment extends Fragment {
 
     /**
      * Constructor for the attendee
-     * @param attendee
      */
     private void setAttendee(Attendee attendee){
         this.attendee = attendee;

@@ -1,21 +1,11 @@
 package com.example.qrazyqrsrus;
 
 // This fragment contains the profile information to be displayed on the profile view
-import static android.content.Context.MODE_PRIVATE;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -36,36 +25,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.checkerframework.checker.units.qual.Current;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 public class ViewProfileFragment extends Fragment {
     private Attendee attendee;
     private EditText etFullName, etAge, etEmailAddress;
     private ImageView imgProfilePicture;
-    private FirebaseStorage storage;
     private StorageReference storageRef;
     private Button btnUpdateProfile;
     private Switch switchGeolocation;
     private FirebaseFirestore db;
-    private boolean isProfileLoaded = false;
     private Button btnDone, btnCancel;
     private Boolean imageUpdates = false;
     private Uri newImageUri;
@@ -79,7 +54,7 @@ public class ViewProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        storage = FirebaseStorage.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
 
         galleryActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
@@ -152,8 +127,6 @@ public class ViewProfileFragment extends Fragment {
         if (args != null && args.containsKey("attendee")) {
             Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
             if (attendeeClicked != null) {
-//                Log.d("profile_error", "User ID: " + userId);
-//                Log.d("profile_error", "Attendee ID: " + attendeeClicked.getId());
 
                 if (!Objects.equals(userId, attendeeClicked.getId())) {
                     restrictEdits();
@@ -199,27 +172,16 @@ public class ViewProfileFragment extends Fragment {
         btnCancel.setOnClickListener(v -> revertChanges());
 
 
-        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
-            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
+        assert args != null;
+        if (args.getSerializable("userId") != null && args.getSerializable("attendee") != null){
+            if(!userId.equals(((Attendee) args.getSerializable("attendee")).getId())){
                 restrictEdits();
             }
         }
-        if ((Attendee) args.getSerializable("attendee") != null){
+        if (args.getSerializable("attendee") != null){
             loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
         }
 
-        //loadUserProfile(userId);
-//        FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
-//            @Override
-//            public void onResult(Attendee attendee) {
-//
-//            }
-//        });
-
-
-//        btnUpdateProfile.setOnClickListener(v -> {
-//            updateUserProfile(this.attendee);
-//        });
 
         return view;
     }
@@ -243,14 +205,9 @@ public class ViewProfileFragment extends Fragment {
             }
             imgProfilePicture.setImageBitmap(profileBitmap);
         } else{
-            FirebaseDB.getInstance().retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
-                @Override
-                public void onResult(Bitmap bitmap) {
-                    imgProfilePicture.setImageBitmap(bitmap);
-                }
-            });
+            FirebaseDB.getInstance().retrieveImage(attendee, bitmap -> imgProfilePicture.setImageBitmap(bitmap));
         }
-        isProfileLoaded = true;
+        boolean isProfileLoaded = true;
     }
 
     private void updateUserProfile(Attendee attendee){
@@ -298,8 +255,7 @@ public class ViewProfileFragment extends Fragment {
 
     private String generatePathName(String attendeeName){
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String pathName = "profile/" + attendeeName + timeStamp;
-        return pathName;
+        return "profile/" + attendeeName + timeStamp;
     }
 
     private void enterEditMode() {

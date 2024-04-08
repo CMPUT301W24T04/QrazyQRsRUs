@@ -34,8 +34,6 @@ import java.util.Locale;
  */
 public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
-    private androidx.appcompat.widget.Toolbar toolbar;
-
     //temporarily set listener to be mainActivity. should eventually be adding events to firestore.
     @Override
     public void onAttach(@NonNull Context context) {
@@ -99,22 +97,21 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
     /**
      * Toolbar functionality
-     * @param view
      */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
         //it was posted by the user Faisal Naseer (https://stackoverflow.com/users/2641848/faisal-naseer) in the post https://stackoverflow.com/a/45653449
-        toolbar = (androidx.appcompat.widget.Toolbar) view.findViewById(R.id.end_time_screen_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.end_time_screen_toolbar);
         toolbar.inflateMenu(R.menu.menu_with_back_button);
         //the fragment implements the Toolbar.OnMenuItemClick interface, pass itself.
-        toolbar.setOnMenuItemClickListener((androidx.appcompat.widget.Toolbar.OnMenuItemClickListener) this);
+        toolbar.setOnMenuItemClickListener(this);
     }
 
     /**
      * switch views when menu is clicked
      * @param item {@link MenuItem} that was clicked
-     * @return
+     * @return a boolean indicating whether or not back or cancel button were clicked
      */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -140,8 +137,6 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
     /**
      * Save the local time
-     * @param datePicker
-     * @param timePicker
      * @return LocalDateTime
      */
     //we must convert the date that was picked by the user into an LocalDateTime (java.time.LocalDateTime)

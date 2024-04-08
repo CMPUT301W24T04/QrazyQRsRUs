@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
-    private ArrayList<Event> events;
-    private Context context;
+    private final ArrayList<Event> events;
+    private final Context context;
 
     public HomeCheckedInListAdapter(Context context, ArrayList<Event> events){
         super(context,0, events);
@@ -54,7 +54,7 @@ public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
         Location.setText(event.getLocation());
 
 
-        // set values of textviews based on the object attributes
+        // set values of textview based on the object attributes
         String tempName = event.getName();
         if (tempName.length() > 20) {
             String newText = tempName.substring(0, 20) + "...";

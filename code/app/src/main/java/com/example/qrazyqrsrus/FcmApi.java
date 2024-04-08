@@ -9,8 +9,8 @@ import retrofit2.http.POST;
 //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
 public interface FcmApi {
     @POST("/send")
-    public Call<MessageSentResponse> sendMessage(@Body SendMessageDto body);
+    Call<MessageSentResponse> sendMessage(@Body SendMessageDto body);
 
     @POST("/broadcast")
-    public Call<MessageSentResponse> broadcast(@Body SendMessageDto body);
+    Call<MessageSentResponse> broadcast(@Body SendMessageDto body);
 }

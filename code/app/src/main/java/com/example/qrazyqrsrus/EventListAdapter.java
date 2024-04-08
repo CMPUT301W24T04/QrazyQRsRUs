@@ -17,8 +17,8 @@ import java.util.ArrayList;
  * Saves the event class in a content view and adds that content to the list
  */
 public class EventListAdapter extends ArrayAdapter<Event> {
-    private ArrayList<Event> events;
-    private Context context;
+    private final ArrayList<Event> events;
+    private final Context context;
 
     public EventListAdapter(Context context, ArrayList<Event> events){
         super(context,0, events);

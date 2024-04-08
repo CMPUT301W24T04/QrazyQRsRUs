@@ -1,6 +1,5 @@
 package com.example.qrazyqrsrus;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.provider.MediaStore;
@@ -17,25 +15,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-
-import android.widget.ArrayAdapter;
 
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -79,7 +65,6 @@ public class EventDetailsFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -140,92 +125,69 @@ public class EventDetailsFragment extends Fragment {
         }
 
         //Change view to attendee list when click on view attendees button
-        viewAttendeesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // pass the event as a bundle to the attendeeList so we know which event to get from
-                Bundle args = new Bundle();
-                args.putSerializable("event", event);
-                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2,args);
-            }
+        viewAttendeesButton.setOnClickListener(v -> {
+            // pass the event as a bundle to the attendeeList so we know which event to get from
+            Bundle args = new Bundle();
+            args.putSerializable("event", event);
+            Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_attendeeList2,args);
         });
 
         //Change view to locations when click on view geolocation button
-        viewLocations.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // pass the event as a bundle to the attendeeList so we know which event to get from
-                Bundle args = new Bundle();
-                args.putSerializable("event", event);
-                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_geoLocation,args);
+        viewLocations.setOnClickListener(v -> {
+            // pass the event as a bundle to the attendeeList so we know which event to get from
+            Bundle args = new Bundle();
+            args.putSerializable("event", event);
+            Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_geoLocation,args);
+        });
+
+        // need to get attendeeID and eventID first
+        backButton.setOnClickListener(view -> {
+            //currently it is possible that the view could have no NavController if we got to the screen from the qr scanner
+            //TODO: hide back button instead of do nothing
+            try{
+                Navigation.findNavController(rootView).popBackStack();
+            } catch (Exception e){
+                backButton.setVisibility(View.GONE);
+            }
+        });
+        // need to get attendeeID and eventID first
+        signUpEvent.setOnClickListener(view -> {
+            event.addSignUp(attendee.getDocumentId());
+            firebaseDB.updateEvent(event);
+            firebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
+            signUpEvent.setVisibility(View.GONE);
+        });
+
+        viewAnnouncementsButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putSerializable("event", event);
+            if (Objects.equals(attendee.getDocumentId(), event.getOrganizerId())) {
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementEditFragment, args);
+            } else {
+                Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementsFragment, args);
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            // need to get attendeeID and eventID first
-            @Override
-            public void onClick(View view) {
-                //currently it is possible that the view could have no NavController if we got to the screen from the qr scanner
-                //TODO: hide back button instead of do nothing
-                try{
-                    Navigation.findNavController(rootView).popBackStack();
-                } catch (Exception e){
-                    backButton.setVisibility(View.GONE);
-                }
-            }
-        });
-        signUpEvent.setOnClickListener(new View.OnClickListener() {
-            // need to get attendeeID and eventID first
-            @Override
-            public void onClick(View view) {
-                event.addSignUp(attendee.getDocumentId());
-                firebaseDB.updateEvent(event);
-                firebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
-                signUpEvent.setVisibility(View.GONE);
-            }
+        promoQRShare.setOnClickListener(v -> {
+            //we start by creating new intent with binary content that contains the image of the QR code we would like to share
+            //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            Uri uriToImage = getUriToShare(promoBitmap);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+            shareIntent.setType("image/jpeg");
+            startActivity(Intent.createChooser(shareIntent, null));
         });
 
-        viewAnnouncementsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putSerializable("event", event);
-                if (Objects.equals(attendee.getDocumentId(), event.getOrganizerId())) {
-                    Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementEditFragment, args);
-                } else {
-                    Navigation.findNavController(rootView).navigate(R.id.action_eventDetailsFragment_to_AnnouncementsFragment, args);
-                }
-            }
-        });
-
-        promoQRShare.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                //we start by creating new intent with binary content that contains the image of the QR code we would like to share
-                //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                Uri uriToImage = getUriToShare(promoBitmap);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                shareIntent.setType("image/jpeg");
-                startActivity(Intent.createChooser(shareIntent, null));
-            }
-        });
-
-        checkInQRShare.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                //we start by creating new intent with binary content that contains the image of the QR code we would like to share
-                //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                Uri uriToImage = getUriToShare(checkInBitmap);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                shareIntent.setType("image/jpeg");
-                startActivity(Intent.createChooser(shareIntent, null));
-            }
+        checkInQRShare.setOnClickListener(v -> {
+            //we start by creating new intent with binary content that contains the image of the QR code we would like to share
+            //this implementation is from Android Developer's example binary share intent from https://developer.android.com/training/sharing/send, Accessed on Mar. 22nd, 2024
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            Uri uriToImage = getUriToShare(checkInBitmap);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+            shareIntent.setType("image/jpeg");
+            startActivity(Intent.createChooser(shareIntent, null));
         });
 
 
@@ -234,12 +196,7 @@ public class EventDetailsFragment extends Fragment {
 
         String nameString = ""+event.getName();
         //String organizerString = "Organized by: ";
-        firebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
-            @Override
-            public void onResult(String string) {
-                updateOrganizerString(string, rootView);
-            }
-        });
+        firebaseDB.getUserName(event.getOrganizerId(), string -> updateOrganizerString(string, rootView));
         String locationString = "Location:     "+event.getLocation();
         String descriptionString = "Description:     "+event.getDetails();
         String startDateString = "Start DateTime:     "+event.getStartDate();
@@ -294,9 +251,9 @@ public class EventDetailsFragment extends Fragment {
             return;
         }
         else {
-            ((ImageView) view.findViewById(R.id.check_in_qr_view)).setVisibility(View.GONE);
-            ((Button) view.findViewById(R.id.check_in_share_button)).setVisibility(View.GONE);
-            ((TextView) view.findViewById(R.id.check_in_qr_text)).setVisibility(View.GONE);
+            view.findViewById(R.id.check_in_qr_view).setVisibility(View.GONE);
+            view.findViewById(R.id.check_in_share_button).setVisibility(View.GONE);
+            view.findViewById(R.id.check_in_qr_text).setVisibility(View.GONE);
         }
 
         if (event.getSignUps().contains(this.attendee.getDocumentId())){
@@ -326,12 +283,7 @@ public class EventDetailsFragment extends Fragment {
      */
     private void setImages(ImageView posterView, ImageView promoQRView, ImageView checkInQRView){
         if (this.event.getPosterPath() != null) {
-            firebaseDB.retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
-                @Override
-                public void onResult(Bitmap bitmap) {
-                    posterView.setImageBitmap(bitmap);
-                }
-            });
+            firebaseDB.retrieveImage(this.event, bitmap -> posterView.setImageBitmap(bitmap));
         }
         this.promoBitmap = qrCodeGenerator.generateBitmap(this.event.getQrCodePromo());
         if (this.promoBitmap == null){

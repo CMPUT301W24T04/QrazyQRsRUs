@@ -4,39 +4,27 @@ package com.example.qrazyqrsrus;
 
 import static android.graphics.ImageDecoder.createSource;
 import static android.graphics.ImageDecoder.decodeBitmap;
-import static android.graphics.ImageDecoder.decodeDrawable;
-import static android.os.Environment.getExternalStoragePublicDirectory;
 
-import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,7 +35,6 @@ import java.util.Date;
 public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuItemClickListener, ImageDecoder.OnHeaderDecodedListener {
 
     private ImageView imageView;
-    private Toolbar toolbar;
 
     private Uri uri;
     private String initialPath;
@@ -58,8 +45,6 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 
     /**
      * save the image as an instance
-     * @param param1
-     * @param param2
      * @return fragment
      */
     public static NewEventImageFragment newInstance(String param1, String param2) {
@@ -99,7 +84,6 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,6 +91,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.new_event_image_fragment, container, false);
         Bundle bundle = getArguments();
+        assert bundle != null;
         handleArguments(bundle, view);
         createToolbar(view);
         //temporarily display event name here
@@ -115,8 +100,6 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         //pass bundle ahead to qr code
         fab.setOnClickListener(v -> {
             Bundle args = makeNewBundle(getArguments());
-            //Event event = saveImageToFirebase(this.uri, ((Event) args.getSerializable("event")));
-            //args.putSerializable("event", event);
             Navigation.findNavController(view).navigate(R.id.action_newEventImageFragment_to_newEventQrFragment, args);
         });
 
@@ -130,7 +113,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
                     if (uri != null) {
 //                        Log.d("PhotoPicker", "Selected URI: " + uri);
                         //as long as the user selected an image, we invoke our function to update the imageView to display the uploaded poster, and save the event's poster
-                        imageView = (ImageView) view.findViewById(R.id.new_event_display_event_poster);
+                        imageView = view.findViewById(R.id.new_event_display_event_poster);
                         updateImage(uri);
                         this.uri = uri;
                         this.path = generateUniquePathName(((Event.EventBuilder) bundle.getSerializable("builder")).getName());
@@ -142,12 +125,10 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         //we set an onclick listener for the upload image button
         //upon clicking, we launch the pickVisualMediaRequest acitivity
         Button button = view.findViewById(R.id.new_event_image_button);
-        button.setOnClickListener(v -> {
-            pickMedia.launch(new PickVisualMediaRequest.Builder()
-                    //we only want images
-                    .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                    .build());
-        });
+        button.setOnClickListener(v -> pickMedia.launch(new PickVisualMediaRequest.Builder()
+                //we only want images
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build()));
 
         if (this.firebaseDB == null){
             setFirebaseDB(FirebaseDB.getInstance());
@@ -162,7 +143,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
         //it was posted by the user Faisal Naseer (https://stackoverflow.com/users/2641848/faisal-naseer) in the post https://stackoverflow.com/a/45653449
-        toolbar = (Toolbar) view.findViewById(R.id.image_screen_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.image_screen_toolbar);
         toolbar.inflateMenu(R.menu.menu_with_back_button);
         //the fragment implements the Toolbar.OnMenuItemClick interface, pass itself.
         toolbar.setOnMenuItemClickListener(this);
@@ -175,6 +156,7 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
         if (id == R.id.back_button){
             //go to previous screen
             Bundle args = getArguments();
+            assert args != null;
             args = makeNewBundle(args);
             Navigation.findNavController(getView()).navigate(R.id.action_newEventImageFragment_to_newEventTextFragment, args);
             return true;
@@ -198,8 +180,6 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
             imageSource = createSource(getContext().getContentResolver(), uri);
             imageView.setImageBitmap(decodeBitmap(imageSource, this));
             //deprecated, see https://developer.android.com/reference/android/provider/MediaStore.Images.Media#getBitmap(android.content.ContentResolver,%20android.net.Uri)
-//            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-//            imageView.setImageBitmap(bitmap);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -212,19 +192,11 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 
     }
 
-//    private Event saveImageToFirebase(Uri uri, Event event){
-//        String pathname = generateUniquePathName(event);
-//        event.setPosterPath(pathname);
-//        FirebaseDB.getInstance().uploadImage(uri, pathname);
-//        return event;
-//    }
-
     private String generateUniquePathName(String name){
         //we generate a timestamp that contains the date and time the qr was generated. this allows us to prevent naming our qrcode as something already saved in the database
         //this idea for safe name generation is from https://developer.android.com/media/camera/camera-deprecated/photobasics accessed on Feb. 24, 2024
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String pathName = "poster/" + name + timeStamp;
-        return pathName;
+        return "poster/" + name + timeStamp;
     }
     private Bundle makeNewBundle(Bundle bundle){
         Event.EventBuilder builder = (Event.EventBuilder) bundle.getSerializable("builder");
@@ -232,17 +204,19 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
             //if this.uri is null, the user either 1) did not upload an image or 2) had uploaded an image before, but returned to this screen and deleted the image
             if (this.initialPath != null){
                 FirebaseDB.getInstance().deleteImage(this.initialPath);
+                assert builder != null;
                 builder.setUri(null);
                 builder.setPosterPath(null);
             }
             return bundle;
         } else{
             //if this.uri is not null, the user either 1) uploaded an image for the first time or changed the image or 2) did not change the image they initially uploaded
-            if (this.initialPath == null || this.initialPath != this.path){
+            if (this.initialPath == null || !this.initialPath.equals(this.path)){
                 if (this.initialPath != null){
                     FirebaseDB.getInstance().deleteImage(this.initialPath);
                 }
                 FirebaseDB.getInstance().uploadImage(this.uri, this.path);
+                assert builder != null;
                 builder.setUri(this.uri);
                 builder.setPosterPath(this.path);
             }
@@ -256,16 +230,12 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
     private void handleArguments(Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         //if builder.getPosterPath != null, the user has already been to this screen so we restore their state
+        assert builder != null;
         if (builder.getPosterPath() != null){
             this.uri = builder.getUri();
             this.initialPath = builder.getPosterPath();
             this.path = this.initialPath;
-            FirebaseDB.getInstance().retrieveImage(builder.getPosterPath(), new FirebaseDB.GetBitmapCallBack() {
-                @Override
-                public void onResult(Bitmap bitmap) {
-                    ((ImageView) view.findViewById(R.id.new_event_display_event_poster)).setImageBitmap(bitmap);
-                }
-            });
+            FirebaseDB.getInstance().retrieveImage(builder.getPosterPath(), bitmap -> ((ImageView) view.findViewById(R.id.new_event_display_event_poster)).setImageBitmap(bitmap));
         } else{
             this.uri = null;
             this.initialPath = null;

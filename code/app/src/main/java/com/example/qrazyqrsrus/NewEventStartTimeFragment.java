@@ -31,8 +31,6 @@ import java.util.Locale;
  */
 public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
-    private androidx.appcompat.widget.Toolbar toolbar;
-
     /**
      * attaches dialog to screen
      * @param context used
@@ -64,7 +62,6 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,13 +96,12 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 
     /**
      * Has the toolbar functionality to change views
-     * @param view
      */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
         //it was posted by the user Faisal Naseer (https://stackoverflow.com/users/2641848/faisal-naseer) in the post https://stackoverflow.com/a/45653449
-        toolbar = (androidx.appcompat.widget.Toolbar) view.findViewById(R.id.start_time_screen_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.start_time_screen_toolbar);
         toolbar.inflateMenu(R.menu.menu_with_back_button);
         //the fragment implements the Toolbar.OnMenuItemClick interface, pass itself.
         toolbar.setOnMenuItemClickListener(this);

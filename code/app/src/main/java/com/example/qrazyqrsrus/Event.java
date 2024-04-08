@@ -2,14 +2,10 @@ package com.example.qrazyqrsrus;
 // Holds the attributes for an event created
 import android.net.Uri;
 
-import android.util.Log;
-
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 
 public class Event implements Serializable {
@@ -26,9 +22,9 @@ public class Event implements Serializable {
     private String posterPath;
     private String qrCode;
     private String qrCodePromo;
-    private ArrayList<String> announcements = new ArrayList<String>();
-    private ArrayList<String> signUps= new ArrayList<String>();
-    private ArrayList<String> checkIns= new ArrayList<String>();
+    private ArrayList<String> announcements = new ArrayList<>();
+    private ArrayList<String> signUps= new ArrayList<>();
+    private ArrayList<String> checkIns= new ArrayList<>();
     private String organizerToken;
 
 
@@ -49,9 +45,9 @@ public class Event implements Serializable {
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
         this.geolocationOn = true;
-        this.announcements = new ArrayList<String>();
-        this.signUps = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
+        this.announcements = new ArrayList<>();
+        this.signUps = new ArrayList<>();
+        this.checkIns = new ArrayList<>();
         this.maxAttendees = maxAttendees;
     }
 
@@ -112,7 +108,6 @@ public class Event implements Serializable {
     public String getDocumentId() { return documentId; }
     /** get
      *
-     * @return String
      */
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
@@ -126,7 +121,6 @@ public class Event implements Serializable {
     }
     /** get
      *
-     * @return String
      */
     public void setName(String eventName) {
         if (eventName == null || eventName.isEmpty()) {
@@ -145,7 +139,6 @@ public class Event implements Serializable {
     }
     /** set
      *
-     * @return String
      */
     public void setOrganizerId(String organizerId) {
         this.organizerId = organizerId;
@@ -159,7 +152,6 @@ public class Event implements Serializable {
     }
     /** set
      *
-     * @return String
      */
     public void setDetails(String details) {
         if (details == null || details.isEmpty()) {
@@ -178,7 +170,6 @@ public class Event implements Serializable {
     }
     /** set
      *
-     * @return String
      */
     public void setLocation(String location) {
         if (location == null || location.isEmpty()) {
@@ -211,7 +202,6 @@ public class Event implements Serializable {
     }
     /** set
      *
-     * @return String
      */
     public void setGeolocationOn(Boolean geolocationOn) {
         this.geolocationOn = geolocationOn;
@@ -225,7 +215,6 @@ public class Event implements Serializable {
     }
     /** Sets the path of the image for the poster
      *
-     * @return String
      */
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
@@ -251,7 +240,6 @@ public class Event implements Serializable {
     }
     /** set
      *
-     * @return
      */
     public void setQrCodePromo(String qrCodePromo) {
         this.qrCodePromo = qrCodePromo;
@@ -285,14 +273,12 @@ public class Event implements Serializable {
     }
     /** set
      *
-     * @return ArrayList<String>
      */
     public void setSignUps(ArrayList<String> signUps) {
         this.signUps = signUps;
     }
     /** adds user
      *
-     * @return
      */
     public void addSignUp(String signUp) {
         if (this.maxAttendees == null || (this.getAttendeeCount() < this.maxAttendees)){
@@ -310,7 +296,6 @@ public class Event implements Serializable {
 
     /** removes user
      *
-     * @return
      */
     public boolean deleteSignUp(String userId) {
         if (signUps.contains(userId)){
@@ -328,14 +313,12 @@ public class Event implements Serializable {
     }
     /** get
      *
-     * @return ArrayList<String>
      */
     public void setCheckIns(ArrayList<String> checkIns) {
         this.checkIns = checkIns;
     }
     /** adds checkin
      *
-     * @return
      */
     public void addCheckIn(String checkIn) {
         this.checkIns.add(checkIn);
@@ -352,7 +335,6 @@ public class Event implements Serializable {
 
     /** removes checkin
      *
-     * @return
      */
     public void deleteCheckIn(String checkIn) {
         this.checkIns.remove(checkIn);
@@ -408,9 +390,9 @@ public class Event implements Serializable {
         this.qrCode = builder.qrCode;
         this.qrCodePromo = builder.qrCodePromo;
         this.organizerToken = builder.organizerToken;
-        this.announcements = new ArrayList<String>();
-        this.signUps = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
+        this.announcements = new ArrayList<>();
+        this.signUps = new ArrayList<>();
+        this.checkIns = new ArrayList<>();
     }
 
     public static class EventBuilder implements Serializable{

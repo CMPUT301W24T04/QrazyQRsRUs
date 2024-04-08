@@ -21,7 +21,6 @@ public class Attendee implements Serializable {
 
     /**
      * Constructor for attendee with only id
-     * @param id
      */
     // Constructor for a new attendee
     public Attendee(String id) {
@@ -32,12 +31,6 @@ public class Attendee implements Serializable {
 
     /**
      * Constructor for attendee with full information
-     * @param id
-     * @param documentId
-     * @param name
-     * @param email
-     * @param profilePicturePath
-     * @param geolocationOn
      */
     // Constructor for attendee instance gotten from Firestore
     public Attendee(String id, String documentId, String name, String email, String profilePicturePath, Boolean geolocationOn) {
@@ -60,9 +53,6 @@ public class Attendee implements Serializable {
 
     /**
      * Constructor for attendee with limited information when their info is not full inputted
-     * @param name
-     * @param documentId
-     * @param id
      */
     public Attendee(String name, String documentId, String id, long checkins) {
         this.name = name;

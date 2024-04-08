@@ -11,9 +11,6 @@
         <action
             android:id="@+id/action_attendeeList_to_mainMenu"
             app:destination="@id/mainMenu" />
-        <action
-            android:id="@+id/action_attendeeList_to_attendeeInfoView"
-            app:destination="@id/attendeeInfoView" />
     </fragment>
     <fragment
         android:id="@+id/eventList"
@@ -22,9 +19,6 @@
         <action
             android:id="@+id/action_eventList_to_mainMenu"
             app:destination="@id/mainMenu" />
-        <action
-            android:id="@+id/action_eventList_to_eventInfoView"
-            app:destination="@id/eventInfoView" />
         <action
             android:id="@+id/action_eventList_to_eventDetailsFragment2"
             app:destination="@id/eventDetailsFragment2" />
@@ -43,22 +37,6 @@
         <action
             android:id="@+id/action_mainMenu_to_eventDetailsFragment"
             app:destination="@id/eventDetailsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/attendeeInfoView"
-        android:name="com.example.qrazyqrsrus.AttendeeInfoView"
-        android:label="AttendeeInfoView" >
-        <action
-            android:id="@+id/action_attendeeInfoView_to_attendeeList"
-            app:destination="@id/attendeeList" />
-    </fragment>
-    <fragment
-        android:id="@+id/eventInfoView"
-        android:name="com.example.qrazyqrsrus.EventInfoView"
-        android:label="EventInfoView" >
-        <action
-            android:id="@+id/action_eventInfoView_to_eventList"
-            app:destination="@id/eventList" />
     </fragment>
     <fragment
 

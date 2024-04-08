@@ -2,7 +2,6 @@
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Fragment to display the Announcements section which users
@@ -32,11 +24,6 @@ import java.util.List;
  * @version 1
  */
 public class AnnouncementsFragment extends Fragment {
-
-    private ListView announcementListView;
-    private ArrayList<String> announcements;
-    private ArrayAdapter<String> adapter;
-    private Button backButton;
 
     public AnnouncementsFragment() {
         // Constructor
@@ -60,18 +47,15 @@ public class AnnouncementsFragment extends Fragment {
         Event event = (Event) getArguments().get("event");
         assert event != null;
 
-        announcementListView = rootView.findViewById(R.id.list_announcements);
-        backButton = rootView.findViewById(R.id.button_back);
+        ListView announcementListView = rootView.findViewById(R.id.list_announcements);
+        Button backButton = rootView.findViewById(R.id.button_back);
 
-        announcements = event.getAnnouncements();
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, announcements);
+        ArrayList<String> announcements = event.getAnnouncements();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, announcements);
         announcementListView.setAdapter(adapter);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
-            }
+        backButton.setOnClickListener(v -> {
+            Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
         });
 
         return rootView;
