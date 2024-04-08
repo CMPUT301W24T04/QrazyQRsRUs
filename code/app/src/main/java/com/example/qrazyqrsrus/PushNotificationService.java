@@ -41,8 +41,8 @@ public class PushNotificationService extends FirebaseMessagingService {
                     public Event onSuccess(Event event) {
                         args.putSerializable("event", event);
                         PendingIntent pendingIntent = new NavDeepLinkBuilder(getApplicationContext())
-                                .setGraph(R.navigation.home_events_nav_graph)
-                                .setDestination(R.id.eventDetailsFragment3)         // THIS IS A POSSIBLE SPOT FOR AN ERROR, I AM NOT SURE WHICH NAV GRAPH TO USE AND THEREFORE WHICH DESTINATION
+                                .setGraph(R.navigation.notification_nav_graph)
+                                .setDestination(R.id.eventDetailsFragment4)         // THIS IS A POSSIBLE SPOT FOR AN ERROR, I AM NOT SURE WHICH NAV GRAPH TO USE AND THEREFORE WHICH DESTINATION
                                 .setArguments(args)
                                 .createPendingIntent();
 

@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This fragment displays a list of events the user is signed in to.
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

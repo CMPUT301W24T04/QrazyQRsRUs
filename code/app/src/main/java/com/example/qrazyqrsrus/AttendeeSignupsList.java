@@ -1,3 +1,4 @@
+// This fragment displays a list of attendees who signed up for an event
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class AttendeeSignupsList extends Fragment {
     ListView attendeeList;
     ArrayList<Attendee> attendeeDataList;
     AttendeeSignUpsListAdapter attendeeListAdapter;
+    private FirebaseDB firebaseDB;
     /**
      * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -57,6 +59,10 @@ public class AttendeeSignupsList extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // if not in test use firebase
+        if(firebaseDB == null){
+            firebaseDB = FirebaseDB.getInstance();
+        }
         // DEFINE VIEW
         View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_signups_list, container, false);
         //**************************************************************************************************************
@@ -73,7 +79,8 @@ public class AttendeeSignupsList extends Fragment {
         //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
-        FirebaseDB.getInstance().getEventSignedUpUsers(event, attendeeDataList, attendeeListAdapter);
+//        FirebaseDB.getInstance().getEventSignedUpUsers(event, attendeeDataList, attendeeListAdapter);
+        firebaseDB.getEventSignedUpUsers(event, attendeeDataList, attendeeListAdapter);
         //FirebaseDB.getInstance().getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
 
         //see who is signed up for the event as well
@@ -137,5 +144,8 @@ public class AttendeeSignupsList extends Fragment {
         });
 
         return attendeeListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
+    }
+    public void setFirebaseDB(FirebaseDB instance){
+        this.firebaseDB = instance;
     }
 }

@@ -1,5 +1,13 @@
+// This class displays a map and pins where users are checked in from
+// Problems:
+//            - If a user has a long name, it may be outside the pin boundaries
+//            - Names might overlap when zoomed out since pins change size depending on how far we are zoomed
 package com.example.qrazyqrsrus;
 
+// This fragment creates a map and sets markers on that map for where users are checked in from
+// Problems:
+//          - Users with long names may have their name extend outside of the marker background
+//          - User names may overlap when zoomed out since markers changes size based on how zoomed out a person it
 import static com.mapbox.maps.plugin.gestures.GesturesUtils.getGestures;
 import static com.mapbox.maps.plugin.locationcomponent.LocationComponentUtils.getLocationComponent;
 
@@ -56,6 +64,9 @@ import java.util.ArrayList;
 
 import kotlin.DslMarker;
 
+/**
+ * Creates the map and adds markers to the map
+ */
 public class GeoLocation extends Fragment {
     private MapView mapView;
     ArrayList<Attendee> attendeeDataList;

@@ -32,14 +32,15 @@
                 android:background="@drawable/rounded_corners"
                 android:clipToOutline="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="Poster" />
 
             <TextView
                 android:id="@+id/event_detail_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:text=" "
+                android:text="Placeholder"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:fontFamily="@font/lobster"
@@ -216,6 +217,7 @@
                 app:layout_constraintTop_toBottomOf="@id/view_announcements_button"
                 app:layout_constraintWidth_percent="0.9" />
 
+
             <TextView
                 android:id="@+id/promo_qr_text"
                 android:layout_width="wrap_content"
@@ -241,7 +243,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/promo_qr_text" />
 
-
             <Button
                 android:id="@+id/promo_share_button"
                 android:layout_width="37dp"
@@ -263,6 +264,7 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.425"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/promo_qr_view" />
 
@@ -272,10 +274,12 @@
                 android:layout_height="100dp"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/no_image_source"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/check_in_qr_text" />
+                app:layout_constraintTop_toBottomOf="@id/check_in_qr_text"
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/check_in_share_button"

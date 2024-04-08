@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// Holds the attributes for an event created
 import android.net.Uri;
 
 import android.util.Log;

@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class holds the attributes of an event to be displayed on the content view
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,5 +62,9 @@ public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
         }
 
         return view;
+    }
+
+    public String getEventName(Integer position) {
+        return events.get(position).getName();
     }
 }

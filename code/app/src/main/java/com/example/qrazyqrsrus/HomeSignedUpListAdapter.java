@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class holds the information for users signed up on the content view for the events signed up list
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,11 @@ public class HomeSignedUpListAdapter extends ArrayAdapter<Event> {
     private ArrayList<Event> events;
     private Context context;
 
+    /**
+     * Constructor for the adapter
+     * @param context
+     * @param events
+     */
     public HomeSignedUpListAdapter(Context context, ArrayList<Event> events){
         super(context,0, events);
         this.events = events;

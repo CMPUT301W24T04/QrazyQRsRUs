@@ -1,3 +1,4 @@
+// This fragment displays a list of the events
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
@@ -44,13 +45,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 /**
- * Gets database information about event attendee is signed up for and displays it
+ * Gets database information about events an attendee is signed up for and displays it
  */
 public class EventList extends Fragment {  // FIX LATER
 
     ListView eventList;
     ArrayList<Event> eventDataList;
     com.example.qrazyqrsrus.EventListAdapter eventListAdapter;
+
+    private FirebaseDB firebaseDB;
 
     // FIREBASE
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -71,6 +74,9 @@ public class EventList extends Fragment {  // FIX LATER
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if(firebaseDB == null){
+            firebaseDB = FirebaseDB.getInstance();
+        }
         // DEFINE VIEW
         //NOTE: This inflates from the same xml file as MyEventsFragment
         //this is fine, but buttons have the same name
@@ -89,7 +95,8 @@ public class EventList extends Fragment {  // FIX LATER
         eventList.setAdapter(eventListAdapter);
 
         // we get all events from the database, and have it populate the datalist and listadapter
-        FirebaseDB.getInstance().getAllEvents(eventDataList, eventListAdapter);
+//        FirebaseDB.getInstance().getAllEvents(eventDataList, eventListAdapter);
+        firebaseDB.getAllEvents(eventDataList, eventListAdapter);
 
         //set the header to say "browse all events"
         TextView header = eventListLayout.findViewById(R.id.event_list_title);
@@ -127,5 +134,8 @@ public class EventList extends Fragment {  // FIX LATER
 
 
 
+    }
+    public void setFirebaseDB(FirebaseDB instance){
+        this.firebaseDB = instance;
     }
 }
