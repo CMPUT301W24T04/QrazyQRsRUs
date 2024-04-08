@@ -57,15 +57,4 @@ public class SendMessageDto {
         this.eventId = eventId;
     }
 
-    /**
-     * This function converts our data transfer object to a Json file
-     * @param dtoToConvert the data transfer object we are converting
-     * @return a json file
-     */
-    public String getJson(SendMessageDto dtoToConvert){
-        Gson gson = new Gson();
-        String json = gson.toJson(dtoToConvert);
-        return json;
-    }
-
 }

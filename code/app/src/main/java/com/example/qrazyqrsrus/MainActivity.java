@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     /**
      * Uses a callback to do actions when user scans a QR code
      */
-    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
+    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(FirebaseDB.getInstance(), this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
         //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
 
         /**
@@ -137,30 +137,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                user[0] = attendee;
-            }
-
-            @Override
-            public void onNoResult() {
-                Log.d("sad face", ":(");
-            }
-        });
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Event Announcements";
-            String description = "Receive push notifications from event organizers";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system. You can't change the importance
-            // or other notification behaviors after this.
-            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         //we don't need to getToken, this is just for testing
         //FirebaseDB.getInstance().getToken();
@@ -178,16 +155,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             notificationManager.createNotificationChannel(channel);
         }
 
-        //Attendee[] user = new Attendee[1];
-
-//        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
-//            @Override
-//            public void onResult(Attendee attendee) {
-//                user[0] = attendee;
-//                ChangeFragment(new HomeEventsFragment());
-//            }
-//        });
-
         ChangeFragment(new HomeEventsFragment());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -197,13 +164,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         }
 
-
-
-//        if (deviceId == null) {
-//            Log.d("deviceId", "super badness");
-//            return;
-//        }
-
         // When the navigation bar is clicked
         binding.BottomNavView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -212,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch(user[0]);
+                qrHandler.launch(deviceId);
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
@@ -237,5 +197,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         fragmentTransaction.commit();
     }
 
-
+    public void setQrHandler(QRCodeScanHandler qrHandler) {
+        this.qrHandler = qrHandler;
+    }
 }
