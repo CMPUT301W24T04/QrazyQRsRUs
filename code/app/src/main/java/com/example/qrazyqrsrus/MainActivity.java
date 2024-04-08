@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private Activity activity = this;
 
     Attendee[] user = new Attendee[1];
-    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
+    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(FirebaseDB.getInstance(), this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
         //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
 
         @Override
@@ -110,22 +110,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                user[0] = attendee;
-            }
-
-            @Override
-            public void onNoResult() {
-                Log.d("sad face", ":(");
-            }
-        });
-
-        // Apparently this is not good practice, but if it works, it works.
-//        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
-//        Log.d("test", deviceId);
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
