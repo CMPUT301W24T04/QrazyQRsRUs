@@ -285,6 +285,11 @@ public class ViewProfileFragment extends Fragment {
         return pathName;
     }
 
+    /**
+     * Prepares the fragment for profile editing by enabling text fields, making the save and cancel buttons visible,
+     * hiding the update profile button, and allowing for profile picture updates.
+     */
+
     private void enterEditMode() {
         // Make EditTexts editable
         etFullName.setEnabled(true);
@@ -301,6 +306,11 @@ public class ViewProfileFragment extends Fragment {
         imageUpdates = true;
     }
 
+    /**
+     * Saves the changes made to the user's profile information to Firebase, including name, email, geolocation preference,
+     * and potentially a new profile picture if one has been selected. Exits edit mode upon successful update.
+     */
+
     private void saveChanges() {
         updateUserProfile(this.attendee);
     }
@@ -308,6 +318,10 @@ public class ViewProfileFragment extends Fragment {
 
 
 
+    /**
+     * Reverts any changes made in the edit mode by reloading the initial attendee information and resetting the UI
+     * to view mode, disabling text fields, and hiding save and cancel buttons.
+     */
 
     private void revertChanges() {
         // Reset information to the last saved state
@@ -316,6 +330,12 @@ public class ViewProfileFragment extends Fragment {
         // Make fields non-editable and update UI back to view mode
         exitEditMode();
     }
+
+    /**
+     * Resets the UI to view mode after editing is complete or cancelled, disabling text fields and making the update profile
+     * button visible again. Also resets the flag for profile picture updates and clears any new image URI.
+     */
+
     private void exitEditMode() {
         // Make EditTexts non-editable
         etFullName.setEnabled(false);
@@ -334,6 +354,13 @@ public class ViewProfileFragment extends Fragment {
         newImageUri = null;
     }
 
+    /**
+     * Factory method to create a new instance of ViewProfileFragment with attendee details passed as arguments.
+     *
+     * @param attendee The attendee whose profile is to be viewed or edited.
+     * @return A new instance of ViewProfileFragment with attendee data.
+     */
+
     public static ViewProfileFragment newInstance(Attendee attendee){
         Bundle args = new Bundle();
         args.putSerializable("attendee", attendee);
@@ -342,6 +369,11 @@ public class ViewProfileFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    /**
+     * Restricts the user from editing their profile by disabling input fields and hiding the update profile button.
+     * This method is typically called when viewing another user's profile where edits are not permitted.
+     */
 
     private void restrictEdits(){
         etEmailAddress.setInputType(0);

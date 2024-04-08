@@ -14,6 +14,13 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * A utility class for generating QR codes and checking their uniqueness within the application's context.
+ * It interacts with Firebase to ensure that the content of the QR code to be generated does not already
+ * exist in the database, hence maintaining the uniqueness of QR codes for different purposes such as event
+ * promotion or event check-ins.
+ */
+
 public class QRCodeGenerator {
 
     private static Bitmap bitmap = null;

@@ -36,6 +36,13 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Manages the scanning of QR codes within the application, handling the launch of the scanning activity,
+ * processing the scan results, and invoking callbacks based on the outcome of the scan. This class is
+ * designed to facilitate QR code scanning for both promotional and check-in purposes within the app, as
+ * well as handling special cases such as admin access via a specific QR code.
+ */
+
 public class QRCodeScanHandler{
 
     //the error if an error occurs
