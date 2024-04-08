@@ -47,7 +47,7 @@ import java.util.Map;
 /**
  * Gets database information about events an attendee is signed up for and displays it
  */
-public class EventList extends Fragment {  // FIX LATER
+public class EventList extends Fragment {
 
     ListView eventList;
     ArrayList<Event> eventDataList;
