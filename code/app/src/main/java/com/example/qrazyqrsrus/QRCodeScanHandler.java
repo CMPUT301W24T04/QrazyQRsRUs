@@ -2,6 +2,9 @@
 //currently, no class properly implements onNoResult if there is an error while QR code scanning
 package com.example.qrazyqrsrus;
 
+import static androidx.test.InstrumentationRegistry.getContext;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
@@ -158,13 +161,20 @@ public class QRCodeScanHandler{
     /**
      * Launches the Activity defined in the constructor
      */
-    public void launch(Attendee user){
-        if (user == null){
-            //TODO: use singleton
-            Log.d("QRCodeScanHandler Launch", "user was null");
-        }
-        this.user = user;
-        barcodeLauncher.launch(new ScanOptions());
+    public void launch(String userID){
+        FirebaseDB.getInstance().loginUser(userID, new FirebaseDB.GetAttendeeCallBack() {
+            @Override
+            public void onResult(Attendee attendee) {
+                setUser(attendee);
+                barcodeLauncher.launch(new ScanOptions());
+            }
+
+            @Override
+            public void onNoResult() {
+
+            }
+        });
+
     }
 
     /**
@@ -216,5 +226,9 @@ public class QRCodeScanHandler{
 
     public void setFirebaseDB(FirebaseDB firebaseDB) {
         this.firebaseDB = firebaseDB;
+    }
+
+    public void setUser(Attendee attendee){
+        this.user = attendee;
     }
 }

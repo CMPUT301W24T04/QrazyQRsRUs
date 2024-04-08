@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch(user[0]);
+                qrHandler.launch(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
@@ -224,5 +224,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         fragmentTransaction.commit();
     }
 
-
+    public void setQrHandler(QRCodeScanHandler qrHandler) {
+        this.qrHandler = qrHandler;
+    }
 }
