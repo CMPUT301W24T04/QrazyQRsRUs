@@ -4,24 +4,17 @@ package com.example.qrazyqrsrus;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
-import android.util.Log;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import java.util.function.Consumer;
-
 public class LocationSingleton {
     private static LocationSingleton instance = null;
-    private final int LOCATION_PERMISSION_GRANTED = 1;
+
     public interface LongitudeLatitudeCallback {
         /**
          * A function for the callback to handle the accessed user location
@@ -69,8 +62,9 @@ public class LocationSingleton {
         //the post was made by the user keshav.bahadoor (https://stackoverflow.com/users/1535115/keshav-bahadoor)
         if (ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
             //if not, we launch a dialog in main activity that asks the user to grant permissions
+            int LOCATION_PERMISSION_GRANTED = 1;
             ActivityCompat.requestPermissions( activity, new String[] {  Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION  },
-                    LOCATION_PERMISSION_GRANTED );
+                    LOCATION_PERMISSION_GRANTED);
         }
 
         //if users have not granted permissions, we invoke the callback with a default location
@@ -89,12 +83,7 @@ public class LocationSingleton {
                         LocationManager.GPS_PROVIDER,
                         null,
                         activity.getMainExecutor(),
-                        new Consumer<Location>() {
-                            @Override
-                            public void accept(Location location) {
-                                callback.onResult(location.getLongitude(), location.getLatitude());
-                            }
-                        }
+                        location1 -> callback.onResult(location1.getLongitude(), location1.getLatitude())
                 );
             }
         } else{

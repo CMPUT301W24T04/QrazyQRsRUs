@@ -6,7 +6,6 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -61,7 +60,7 @@ public class MyEventsListFragment extends Fragment {
         EventListAdapter myEventsListAdapter = new EventListAdapter(getContext(), myEvents);
 
         if (getArguments() == null){
-            FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+            FirebaseDB.getInstance().loginUser(Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
                     FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
@@ -71,12 +70,13 @@ public class MyEventsListFragment extends Fragment {
 
                 @Override
                 public void onNoResult() {
-                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    new ErrorDialog(R.string.login_error).show(requireActivity().getSupportFragmentManager(), "Error Dialog");
                 }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
             setAttendee(attendee);
+            assert attendee != null;
             FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
 //            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
         }
@@ -84,14 +84,11 @@ public class MyEventsListFragment extends Fragment {
         eventListView.setAdapter(myEventsListAdapter);
 
 
-        eventListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Bundle args = new Bundle();
-                args.putSerializable("event", myEvents.get(i));
+        eventListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Bundle args = new Bundle();
+            args.putSerializable("event", myEvents.get(i));
 //                args.putSerializable("attendee", attendee);
-                Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_eventDetailsFragment, args);
-            }
+            Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_eventDetailsFragment, args);
         });
 
         FloatingActionButton fab = rootView.findViewById(R.id.new_event_button);
@@ -108,7 +105,7 @@ public class MyEventsListFragment extends Fragment {
 
     /**
      * Creates a bundle for the attendee
-     * @param attendee
+     * @param attendee the user who is viewing the
      * @return fragment
      */
     public static HomeFragment newInstance(Attendee attendee){
@@ -122,7 +119,7 @@ public class MyEventsListFragment extends Fragment {
 
     /**
      * Constructor for the attendee
-     * @param attendee
+     * @param attendee the user whose home screen we want to display
      */
     private void setAttendee(Attendee attendee){
         this.attendee = attendee;

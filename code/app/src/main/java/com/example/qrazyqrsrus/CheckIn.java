@@ -1,8 +1,6 @@
 // This class holds the attributed for checked in attendees
 package com.example.qrazyqrsrus;
 
-import java.util.Map;
-
 public class CheckIn {
     private String attendeeDocId;
     private String documentId;
@@ -15,12 +13,6 @@ public class CheckIn {
 
     }
 
-    public CheckIn(String attendeeDocId, String documentId, String eventDocId, long numberOfCheckIns) {
-        this.attendeeDocId = attendeeDocId;
-        this.documentId = documentId;
-        this.eventDocId = eventDocId;
-        this.numberOfCheckIns = numberOfCheckIns;
-    }
     public CheckIn(String attendeeDocId, String eventDocId, Double longitude, Double latitude) {
         this.attendeeDocId = attendeeDocId;
         this.eventDocId = eventDocId;

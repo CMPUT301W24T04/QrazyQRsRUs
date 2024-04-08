@@ -6,24 +6,13 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,9 +33,9 @@ public class FirebaseDB {
         void onResult(boolean isUnique, CheckIn checkIn);
     }
 
-    //- we change the callback interface for looking for a matching qr code to have an OnNoResult function that handles the case that no matching qr code exists for either promo or checkin
-    //then in qr scanhandler we call findEventWithQR in OnNoResult for the promo qr search
-    //then in qr scanhandler we throw error in onNoResult after both qr searches
+    //- we change the callback interface for looking for a matching qr code to have an OnNoResult function that handles the case that no matching qr code exists for either promo or check in
+    //then in qr scan-handler we call findEventWithQR in OnNoResult for the promo qr search
+    //then in qr scan-handler we throw error in onNoResult after both qr searches
     public interface MatchingQRCallBack {
         void onResult(Event matchingEvent);
 
@@ -81,17 +70,6 @@ public class FirebaseDB {
     public interface OnFinishedCallback{
         void onFinished();
     }
-
-    public interface AttemptLoginCallback {
-        void onResult();
-
-        void onNoResult();
-    }
-
-    public interface StringArrayCallback {
-        void onResult(ArrayList<String> array);
-    }
-
     public interface GetTokenCallback{
         void onResult(String token);
     }
@@ -103,74 +81,14 @@ public class FirebaseDB {
 
     //singleton
     private static FirebaseDB instance = null;
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private FirebaseMessaging messaging;
-    private CollectionReference usersCollection;
-    private CollectionReference eventsCollection;
-    private CollectionReference checkInsCollection;
-    private CollectionReference adminLoginsCollection;
-
-    public CollectionReference getUsersCollection() {
-        return usersCollection;
-    }
-
-    public void setUsersCollection(CollectionReference usersCollection) {
-        this.usersCollection = usersCollection;
-    }
-
-    public CollectionReference getEventsCollection() {
-        return eventsCollection;
-    }
-
-    public void setEventsCollection(CollectionReference eventsCollection) {
-        this.eventsCollection = eventsCollection;
-    }
-
-    public CollectionReference getCheckInsCollection() {
-        return checkInsCollection;
-    }
-
-    public void setCheckInsCollection(CollectionReference checkInsCollection) {
-        this.checkInsCollection = checkInsCollection;
-    }
-
-    public CollectionReference getAdminLoginsCollection() {
-        return adminLoginsCollection;
-    }
-
-    public void setAdminLoginsCollection(CollectionReference adminLoginsCollection) {
-        this.adminLoginsCollection = adminLoginsCollection;
-    }
-
-    public FirebaseFirestore getDb() {
-        return db;
-    }
-
-    public void setDb(FirebaseFirestore db) {
-        this.db = db;
-    }
-
-    public FirebaseStorage getStorage() {
-        return storage;
-    }
-
-    public void setStorage(FirebaseStorage storage) {
-        this.storage = storage;
-    }
-
-    public FirebaseMessaging getMessaging() {
-        return messaging;
-    }
-
-    public void setMessaging(FirebaseMessaging messaging) {
-        this.messaging = messaging;
-    }
-
+    private final FirebaseStorage storage;
+    private final FirebaseMessaging messaging;
+    private final CollectionReference usersCollection;
+    private final CollectionReference eventsCollection;
+    private final CollectionReference checkInsCollection;
     final String usersTAG = "Users";
     final String eventsTAG = "Events";
     final String imagesTAG = "Images";
-
     final String checkInsTag = "CheckIns";
 
 
@@ -186,10 +104,6 @@ public class FirebaseDB {
 
     /**
      * This method is used to get a test instance of FirebaseDB that can use Mock Firebase Firestore/Storage/Messaging instances, to perform tests without hitting the actual database.
-     * @param firestoreInstance
-     * @param firebaseStorageInstance
-     * @param firebaseMessagingInstance
-     * @return
      */
     public static FirebaseDB getInstance(FirebaseFirestore firestoreInstance, FirebaseStorage firebaseStorageInstance, FirebaseMessaging firebaseMessagingInstance){
         return new FirebaseDB(firestoreInstance, firebaseStorageInstance, firebaseMessagingInstance, firestoreInstance.collection("Users"), firestoreInstance.collection("Events"),
@@ -201,13 +115,11 @@ public class FirebaseDB {
     //we don't want to mock FirebaseDB, we want to mock FirebaseFirestore.getInstance()
     private FirebaseDB(FirebaseFirestore firestoreInstance, FirebaseStorage storageInstance, FirebaseMessaging messagingInstance, CollectionReference usersCollection, CollectionReference eventsCollection,
                        CollectionReference checkInsCollection, CollectionReference adminLoginsCollection){
-        this.db = firestoreInstance;
         this.storage = storageInstance;
         this.messaging = messagingInstance;
         this.usersCollection = usersCollection;
         this.eventsCollection = eventsCollection;
         this.checkInsCollection = checkInsCollection;
-        this.adminLoginsCollection = adminLoginsCollection;
     }
 
     // Change String to Attendee class when someone implements it.
@@ -220,19 +132,13 @@ public class FirebaseDB {
     public void addUser(Attendee user) {
         usersCollection
                 .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
+                .addOnSuccessListener(documentReference -> {
 //                        Log.d(usersTAG, "User document snapshot written with ID:" + documentReference.getId());
-                        user.setDocumentId(documentReference.getId());
-                        updateUser(user);
-                    }
+                    user.setDocumentId(documentReference.getId());
+                    updateUser(user);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                .addOnFailureListener(e -> {
 //                        Log.w(usersTAG, "Error while adding user document", e);
-                    }
                 });
     }
 
@@ -247,24 +153,22 @@ public class FirebaseDB {
         usersCollection
                 .whereEqualTo("id", userId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            if (task.getResult() == null || task.getResult().isEmpty()) {
-                                Attendee attendee = new Attendee(userId);
-                                addUser(attendee);
-                                callBack.onResult(attendee);
-                            } else {
-                                for (DocumentSnapshot documentSnapshot: task.getResult()) {
-                                    Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                                    attendee.setDocumentId(documentSnapshot.getId());
-                                    callBack.onResult(attendee);
-                                }
-                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (task.getResult() == null || task.getResult().isEmpty()) {
+                            Attendee attendee = new Attendee(userId);
+                            addUser(attendee);
+                            callBack.onResult(attendee);
                         } else {
-                            Log.e("MainActivity", "Error trying to login");
+                            for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                                assert attendee != null;
+                                attendee.setDocumentId(documentSnapshot.getId());
+                                callBack.onResult(attendee);
+                            }
                         }
+                    } else {
+                        Log.e("MainActivity", "Error trying to login");
                     }
                 });
     }
@@ -277,19 +181,13 @@ public class FirebaseDB {
     public void addEvent(Event event) {
         eventsCollection
                 .add(event)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
+                .addOnSuccessListener(documentReference -> {
 //                        Log.d(eventsTAG, "event document snapshot written with ID:" + documentReference.getId());
-                        event.setDocumentId(documentReference.getId());
-                        updateEvent(event);
-                    }
+                    event.setDocumentId(documentReference.getId());
+                    updateEvent(event);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                .addOnFailureListener(e -> {
 //                        Log.w(eventsTAG, "Error while adding event document", e);
-                    }
                 });
     }
 
@@ -305,17 +203,11 @@ public class FirebaseDB {
                         "email", user.getEmail(),
                         "geolocationOn", user.getGeolocationOn(),
                         "profilePicturePath", user.getProfilePicturePath(), "documentId", user.getDocumentId())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
+                .addOnSuccessListener(unused -> {
 //                        Log.d(usersTAG, "User document updated successfully");
-                    }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                .addOnFailureListener(e -> {
 //                        Log.w(usersTAG, "Error while updating user document", e);
-                    }
                 });
     }
 
@@ -332,17 +224,11 @@ public class FirebaseDB {
                         event.getSignUps(), "posterPath", event.getPosterPath(),
                         "qrCode", event.getQrCode(), "documentId", event.getDocumentId(),
                         "organizerToken", event.getOrganizerToken())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
+                .addOnSuccessListener(unused -> {
 //                        Log.d(eventsTAG, "Event document updated successfully");
-                    }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                .addOnFailureListener(e -> {
 //                        Log.w(eventsTAG, "Error while updating event document", e);
-                    }
                 });
     }
 
@@ -351,7 +237,7 @@ public class FirebaseDB {
      *
      * @param file     The file in the local system
      * @param pathName This is the path of the image. In the form {folder}/{image} where
-     *                 folder is either profiles, posters, qrcodes, and image is just the name of
+     *                 folder is either profiles, posters, qr codes, and image is just the name of
      *                 the image
      */
     public void uploadImage(Uri file, String pathName) {
@@ -359,17 +245,11 @@ public class FirebaseDB {
         StorageReference storageReference = storageRef.child(pathName + ".jpg");
 
         storageReference.putFile(file)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                .addOnSuccessListener(taskSnapshot -> {
 //                        Log.d(imagesTAG, "Successful image upload");
-                    }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                .addOnFailureListener(e -> {
 //                        Log.d(imagesTAG, "Failed to upload image");
-                    }
                 });
 
     }
@@ -385,17 +265,11 @@ public class FirebaseDB {
         try {
             StorageReference storageRef = storage.getReference(user.getProfilePicturePath() + ".jpg");
             File localFile = File.createTempFile(user.getProfilePicturePath().split("/")[1], "jpg");
-            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+            storageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
 //                    Log.d(imagesTAG, "Successfully retrieved image");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
+            }).addOnFailureListener(exception -> {
 //                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
-                }
             });
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
@@ -413,18 +287,10 @@ public class FirebaseDB {
         try {
             StorageReference storageRef = storage.getReference(event.getPosterPath() + ".jpg");
             File localFile = File.createTempFile(event.getPosterPath().split("/")[1], "jpg");
-            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                    Log.d(imagesTAG, "Successfully retrieved image");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
-                }
-            });
+            storageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                Log.d(imagesTAG, "Successfully retrieved image");
+            }).addOnFailureListener(exception -> Log.w(imagesTAG, "Failed to retrieve image: " + exception));
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
@@ -434,18 +300,10 @@ public class FirebaseDB {
         try {
             StorageReference storageRef = storage.getReference(path + ".jpg");
             File localFile = File.createTempFile(path.split("/")[1], "jpg");
-            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                    Log.d(imagesTAG, "Successfully retrieved image");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
-                }
-            });
+            storageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                Log.d(imagesTAG, "Successfully retrieved image");
+            }).addOnFailureListener(exception -> Log.w(imagesTAG, "Failed to retrieve image: " + exception));
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
@@ -460,17 +318,9 @@ public class FirebaseDB {
         StorageReference storageRef = storage.getReference();
         StorageReference storageReference = storageRef.child(pathName + ".jpg");
 
-        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
+        storageReference.delete().addOnSuccessListener(unused -> {
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //TODO: handle bad attempts to delete
-            }
-        });
+        }).addOnFailureListener(e -> Log.w(imagesTAG, "Failed: " + e));
     }
 
     /**
@@ -482,46 +332,43 @@ public class FirebaseDB {
     public void getAllEvents(ArrayList<Event> eventList, ArrayAdapter<Event> eventArrayAdapter) {
         eventsCollection
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(eventsTAG, "Retrieved all events");
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String id = document.getId();
-                                String name = (String) document.getData().get("name");
-                                String organizerId = (String) document.getData().get("organizerId");
-                                String details = (String) document.getData().get("details");
-                                String location = (String) document.getData().get("location");
-                                String startDate = (String) document.getData().get("startDate");
-                                String endDate = (String) document.getData().get("endDate");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                String posterPath = (String) document.getData().get("posterPath");
-                                String qrCode = (String) document.getData().get("qrCode");
-                                String qrCodePromo = (String) document.getData().get("qrCodePromo");
-                                String organizerToken = (String) document.getData().get("organizerToken");
-                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
-                                Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
-                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-                                if (announcements == null){
-                                    announcements = new ArrayList<String>();
-                                }
-                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
-                                if (signUps == null){
-                                    signUps = new ArrayList<String>();
-                                }
-                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
-                                if (checkIns == null){
-                                    checkIns = new ArrayList<String>();
-                                }
-
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
-                                eventList.add(event);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(eventsTAG, "Retrieved all events");
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String id = document.getId();
+                            String name = (String) document.getData().get("name");
+                            String organizerId = (String) document.getData().get("organizerId");
+                            String details = (String) document.getData().get("details");
+                            String location = (String) document.getData().get("location");
+                            String startDate = (String) document.getData().get("startDate");
+                            String endDate = (String) document.getData().get("endDate");
+                            Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                            String posterPath = (String) document.getData().get("posterPath");
+                            String qrCode = (String) document.getData().get("qrCode");
+                            String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                            String organizerToken = (String) document.getData().get("organizerToken");
+                            Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                            Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
+                            ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                            if (announcements == null){
+                                announcements = new ArrayList<>();
                             }
-                            eventArrayAdapter.notifyDataSetChanged();
-                        } else {
-                            Log.d(eventsTAG, "Error getting documents: ", task.getException());
+                            ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                            if (signUps == null){
+                                signUps = new ArrayList<>();
+                            }
+                            ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                            if (checkIns == null){
+                                checkIns = new ArrayList<>();
+                            }
+
+                            Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
+                            eventList.add(event);
                         }
+                        eventArrayAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d(eventsTAG, "Error getting documents: ", task.getException());
                     }
                 });
 
@@ -530,81 +377,43 @@ public class FirebaseDB {
         ArrayList<Event> eventList = new ArrayList<>();
         eventsCollection
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(eventsTAG, "Retrieved all events");
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String id = document.getId();
-                                String name = (String) document.getData().get("name");
-                                String organizerId = (String) document.getData().get("organizerId");
-                                String details = (String) document.getData().get("details");
-                                String location = (String) document.getData().get("location");
-                                String startDate = (String) document.getData().get("startDate");
-                                String endDate = (String) document.getData().get("endDate");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                String posterPath = (String) document.getData().get("posterPath");
-                                String qrCode = (String) document.getData().get("qrCode");
-                                String qrCodePromo = (String) document.getData().get("qrCodePromo");
-                                String organizerToken = (String) document.getData().get("organizerToken");
-                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
-                                Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
-                                ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-                                if (announcements == null){
-                                    announcements = new ArrayList<String>();
-                                }
-                                ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
-                                if (signUps == null){
-                                    signUps = new ArrayList<String>();
-                                }
-                                ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
-                                if (checkIns == null){
-                                    checkIns = new ArrayList<String>();
-                                }
-
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
-                                eventList.add(event);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(eventsTAG, "Retrieved all events");
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String id = document.getId();
+                            String name = (String) document.getData().get("name");
+                            String organizerId = (String) document.getData().get("organizerId");
+                            String details = (String) document.getData().get("details");
+                            String location = (String) document.getData().get("location");
+                            String startDate = (String) document.getData().get("startDate");
+                            String endDate = (String) document.getData().get("endDate");
+                            Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                            String posterPath = (String) document.getData().get("posterPath");
+                            String qrCode = (String) document.getData().get("qrCode");
+                            String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                            String organizerToken = (String) document.getData().get("organizerToken");
+                            Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                            Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
+                            ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                            if (announcements == null){
+                                announcements = new ArrayList<>();
                             }
-                            callBack.onResult(eventList);
-                        } else {
-                            Log.d(eventsTAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
-    }
-
-    /**
-     * Retrieves all users in the users collection
-     *
-     * @param attendeeList         The list we're going to hold the users in.
-     * @param attendeeArrayAdapter The ArrayAdapter of attendeeList.
-     */
-    public void getAllUsers(ArrayList<Attendee> attendeeList, ArrayAdapter<Attendee> attendeeArrayAdapter) {
-        usersCollection
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(usersTAG, "Retrieved all users");
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                String id = (String) document.getData().get("id");
-                                String name = (String) document.getData().get("name");
-                                String email = (String) document.getData().get("email");
-                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-
-
-                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                attendeeList.add(attendee);
-                                attendeeArrayAdapter.notifyDataSetChanged();
+                            ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                            if (signUps == null){
+                                signUps = new ArrayList<>();
                             }
-                        } else {
-                            Log.d(usersTAG, "Error getting documents: ", task.getException());
+                            ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                            if (checkIns == null){
+                                checkIns = new ArrayList<>();
+                            }
+
+                            Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
+                            eventList.add(event);
                         }
+                        callBack.onResult(eventList);
+                    } else {
+                        Log.d(eventsTAG, "Error getting documents: ", task.getException());
                     }
                 });
 
@@ -619,27 +428,24 @@ public class FirebaseDB {
     public void getAllUsers(ArrayList<Attendee> attendeeList, OnFinishedCallback callback) {
         usersCollection
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(usersTAG, "Retrieved all users");
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                String id = (String) document.getData().get("id");
-                                String name = (String) document.getData().get("name");
-                                String email = (String) document.getData().get("email");
-                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(usersTAG, "Retrieved all users");
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String documentId = document.getId();
+                            String id = (String) document.getData().get("id");
+                            String name = (String) document.getData().get("name");
+                            String email = (String) document.getData().get("email");
+                            String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                            Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
 
 
-                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                attendeeList.add(attendee);
-                            }
-                            callback.onFinished();
-                        } else {
-                            Log.d(usersTAG, "Error getting documents: ", task.getException());
+                            Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                            attendeeList.add(attendee);
                         }
+                        callback.onFinished();
+                    } else {
+                        Log.d(usersTAG, "Error getting documents: ", task.getException());
                     }
                 });
 
@@ -655,33 +461,26 @@ public class FirebaseDB {
         eventsCollection
                 .whereArrayContains("signUps", user.getDocumentId())
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            Event event = documentSnapshot.toObject(Event.class);
-                            if (event.getAnnouncements() == null){
-                                event.setAnnouncements(new ArrayList<String>());
-                            }
-                            if (event.getSignUps() == null){
-                                event.setSignUps(new ArrayList<String>());
-                            }
-                            if (event.getCheckIns() == null){
-                                event.setCheckIns(new ArrayList<String>());
-                            }
-                            event.setDocumentId(documentSnapshot.getId());
-                            eventArrayList.add(event);
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        Event event = documentSnapshot.toObject(Event.class);
+                        assert event != null;
+                        if (event.getAnnouncements() == null){
+                            event.setAnnouncements(new ArrayList<>());
                         }
-                        adapter.notifyDataSetChanged();
-                        Log.d(eventsTAG, "Events successfully retrieved");
+                        if (event.getSignUps() == null){
+                            event.setSignUps(new ArrayList<>());
+                        }
+                        if (event.getCheckIns() == null){
+                            event.setCheckIns(new ArrayList<>());
+                        }
+                        event.setDocumentId(documentSnapshot.getId());
+                        eventArrayList.add(event);
                     }
+                    adapter.notifyDataSetChanged();
+                    Log.d(eventsTAG, "Events successfully retrieved");
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Failed to retrieve events of user");
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(eventsTAG, "Failed to retrieve events of user"));
     }
 
     /**
@@ -696,129 +495,50 @@ public class FirebaseDB {
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                            myCheckIns.add((String) documentSnapshot.get("eventDocId"));
-                        }
-                        if (!myCheckIns.isEmpty()) {
-                            eventsCollection.whereIn("documentId", myCheckIns).get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                for (DocumentSnapshot document : task.getResult()) {
-                                                    String id = document.getId();
-                                                    String name = (String) document.getData().get("name");
-                                                    String organizerId = (String) document.getData().get("organizerId");
-                                                    String details = (String) document.getData().get("details");
-                                                    String location = (String) document.getData().get("location");
-                                                    String startDate = (String) document.getData().get("startDate");
-                                                    String endDate = (String) document.getData().get("endDate");
-                                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                                    String posterPath = (String) document.getData().get("posterPath");
-                                                    String qrCode = (String) document.getData().get("qrCode");
-                                                    String qrCodePromo = (String) document.getData().get("qrCodePromo");
-                                                    String organizerToken = (String) document.getData().get("organizerToken");
-                                                    Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
-                                                    Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
-                                                    ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
-                                                    if (announcements == null) {
-                                                        announcements = new ArrayList<String>();
-                                                    }
-                                                    ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
-                                                    if (signUps == null) {
-                                                        signUps = new ArrayList<String>();
-                                                    }
-                                                    ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
-                                                    if (checkIns == null) {
-                                                        checkIns = new ArrayList<String>();
-                                                    }
-
-                                                    Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
-                                                    eventList.add(event);
-                                                }
-                                                adapter.notifyDataSetChanged();
-                                            } else {
-                                                Log.d("Firestore", "Error getting documents: ", task.getException());
+                .addOnCompleteListener(task -> {
+                    for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                        myCheckIns.add((String) documentSnapshot.get("eventDocId"));
+                    }
+                    if (!myCheckIns.isEmpty()) {
+                        eventsCollection.whereIn("documentId", myCheckIns).get()
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        for (DocumentSnapshot document : task1.getResult()) {
+                                            String id = document.getId();
+                                            String name = (String) Objects.requireNonNull(document.getData()).get("name");
+                                            String organizerId = (String) document.getData().get("organizerId");
+                                            String details = (String) document.getData().get("details");
+                                            String location = (String) document.getData().get("location");
+                                            String startDate = (String) document.getData().get("startDate");
+                                            String endDate = (String) document.getData().get("endDate");
+                                            Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                            String posterPath = (String) document.getData().get("posterPath");
+                                            String qrCode = (String) document.getData().get("qrCode");
+                                            String qrCodePromo = (String) document.getData().get("qrCodePromo");
+                                            String organizerToken = (String) document.getData().get("organizerToken");
+                                            Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
+                                            Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
+                                            ArrayList<String> announcements = (ArrayList<String>) document.getData().get("announcements");
+                                            if (announcements == null) {
+                                                announcements = new ArrayList<>();
                                             }
+                                            ArrayList<String> signUps = (ArrayList<String>) document.getData().get("signUps");
+                                            if (signUps == null) {
+                                                signUps = new ArrayList<>();
+                                            }
+                                            ArrayList<String> checkIns = (ArrayList<String>) document.getData().get("checkIns");
+                                            if (checkIns == null) {
+                                                checkIns = new ArrayList<>();
+                                            }
+
+                                            Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
+                                            eventList.add(event);
                                         }
-                                    });
-                        }
-                    }
-                });
-
-    }
-
-    /**
-     * Retrieves all the attendees that have signed up an event
-     *
-     * @param event the event we're getting the attendees
-     * @param attendeeArrayList the list passed in to get the attendees
-     */
-    public void getEventSignedUp(Event event, ArrayList<Attendee> attendeeArrayList) {
-        for (String signUps : event.getSignUps()) {
-            usersCollection
-                    .document(signUps)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                            attendee.setDocumentId(documentSnapshot.getId());
-                            attendeeArrayList.add(attendee);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(usersTAG, "Failed " + e);
-                        }
-                    });
-        }
-    }
-
-    /**
-     * Retrieves all the attendees that have checked in an event
-     *
-     * @param event the event we're getting the attendees
-     * @param attendeeArrayList the list passed in to get the events
-     */
-    public void getEventCheckedIn(Event event, ArrayList<Attendee> attendeeArrayList,  ArrayAdapter<Attendee> attendeeArrayAdapter) {
-        checkInsCollection
-                .whereEqualTo("eventDocId", event.getDocumentId())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                            usersCollection
-                                    .document((String) Objects.requireNonNull(documentSnapshot.get("attendeeDocId")))
-                                    .get()
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                                            attendee.setDocumentId(documentSnapshot.getId());
-                                            attendeeArrayList.add(attendee);
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(usersTAG, "Failed " + e);
-                                        }
-                                    });
-
-                        }
-                        attendeeArrayAdapter.notifyDataSetChanged();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(usersTAG, "Failed " + e);
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+                                        Log.d("Firestore", "Error getting documents: ", task1.getException());
+                                    }
+                                });
                     }
                 });
 
@@ -830,19 +550,11 @@ public class FirebaseDB {
      */
     public void getUserName(String userDocumentId, GetStringCallBack callBack) {
         usersCollection.document(userDocumentId).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Log.d(usersTAG, "Success");
-                        callBack.onResult((String) documentSnapshot.get("name"));
-                    }
+                .addOnSuccessListener(documentSnapshot -> {
+                    Log.d(usersTAG, "Success");
+                    callBack.onResult((String) documentSnapshot.get("name"));
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(usersTAG, "Failed "+e);
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(usersTAG, "Failed "+e));
     }
 
     /**
@@ -850,7 +562,7 @@ public class FirebaseDB {
      * Check whether or not the content of a QR code is already in use by an event created in the app.
      *
      * @param qrContent a string that represents the content field of the QR code we are checking
-     * @param mode an integer: 0 if we are checking promotional qr codes, 1 if we are checking checkin qr codes
+     * @param mode an integer: 0 if we are checking promotional qr codes, 1 if we are checking check in qr codes
      * @param callBack a class that implements the UniqueCheckCallBack that will allow you to handle the boolean result if there is an already existing event with the qr code.
      */
     public void checkUnique(String qrContent, int mode, UniqueCheckCallBack callBack) {
@@ -863,25 +575,22 @@ public class FirebaseDB {
         eventsCollection
                 .whereEqualTo(field, qrContent)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            callBack.onResult(task.getResult() == null || task.getResult().isEmpty());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callBack.onResult(task.getResult() == null || task.getResult().isEmpty());
 
-                        } else {
-                            Log.e("MainActivity", "Error checking existing Event QR codes");
-                        }
+                    } else {
+                        Log.e("MainActivity", "Error checking existing Event QR codes");
                     }
                 });
     }
 
     /**
      * \
-     * Check if there exists an event with the matching promotional or checkin qr code
+     * Check if there exists an event with the matching promotional or check in qr code
      *
      * @param qrContent a string that represents the content field of the QR code we are checking
-     * @param mode an integer: 0 if we are checking promotional qr codes, 1 if we are checking checkin qr codes
+     * @param mode an integer: 0 if we are checking promotional qr codes, 1 if we are checking check in qr codes
      * @param callBack a class that implements the MatchingQRCallBack that will allow you to handle the event with the matching qr code
      */
     public void findEventWithQR(String qrContent, int mode, MatchingQRCallBack callBack) {
@@ -894,32 +603,30 @@ public class FirebaseDB {
         eventsCollection
                 .whereEqualTo(field, qrContent)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            if (task.getResult() == null || task.getResult().isEmpty()) {
-                                //if no event with a matching qr code was found, tell the callback
-                                callBack.onNoResult();
-                            } else{
-                                for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                    Event event = documentSnapshot.toObject((Event.class));
-                                    if (event.getAnnouncements() == null){
-                                        event.setAnnouncements(new ArrayList<String>());
-                                    }
-                                    if (event.getSignUps() == null){
-                                        event.setSignUps(new ArrayList<String>());
-                                    }
-                                    if (event.getCheckIns() == null){
-                                        event.setCheckIns(new ArrayList<String>());
-                                    }
-                                    event.setDocumentId(documentSnapshot.getId());
-
-                                    callBack.onResult(event);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (task.getResult() == null || task.getResult().isEmpty()) {
+                            //if no event with a matching qr code was found, tell the callback
+                            callBack.onNoResult();
+                        } else{
+                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                                Event event = documentSnapshot.toObject((Event.class));
+                                assert event != null;
+                                if (event.getAnnouncements() == null){
+                                    event.setAnnouncements(new ArrayList<>());
                                 }
-                            }
+                                if (event.getSignUps() == null){
+                                    event.setSignUps(new ArrayList<>());
+                                }
+                                if (event.getCheckIns() == null){
+                                    event.setCheckIns(new ArrayList<>());
+                                }
+                                event.setDocumentId(documentSnapshot.getId());
 
+                                callBack.onResult(event);
+                            }
                         }
+
                     }
                 });
 
@@ -934,45 +641,26 @@ public class FirebaseDB {
         eventsCollection
                 .whereEqualTo("organizerId", user.getDocumentId())
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            Event event = documentSnapshot.toObject(Event.class);
-                            if (event.getAnnouncements() == null){
-                                event.setAnnouncements(new ArrayList<String>());
-                            }
-                            if (event.getSignUps() == null){
-                                event.setSignUps(new ArrayList<String>());
-                            }
-                            if (event.getCheckIns() == null){
-                                event.setCheckIns(new ArrayList<String>());
-                            }
-                            event.setDocumentId(documentSnapshot.getId());
-                            eventArrayList.add(event);
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        Event event = documentSnapshot.toObject(Event.class);
+                        assert event != null;
+                        if (event.getAnnouncements() == null){
+                            event.setAnnouncements(new ArrayList<>());
                         }
-                        adapter.notifyDataSetChanged();
-                        Log.d(eventsTAG, "Events successfully retrieved");
+                        if (event.getSignUps() == null){
+                            event.setSignUps(new ArrayList<>());
+                        }
+                        if (event.getCheckIns() == null){
+                            event.setCheckIns(new ArrayList<>());
+                        }
+                        event.setDocumentId(documentSnapshot.getId());
+                        eventArrayList.add(event);
                     }
+                    adapter.notifyDataSetChanged();
+                    Log.d(eventsTAG, "Events successfully retrieved");
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Failed to retrieve events of user");
-                    }
-                });
-    }
-
-    public void addCheckIn(CheckIn checkIn) {
-        checkInsCollection
-                .add(checkIn)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        checkIn.setDocumentId(documentReference.getId());
-                        updateCheckIn(checkIn);
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(eventsTAG, "Failed to retrieve events of user"));
     }
 
     public void updateCheckIn(CheckIn checkIn) {
@@ -982,18 +670,8 @@ public class FirebaseDB {
                         "documentId", checkIn.getDocumentId(),
                         "eventDocId", checkIn.getEventDocId(), "longitude", checkIn.getLongitude(),
                         "latitude",checkIn.getLatitude() ,"numberOfCheckIns", checkIn.getNumberOfCheckIns())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(usersTAG, "CheckIn document updated successfully");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(usersTAG, "Error while updating check in document", e);
-                    }
-                });
+                .addOnSuccessListener(unused -> Log.d(usersTAG, "CheckIn document updated successfully"))
+                .addOnFailureListener(e -> Log.w(usersTAG, "Error while updating check in document", e));
     }
 
     public void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckInCallBack callBack) {
@@ -1001,23 +679,18 @@ public class FirebaseDB {
                 .whereEqualTo("attendeeDocId", attendeeDocId)
                 .whereEqualTo("eventDocId", eventDocId)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        Log.d("checkInAlreadyExists", String.valueOf(queryDocumentSnapshots.isEmpty()));
-                        CheckIn checkInToReturn = null;
-                        if (!(queryDocumentSnapshots.isEmpty())){
-                            if (queryDocumentSnapshots.getDocuments().size() == 1){
-                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()){
-                                    checkInToReturn = documentSnapshot.toObject(CheckIn.class);
-                                }
-                            } else{
-                                //TODO: handle this bad error, where there are duplicate checkins in firebase
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d("checkInAlreadyExists", String.valueOf(queryDocumentSnapshots.isEmpty()));
+                    CheckIn checkInToReturn = null;
+                    if (!(queryDocumentSnapshots.isEmpty())){
+                        if (queryDocumentSnapshots.getDocuments().size() == 1){
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()){
+                                checkInToReturn = documentSnapshot.toObject(CheckIn.class);
                             }
                         }
-                        //can return null if no checkin alredy exists, or if we get a bad checkin (duplicates exist)
-                        callBack.onResult(queryDocumentSnapshots.isEmpty(), checkInToReturn);
                     }
+                    //can return null if no check in already exists, or if we get a bad check in (duplicates exist)
+                    callBack.onResult(queryDocumentSnapshots.isEmpty(), checkInToReturn);
                 });
     }
 
@@ -1031,18 +704,15 @@ public class FirebaseDB {
     public void addCheckInToEvent(CheckIn checkIn, Event event) {
         checkInsCollection
                 .add(checkIn)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        checkIn.setDocumentId(documentReference.getId());
-                        //update checkIn to get the document ID set in the field for future accesses
-                        updateCheckIn(checkIn);
-                        //we delete the signup from the event's field
-                        event.deleteSignUp(checkIn.getAttendeeDocId());
-                        //we add the checkIn and update our event :)
-                        event.addCheckIn(checkIn.getDocumentId());
-                        updateEvent(event);
-                    }
+                .addOnSuccessListener(documentReference -> {
+                    checkIn.setDocumentId(documentReference.getId());
+                    //update checkIn to get the document ID set in the field for future accesses
+                    updateCheckIn(checkIn);
+                    //we delete the signup from the event's field
+                    event.deleteSignUp(checkIn.getAttendeeDocId());
+                    //we add the checkIn and update our event :)
+                    event.addCheckIn(checkIn.getDocumentId());
+                    updateEvent(event);
                 });
 
     }
@@ -1057,21 +727,13 @@ public class FirebaseDB {
     public void getPostersPaths(ArrayList<String> postersPaths, OnFinishedCallback callback) {
         storage.getReference().child("poster")
                 .listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference poster : listResult.getItems()) {
-                            postersPaths.add(poster.getPath());
-                        }
-                        callback.onFinished();
+                .addOnSuccessListener(listResult -> {
+                    for (StorageReference poster : listResult.getItems()) {
+                        postersPaths.add(poster.getPath());
                     }
+                    callback.onFinished();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(imagesTAG, "Error trying to get posters' paths" + e);
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(imagesTAG, "Error trying to get posters' paths" + e));
     }
 
     /**
@@ -1083,21 +745,13 @@ public class FirebaseDB {
     public void getProfilePicturesPaths(ArrayList<String> profilesPaths, OnFinishedCallback callback) {
         storage.getReference().child("profile")
                 .listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference profile : listResult.getItems()) {
-                            profilesPaths.add(profile.getPath());
-                        }
-                        callback.onFinished();
+                .addOnSuccessListener(listResult -> {
+                    for (StorageReference profile : listResult.getItems()) {
+                        profilesPaths.add(profile.getPath());
                     }
+                    callback.onFinished();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(imagesTAG, "Error trying to get profile pictures' paths" + e);
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(imagesTAG, "Error trying to get profile pictures' paths" + e));
     }
 
     /**
@@ -1106,17 +760,7 @@ public class FirebaseDB {
      * @param callback The callback to invoke once firebase has finished this operation
      */
     public void getAllPicturesPaths(ArrayList<String> imagePaths, OnFinishedCallback callback){
-        getPostersPaths(imagePaths, new OnFinishedCallback() {
-            @Override
-            public void onFinished() {
-                getProfilePicturesPaths(imagePaths, new OnFinishedCallback() {
-                    @Override
-                    public void onFinished() {
-                        callback.onFinished();
-                    }
-                });
-            }
-        });
+        getPostersPaths(imagePaths, () -> getProfilePicturesPaths(imagePaths, callback));
     }
 
     /**
@@ -1130,18 +774,10 @@ public class FirebaseDB {
             StorageReference storageRef = storage.getReference(imagePath);
             String path = imagePath.substring(0, imagePath.lastIndexOf("."));
             File localFile = File.createTempFile(path.split("/")[1], "jpg");
-            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                    Log.d(imagesTAG, "Successfully retrieved image");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
-                }
-            });
+            storageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+                Log.d(imagesTAG, "Successfully retrieved image");
+            }).addOnFailureListener(exception -> Log.w(imagesTAG, "Failed to retrieve image: " + exception));
         } catch (IOException exception) {
             Log.e(imagesTAG, "Error trying to retrieve image: " + exception);
         }
@@ -1157,38 +793,20 @@ public class FirebaseDB {
         eventsCollection
                 .document(event.getDocumentId())
                 .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(eventsTAG, "Successfully deleted the event");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Failed to deleted event" + e);
-                    }
-                });
+                .addOnSuccessListener(unused -> Log.d(eventsTAG, "Successfully deleted the event"))
+                .addOnFailureListener(e -> Log.w(eventsTAG, "Failed to deleted event" + e));
 
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId())
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                checkInsCollection.document(documentSnapshot.getId()).delete();
-                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                            checkInsCollection.document(documentSnapshot.getId()).delete();
                         }
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Error trying to delete check Ins: " + e);
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(eventsTAG, "Error trying to delete check Ins: " + e));
     }
 
     /**
@@ -1200,71 +818,54 @@ public class FirebaseDB {
         storage.getReference()
                 .child(imagePath)
                 .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(imagesTAG, "Deleted image (admin) successfully");
-                        //we look for the document (attendee or event) that has this imagePath in their posterPath field or profilePicturePathField
-                        Log.d("test", imagePath.substring(1, imagePath.length() - 4));
-                        if (imagePath.substring(1, 7).equals("poster")){
-                            eventsCollection
-                                    .whereEqualTo("posterPath", imagePath.substring(1, imagePath.length() - 4))
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                if (task.getResult() == null || task.getResult().isEmpty()) {
-
-                                                } else {
-                                                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
-                                                        Event event = documentSnapshot.toObject(Event.class);
-                                                        event.setPosterPath(null);
-                                                        updateEvent(event);
-
-                                                    }
-                                                }
-                                                callback.onFinished();
-                                            } else {
-                                                Log.e("deleteImageAdmin", "Error trying to find the event that had this image.");
-                                                callback.onFinished();
+                .addOnSuccessListener(unused -> {
+                    Log.d(imagesTAG, "Deleted image (admin) successfully");
+                    //we look for the document (attendee or event) that has this imagePath in their posterPath field or profilePicturePathField
+                    String substring = imagePath.substring(1, imagePath.length() - 4);
+                    Log.d("test", substring);
+                    if (imagePath.startsWith("poster", 1)){
+                        eventsCollection
+                                .whereEqualTo("posterPath", substring)
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        if (task.getResult() != null && !task.getResult().isEmpty()) {
+                                            for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                                Event event = documentSnapshot.toObject(Event.class);
+                                                assert event != null;
+                                                event.setPosterPath(null);
+                                                updateEvent(event);
                                             }
                                         }
-                                    });
-                        } else{
-                            usersCollection
-                                    .whereEqualTo("profilePicturePath", imagePath.substring(1, imagePath.length() - 4))
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                if (task.getResult() == null || task.getResult().isEmpty()) {
-
-                                                } else {
-                                                    for (DocumentSnapshot documentSnapshot: task.getResult()) {
-                                                        Attendee attendee = documentSnapshot.toObject(Attendee.class);
-                                                        attendee.setProfilePicturePath(null);
-                                                        updateUser(attendee);
-                                                    }
-
-                                                }
-                                                callback.onFinished();
-                                            } else {
-                                                Log.e("deleteImageAdmin", "Error trying to find the attendee that had this image.");
-                                                callback.onFinished();
+                                        callback.onFinished();
+                                    } else {
+                                        Log.e("deleteImageAdmin", "Error trying to find the event that had this image.");
+                                        callback.onFinished();
+                                    }
+                                });
+                    } else{
+                        usersCollection
+                                .whereEqualTo("profilePicturePath", substring)
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        if (task.getResult() != null && !task.getResult().isEmpty()) {
+                                            for (DocumentSnapshot documentSnapshot: task.getResult()) {
+                                                Attendee attendee = documentSnapshot.toObject(Attendee.class);
+                                                assert attendee != null;
+                                                attendee.setProfilePicturePath(null);
+                                                updateUser(attendee);
                                             }
                                         }
-                                    });
-                        }
+                                        callback.onFinished();
+                                    } else {
+                                        Log.e("deleteImageAdmin", "Error trying to find the attendee that had this image.");
+                                        callback.onFinished();
+                                    }
+                                });
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(imagesTAG, "Failed to delete image: " + e);
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(imagesTAG, "Failed to delete image: " + e));
     }
 
     /**
@@ -1281,163 +882,66 @@ public class FirebaseDB {
 
         updateUser(attendee);
     }
-
-//    /**
-//     * Gets users from the list of users field in each event
-//     * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
-//     * @param event
-//     */
-//    public void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
-//        checkInsCollection
-//                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                // check if the checked in user has a name that exists
-//                                if(document.get("name") != null){
-//                                    String documentId = document.getId();
-//                                    String id = (String) document.getData().get("id");
-//                                    String name = (String) document.getData().get("name");
-//                                    String email = (String) document.getData().get("email");
-//                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
-//                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-//                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
-//                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
-//                                    attendeeDataList.add(attendee);
-//                                }
-//                                // otherwise add a default name
-//                                else{
-//                                    String documentId = document.getId();
-//                                    String id = (String) document.getData().get("id");
-//                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
-//                                    Attendee attendee = new Attendee("No Name", documentId, id, checkins);
-//                                    attendeeDataList.add(attendee);
-//                                }
-//                            }
-//                            attendeeListAdapter.notifyDataSetChanged();
-//                        }
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
-//                    }
-//                });
-//    }
-
     /**
      * Gets users from the list of users field in each event
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
-     * @param event
      */
     public void getEventCheckedInUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
-        for(Integer i = 0; i < event.getCheckIns().size(); i++) {
+        for(int i = 0; i < event.getCheckIns().size(); i++) {
             checkInsCollection
                     .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
                     .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    // check if the checked in user has a name that exists
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // check if the checked in user has a name that exists
 
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("attendeeDocId");
-                                    String name = (String) document.getData().get("name");
-                                    String email = (String) document.getData().get("email");
-                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-                                    long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
-                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
-                                    attendeeDataList.add(attendee);
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("attendeeDocId");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                                long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
+                                attendeeDataList.add(attendee);
 
-                                }
-                                attendeeListAdapter.notifyDataSetChanged();
                             }
+                            attendeeListAdapter.notifyDataSetChanged();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
-                        }
-                    });
+                    .addOnFailureListener(e -> Log.w(eventsTAG, "Error trying to get the checked-in users: " + e));
         }
     }
     /**
      * Gets users from the list of signed up users field in each event
      * Have to pass along the event class from EventDetailsFragment to AttendeeList so that it knows which event to get the checked-in users from
-     * @param event
      */
     public void getEventSignedUpUsers(Event event, ArrayList<Attendee> attendeeDataList, ArrayAdapter<Attendee> attendeeListAdapter) {
-        for(Integer i = 0; i < event.getSignUps().size(); i++){
+        for(int i = 0; i < event.getSignUps().size(); i++){
             usersCollection
                     .whereEqualTo("documentId", event.getSignUps().get(i))
                     .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    String documentId = document.getId();
-                                    String id = (String) document.getData().get("id");
-                                    String name = (String) document.getData().get("name");
-                                    String email = (String) document.getData().get("email");
-                                    String profilePicturePath = (String) document.getData().get("profilePicturePath");
-                                    Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String documentId = document.getId();
+                                String id = (String) document.getData().get("id");
+                                String name = (String) document.getData().get("name");
+                                String email = (String) document.getData().get("email");
+                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
+                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
 
 //                                Attendee attendee = document.toObject(Attendee.class);
-                                    Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
-                                    attendeeDataList.add(attendee);
-                                }
-                                attendeeListAdapter.notifyDataSetChanged();
+                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn);
+                                attendeeDataList.add(attendee);
                             }
+                            attendeeListAdapter.notifyDataSetChanged();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
-                        }
-                    });
+                    .addOnFailureListener(e -> Log.w(eventsTAG, "Error trying to get the checked-in users: " + e));
 
         }
-    }
-  
-     /**
-     * This function looks for a document with matching admin login details to the user's input
-     * @param username The username input by the user
-     * @param password The password input by the user
-     * @param callback The callback we invoked to tell if the user input valid or invalid admin login credentials
-     */
-    public void attemptAdminLogin(String username, String password, AttemptLoginCallback callback){
-        adminLoginsCollection
-                .whereEqualTo("user", username)
-                .whereEqualTo("pass", password)
-
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            //if there is no matching adminLogin document, we do not log the user in
-                            if (task.getResult() == null || task.getResult().isEmpty()) {
-                                callback.onNoResult();
-                            } else {
-                                //if there is a matching adminLogin document, we log the user in to the admin screen
-                                callback.onResult();
-                            }
-                        } else {
-                            Log.e("MainActivity", "Error trying to login");
-                        }
-                    }
-                });
-
     }
 
     public void userCheckedIntoEvent(Attendee user, Event event, UniqueCheckCallBack callBack) {
@@ -1445,66 +949,17 @@ public class FirebaseDB {
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
                 .whereEqualTo("eventDocId", event.getDocumentId())
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        callBack.onResult(!queryDocumentSnapshots.isEmpty());
-                    }
-                });
-    }
-
-    public void getEventCheckedInUsersGeoLocation(Event event, ArrayList<String> attendeeDataList, ArrayList latitudeList, ArrayList longitudeList) {
-        checkInsCollection
-                .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // check if the checked in user has a name that exists
-                                String documentId = document.getId();
-                                double latitude = (double) document.getData().get("latitude");
-                                double longitude = (double) document.getData().get("longitude");
-//                                String id = (String) document.getData().get("id");
-//                                String name = (String) document.getData().get("name");
-//                                String email = (String) document.getData().get("email");
-//                                String profilePicturePath = (String) document.getData().get("profilePicturePath");
-//                                Boolean geolocationOn = (Boolean) document.getData().get("geolocationOn");
-//                                long checkins = (long) document.getData().get("numberOfCheckIns"); // changed to type long
-//                                Attendee attendee = new Attendee(id, documentId, name, email, profilePicturePath, geolocationOn, checkins);
-                                attendeeDataList.add(documentId);
-                                latitudeList.add(latitude);
-                                longitudeList.add(longitude);
-
-                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Error trying to get the checked-in users: " + e);
-                    }
-                });
+                .addOnSuccessListener(queryDocumentSnapshots -> callBack.onResult(!queryDocumentSnapshots.isEmpty()));
     }
 
     public void getToken(GetTokenCallback callback){
         messaging
                 .getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        callback.onResult(task.getResult());
-                        Log.d("token", task.getResult());
-                    }
+                .addOnCompleteListener(task -> {
+                    callback.onResult(task.getResult());
+                    Log.d("token", task.getResult());
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("token", "failed to get token");
-                    }
-                });
+                .addOnFailureListener(e -> Log.d("token", "failed to get token"));
     }
 
     /**
@@ -1514,108 +969,47 @@ public class FirebaseDB {
     public void subscribeAttendeeToEventTopic(String topicName){
         messaging
                 .subscribeToTopic(topicName)
-                .addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        Log.d("topic", "successfully subscribed user to event topic");
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("topic", "failed to subscribe user to event topic");
-                    }
-                });
+                .addOnCompleteListener(task -> Log.d("topic", "successfully subscribed user to event topic"))
+                .addOnFailureListener(e -> Log.d("topic", "failed to subscribe user to event topic"));
     }
 
     public void getEventById(String eventId, GetEventCallback callback) {
         eventsCollection.document(eventId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                String id = document.getId();
-                                String name = document.getString("name");
-                                String organizerId = document.getString("organizerId");
-                                String details = document.getString("details");
-                                String location = document.getString("location");
-                                String startDate = document.getString("startDate");
-                                String endDate = document.getString("endDate");
-                                Boolean geolocationOn = document.getBoolean("geolocationOn");
-                                String posterPath = document.getString("posterPath");
-                                String qrCode = document.getString("qrCode");
-                                String qrCodePromo = document.getString("qrCodePromo");
-                                String organizerToken = document.getString("organizerToken");
-                                Long maxAttendeesLong = (Long) document.getData().get("maxAttendees");
-                                Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
-                                ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
-                                ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
-                                ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String id = document.getId();
+                            String name = document.getString("name");
+                            String organizerId = document.getString("organizerId");
+                            String details = document.getString("details");
+                            String location = document.getString("location");
+                            String startDate = document.getString("startDate");
+                            String endDate = document.getString("endDate");
+                            Boolean geolocationOn = document.getBoolean("geolocationOn");
+                            String posterPath = document.getString("posterPath");
+                            String qrCode = document.getString("qrCode");
+                            String qrCodePromo = document.getString("qrCodePromo");
+                            String organizerToken = document.getString("organizerToken");
+                            Long maxAttendeesLong = (Long) Objects.requireNonNull(document.getData()).get("maxAttendees");
+                            Integer maxAttendees = maxAttendeesLong != null ? Math.toIntExact(maxAttendeesLong) : null;
+                            ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
+                            ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
+                            ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
 
-                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
-                                callback.onSuccess(event);
-                            } else {
-                                Log.d(eventsTAG, "No such event exists");
-                                callback.onFailure("No such event exists");
-                            }
+                            Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns, maxAttendees);
+                            callback.onSuccess(event);
                         } else {
-                            Log.d(eventsTAG, "Error getting event document: ", task.getException());
-                            callback.onFailure("Error getting event document: " + task.getException().getMessage());
+                            Log.d(eventsTAG, "No such event exists");
+                            callback.onFailure("No such event exists");
                         }
+                    } else {
+                        Log.d(eventsTAG, "Error getting event document: ", task.getException());
+                        callback.onFailure("Error getting event document: " + Objects.requireNonNull(task.getException()).getMessage());
                     }
                 });
     }
-
-
-//    public static Task<Event> getEventById(String eventId) {
-//        TaskCompletionSource<Event> taskCompletionSource = new TaskCompletionSource<>();
-//
-//        eventsCollection.document(eventId)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            if (document.exists()) {
-//                                String id = document.getId();
-//                                String name = document.getString("name");
-//                                String organizerId = document.getString("organizerId");
-//                                String details = document.getString("details");
-//                                String location = document.getString("location");
-//                                String startDate = document.getString("startDate");
-//                                String endDate = document.getString("endDate");
-//                                Boolean geolocationOn = document.getBoolean("geolocationOn");
-//                                String posterPath = document.getString("posterPath");
-//                                String qrCode = document.getString("qrCode");
-//                                String qrCodePromo = document.getString("qrCodePromo");
-//                                String organizerToken = document.getString("organizerToken");
-//                                ArrayList<String> announcements = (ArrayList<String>) document.get("announcements");
-//                                ArrayList<String> signUps = (ArrayList<String>) document.get("signUps");
-//                                ArrayList<String> checkIns = (ArrayList<String>) document.get("checkIns");
-//
-//                                Event event = new Event(id, name, organizerId, details, location, startDate, endDate, geolocationOn, posterPath, qrCode, qrCodePromo, organizerToken, announcements, signUps, checkIns);
-//                                taskCompletionSource.setResult(event);
-//                            } else {
-//                                Log.d(eventsTAG, "No such event exists");
-//                                taskCompletionSource.setException(new Exception("No such event exists"));
-//                            }
-//                        } else {
-//                            Log.d(eventsTAG, "Error getting event document: ", task.getException());
-//                            taskCompletionSource.setException(task.getException());
-//                        }
-//                    }
-//                });
-//
-//        return taskCompletionSource.getTask();
-//    }
-
-
-
 
     /**
      * Gets two lists, one for the CheckIn instances and one for the names of the attendees
@@ -1629,39 +1023,24 @@ public class FirebaseDB {
         AtomicInteger tasksCount = new AtomicInteger(event.getCheckIns().size());
         for (String checkIn : event.getCheckIns()) {
             checkInsCollection.document(checkIn).get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot1) {
-                            String docId = (String) documentSnapshot1.get("attendeeDocId");
-                            usersCollection.document(docId)
-                                    .get()
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot2) {
-                                            Boolean geolocationOn = (Boolean) documentSnapshot2.get("geolocationOn");
-                                            if (Boolean.TRUE.equals(geolocationOn)) {
-                                                checkIns.add(documentSnapshot1.toObject(CheckIn.class));
-                                                names.add((String) documentSnapshot2.get("name"));
-                                            }
-                                            if (tasksCount.decrementAndGet() == 0) {
-                                                callback.onResult(checkIns, names);
-                                            }
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(checkInsTag, "Something went wrong" + e);
-                                        }
-                                    });
-                        }
+                    .addOnSuccessListener(documentSnapshot1 -> {
+                        String docId = (String) documentSnapshot1.get("attendeeDocId");
+                        assert docId != null;
+                        usersCollection.document(docId)
+                                .get()
+                                .addOnSuccessListener(documentSnapshot2 -> {
+                                    Boolean geolocationOn = (Boolean) documentSnapshot2.get("geolocationOn");
+                                    if (Boolean.TRUE.equals(geolocationOn)) {
+                                        checkIns.add(documentSnapshot1.toObject(CheckIn.class));
+                                        names.add((String) documentSnapshot2.get("name"));
+                                    }
+                                    if (tasksCount.decrementAndGet() == 0) {
+                                        callback.onResult(checkIns, names);
+                                    }
+                                })
+                                .addOnFailureListener(e -> Log.w(checkInsTag, "Something went wrong" + e));
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(checkInsTag, "Something went wrong" + e);
-                        }
-                    });
+                    .addOnFailureListener(e -> Log.w(checkInsTag, "Something went wrong" + e));
         }
     }
 }

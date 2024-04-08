@@ -1,19 +1,10 @@
 package com.example.qrazyqrsrus;
 // This fragment allows announcements to be edited
-import static androidx.core.content.ContextCompat.getSystemService;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,36 +12,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.compose.ui.text.AnnotatedString;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Firebase;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.HttpException;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.moshi.MoshiConverterFactory;
-
-import android.Manifest;
 
 /**
  * Fragment to display the Announcement Edit section which
@@ -63,9 +29,6 @@ import android.Manifest;
 public class AnnouncementEditFragment extends Fragment{
 
     private EditText announcementEditText;
-    private Button addButton;
-    private ListView announcementListView;
-    private Button backButton;
     private Button setTokenButton;
     private Button broadcastButton;
     private Button copyTokenButton;
@@ -77,14 +40,6 @@ public class AnnouncementEditFragment extends Fragment{
     private Event event;
 
     //TODO: find out if we can delete
-//    private ActivityResultLauncher<String> requestPermissionLauncher =
-//            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-//                if (isGranted) {
-//                    Log.d("Notification Permissions", "user accepted notification permissions");
-//                } else {
-//                    Log.e("Notification Permissions", "user denied notification permissions");
-//                }
-//            });
 
     public AnnouncementEditFragment() {
         // Constructor
@@ -107,70 +62,33 @@ public class AnnouncementEditFragment extends Fragment{
 
         event = (Event) getArguments().get("event");
         assert event != null;
-
-        //we should be subscribing the person whenever they sign up/checkin, not here
-        //we should also be creating a unique topic for each event
-        //TODO: find out if we can delete
-//        FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
-        //we amke the notification channel to send notifications to
-        //this can be done in MainActivity, it doesn't really matter
-        //TODO: find out if we can delete
-//        createNotificationChannel();
-        //we ask for permission to send notifcations if they are not yet granted
-        //TODO: find out if we can delete
-//        requestNotificationPermission();
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
-        addButton = rootView.findViewById(R.id.button_add);
-        backButton = rootView.findViewById(R.id.button_back);
-        announcementListView = rootView.findViewById(R.id.list_announcements);
+        Button addButton = rootView.findViewById(R.id.button_add);
+        Button backButton = rootView.findViewById(R.id.button_back);
+        ListView announcementListView = rootView.findViewById(R.id.list_announcements);
 
         announcements = event.getAnnouncements();
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, announcements);
+        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, announcements);
         announcementListView.setAdapter(adapter);
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString(), event.getDocumentId());
-                addAnnouncement(event);
+        addButton.setOnClickListener(v -> {
+            NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString(), event.getDocumentId());
+            addAnnouncement(event);
 
-            }
         });
 
-        announcementListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                showDeleteConfirmationDialog(position, event);
+        announcementListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            showDeleteConfirmationDialog(position, event);
 
-                return true;
-            }
+            return true;
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
-            }
+        backButton.setOnClickListener(v -> {
+            Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
         });
 
         return rootView;
     }
-
-
-    //TODO: find out if we can delete
-    /**
-     * This function launches a new activity where Android can request notification permissions if they have not yet been granted.
-     */
-//    private void requestNotificationPermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-//            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-//            if (!notificationManager.areNotificationsEnabled()){
-//                //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
-//                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-//            }
-//        }
-//    }
-
     /**
      * Adds an announcement to the local list then updates the Event object's announcements
      * @param event the Event object with all the details of the event
@@ -199,12 +117,7 @@ public class AnnouncementEditFragment extends Fragment{
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Announcement")
                 .setMessage("Are you sure you want to delete this announcement?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteAnnouncement(position, event);
-                    }
-                })
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> deleteAnnouncement(position, event))
                 .setNegativeButton(android.R.string.no, null)
                 .show();
     }
@@ -248,25 +161,6 @@ public class AnnouncementEditFragment extends Fragment{
     }
 
     //TODO: find out if we can delete
-//    /**
-//     * This function registers a new Android Notification Channel where event announcements will be send to.
-//     * If the channel already exists, this does nothing.
-//     */
-//    private void createNotificationChannel() {
-//        // Create the NotificationChannel, but only on API 26+ because
-//        // the NotificationChannel class is not in the Support Library.
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            CharSequence name = "Event Announcements";
-//            String description = "Receive push notifications from event organizers";
-//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-//            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
-//            channel.setDescription(description);
-//            // Register the channel with the system. You can't change the importance
-//            // or other notification behaviors after this.
-//            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//    }
 
 }
 

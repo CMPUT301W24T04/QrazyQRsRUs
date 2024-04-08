@@ -1,5 +1,7 @@
 package com.example.qrazyqrsrus;
 
+import androidx.annotation.NonNull;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.HttpException;
@@ -11,7 +13,7 @@ public class NotificationSender implements Callback<MessageSentResponse> {
     //we use Retrofit to create our Java interface out of the HTTP Api defined on the backend
     //this definition was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
     //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
-    private FcmApi api = new Retrofit.Builder()
+    private final FcmApi api = new Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
@@ -62,10 +64,10 @@ public class NotificationSender implements Callback<MessageSentResponse> {
     }
 
     @Override
-    public void onResponse(Call<MessageSentResponse> call, Response<MessageSentResponse> response) {
+    public void onResponse(@NonNull Call<MessageSentResponse> call, @NonNull Response<MessageSentResponse> response) {
     }
 
     @Override
-    public void onFailure(Call<MessageSentResponse> call, Throwable t) {
+    public void onFailure(@NonNull Call<MessageSentResponse> call, @NonNull Throwable t) {
     }
 }

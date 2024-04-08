@@ -17,8 +17,8 @@ import java.util.ArrayList;
  * Saves the event class in a content view and adds that content to the list
  */
 public class EventListAdapter extends ArrayAdapter<Event> {
-    private ArrayList<Event> events;
-    private Context context;
+    private final ArrayList<Event> events;
+    private final Context context;
 
     public EventListAdapter(Context context, ArrayList<Event> events){
         super(context,0, events);
@@ -51,13 +51,13 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         // get position of the attendee
         Event event = events.get(position);
 
-        // get textviews from content fragment
+        // get textview from content fragment
         TextView Name = view.findViewById(R.id.name_event);
         TextView location = view.findViewById(R.id.event_location); // = view.findViewById(R.id.number_check_ins);
         TextView date = view.findViewById(R.id.event_date);
         TextView details = view.findViewById(R.id.event_details);
 
-        // set values of textviews based on the object attributes
+        // set values of textview based on the object attributes
         Name.setText(event.getName()); //.getEventName());
         location.setText(event.getLocation());
         date.setText(event.getStartDate()); // ADDED

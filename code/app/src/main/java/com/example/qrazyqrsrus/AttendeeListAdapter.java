@@ -19,14 +19,13 @@ import java.util.ArrayList;
  */
 public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
-    private ArrayList<Attendee> attendees;
-    private Context context;
+    private final ArrayList<Attendee> attendees;
+    private final Context context;
     private FirebaseDB firebaseDB;
 
     /**
      * Constructor to hold the attendee content
-     * @param context
-     * @param attendees
+     * @param attendees the attendees we want to display
      */
     public AttendeeListAdapter(Context context, ArrayList<Attendee> attendees){
         super(context,0, attendees);
@@ -45,7 +44,7 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
      *        always of the right type (see {@link #getViewTypeCount()} and
      *        {@link #getItemViewType(int)}).
      * @param parent The parent that this view will eventually be attached to
-     * @return
+     * @return a view
      */
     @NonNull
     @Override
@@ -70,18 +69,13 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
 
         // change value of name and num_checkins from content value
-        firebaseDB.getUserName(attendee.getId(), new FirebaseDB.GetStringCallBack() {
-            @Override
-            public void onResult(String string) {
-                attendee.setName(string);
-                Name.setText(attendee.getName());
+        firebaseDB.getUserName(attendee.getId(), string -> {
+            attendee.setName(string);
+            Name.setText(attendee.getName());
 
-                String checkins_string = "" + attendee.getCheckins();
-
-//        String num_checkins = attendee.getCheckins().toString();
-                //concatnate number of checkins to the sentence using .concat()
-                checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
-            }
+            String checkins_string = "" + attendee.getCheckins();
+            //concatenate number of checkins to the sentence using .concat()
+            checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
         });
 
         return view;

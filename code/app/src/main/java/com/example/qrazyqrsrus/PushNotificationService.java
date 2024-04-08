@@ -13,6 +13,8 @@ import androidx.navigation.NavDeepLinkBuilder;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Objects;
+
 //this class is required by FirebaseMessaging to generate unique tokens for users
 //this idea was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
 //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
@@ -48,7 +50,7 @@ public class PushNotificationService extends FirebaseMessagingService {
 
                         // Build the notification
                         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, "EVENTS")
-                                .setContentTitle(message.getNotification().getTitle())
+                                .setContentTitle(Objects.requireNonNull(message.getNotification()).getTitle())
                                 .setContentText(message.getNotification().getBody())
                                 .setSmallIcon(R.drawable.dialog_background)
                                 .setContentIntent(pendingIntent) // Set the PendingIntent
@@ -70,7 +72,7 @@ public class PushNotificationService extends FirebaseMessagingService {
                 // Use the event object here
 
             } catch (Exception e) {
-                Log.d("bad exception when generating notification", e.getMessage());
+                Log.d("bad exception when generating notification", Objects.requireNonNull(e.getMessage()));
             }
         }else {
             Log.d("NotificationService", "It doesn't:(");

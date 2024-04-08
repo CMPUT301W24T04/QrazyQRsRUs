@@ -14,13 +14,12 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 public class HomeSignedUpListAdapter extends ArrayAdapter<Event> {
-    private ArrayList<Event> events;
-    private Context context;
+    private final ArrayList<Event> events;
+    private final Context context;
 
     /**
      * Constructor for the adapter
-     * @param context
-     * @param events
+     * @param events the events we want to display
      */
     public HomeSignedUpListAdapter(Context context, ArrayList<Event> events){
         super(context,0, events);
@@ -53,12 +52,12 @@ public class HomeSignedUpListAdapter extends ArrayAdapter<Event> {
         // get position of the attendee
         Event event = events.get(position);
 
-        // get textviews from content fragment
+        // get textview from content fragment
         TextView Name = view.findViewById(R.id.signed_up_name);
         TextView Location = view.findViewById(R.id.signed_up_location);
 
 
-        // set values of textviews based on the object attributes
+        // set values of textview based on the object attributes
 
         Name.setText(event.getName()); //.getEventName());
         Location.setText(event.getLocation());

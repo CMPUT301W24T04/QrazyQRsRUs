@@ -1,31 +1,18 @@
 package com.example.qrazyqrsrus;
 
 // This fragment allows the user to browse events
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -77,6 +64,7 @@ public class HomeFragment extends Fragment{
      *
      * @return rootView
      */
+    @SuppressLint("HardwareIds")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -98,7 +86,7 @@ public class HomeFragment extends Fragment{
         //if the attendee is not passed, we must get the attendee to display only the events they are in.
         if (getArguments() == null){
 
-            firebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+            firebaseDB.loginUser(Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
                     firebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
@@ -107,14 +95,14 @@ public class HomeFragment extends Fragment{
 
                 @Override
                 public void onNoResult() {
-                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    new ErrorDialog(R.string.login_error).show(requireActivity().getSupportFragmentManager(), "Error Dialog");
                 }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("user");
             if (attendee == null){
 
-                FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+                FirebaseDB.getInstance().loginUser(Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                     @Override
                     public void onResult(Attendee attendee) {
                         HomeFragment.this.attendee[0] = attendee;
@@ -135,31 +123,23 @@ public class HomeFragment extends Fragment{
         checkedIn.setAdapter(homeCheckedInListAdapter);
         signedUp.setAdapter(homeSignedUpListAdapter);
 
-        checkedIn.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Bundle args = new Bundle();
-                args.putSerializable("event", checkedInEvents.get(i));
-                args.putSerializable("attendee", attendee);
-                args.putSerializable("isCheckedIn", true);
-                Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
-            }
+        checkedIn.setOnItemClickListener((adapterView, view, i, l) -> {
+            Bundle args = new Bundle();
+            args.putSerializable("event", checkedInEvents.get(i));
+            args.putSerializable("attendee", attendee);
+            args.putSerializable("isCheckedIn", true);
+            Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
         });
 
-        signedUp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Bundle args = new Bundle();
-                args.putSerializable("event", signedUpEvents.get(i));
-                args.putSerializable("attendee", attendee);
-                args.putSerializable("isCheckedIn", false);
-                Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
-            }
+        signedUp.setOnItemClickListener((adapterView, view, i, l) -> {
+            Bundle args = new Bundle();
+            args.putSerializable("event", signedUpEvents.get(i));
+            args.putSerializable("attendee", attendee);
+            args.putSerializable("isCheckedIn", false);
+            Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
         });
 
-        browseEvents.setOnClickListener(v -> {
-            Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventList3);
-        });
+        browseEvents.setOnClickListener(v -> Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventList3));
 
         return rootView;
     }
@@ -169,7 +149,7 @@ public class HomeFragment extends Fragment{
 
     /**
      * Puts the attendee in a bundle to be used
-     * @param attendee
+     * @param attendee the attendee whose home screen we want to show
      * @return fragment
      */
 

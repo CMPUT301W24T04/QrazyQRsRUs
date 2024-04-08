@@ -85,7 +85,7 @@
             android:textColor="#121111"
             android:gravity="start" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switchGeolocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,19 +1,10 @@
 package com.example.qrazyqrsrus;
 
 // This class generates new QR codes in the event creation sequence
-import android.app.Activity;
 import android.graphics.Bitmap;
-import android.widget.ImageView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.Result;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Generates a QR code for an event
@@ -24,8 +15,6 @@ public class QRCodeGenerator {
 
     private BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
-    private static Bitmap bitmap = null;
-
     public interface UniqueQRCheckCallBack {
         void onUnique();
         void onNotUnique();
@@ -34,22 +23,19 @@ public class QRCodeGenerator {
     /**
      * This function will check if a qr code is already in use
      * @param content The content field of the QR code to be generated
-     * @param mode The kind of qr code we are checking. 0 - promo   1 - checkin
+     * @param mode The kind of qr code we are checking. 0 - promo   1 - check in
      * @param callback The UniqueQRCheckCallBack that will handle the two cases: the qr code we are generating is unique (no problem), or the qr code we are generating is already in use (problem)
      */
     public void checkUnique (String content, int mode, UniqueQRCheckCallBack callback){
         if (firebaseDB == null){
             firebaseDB = FirebaseDB.getInstance();
         }
-        firebaseDB.checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
-            @Override
-            public void onResult(boolean isUnique) {
-                //if the qr code is not unique,
-                if (!isUnique) {
-                    callback.onNotUnique();
-                } else{
-                    callback.onUnique();
-                }
+        firebaseDB.checkUnique(content, mode, isUnique -> {
+            //if the qr code is not unique,
+            if (!isUnique) {
+                callback.onNotUnique();
+            } else{
+                callback.onUnique();
             }
         });
     }

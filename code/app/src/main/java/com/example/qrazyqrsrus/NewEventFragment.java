@@ -7,27 +7,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * Holds new event in a bundle
  */
 public class NewEventFragment extends Fragment {
-    /**
-     * saves event dragment in bundle
-     * @param param1
-     * @param param2
-     * @return fragment
-     */
-    public static NewEventFragment newInstance(String param1, String param2) {
-        NewEventFragment fragment = new NewEventFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     /**
      * create view
      * @param savedInstanceState If the fragment is being re-created from
@@ -36,9 +20,6 @@ public class NewEventFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
 
@@ -52,7 +33,7 @@ public class NewEventFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return a view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

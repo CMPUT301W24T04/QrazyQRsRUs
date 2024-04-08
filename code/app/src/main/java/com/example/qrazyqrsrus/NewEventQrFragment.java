@@ -108,7 +108,6 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
         });
         FloatingActionButton fab = view.findViewById(R.id.qr_screen_finish_button);
         fab.setOnClickListener(v -> {
-            //TODO: store event to firebase before navigating back
             Bundle args = null;
             try {
                 args = makeNewBundle(getArguments());

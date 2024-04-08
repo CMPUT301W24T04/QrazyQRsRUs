@@ -57,8 +57,7 @@ public class SendMessageDto {
      */
     public String getJson(SendMessageDto dtoToConvert){
         Gson gson = new Gson();
-        String json = gson.toJson(dtoToConvert);
-        return json;
+        return gson.toJson(dtoToConvert);
     }
 
 }
