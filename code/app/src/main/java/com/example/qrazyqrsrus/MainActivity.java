@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
          */
         @Override
         public void onPromoResult(Event matchingEvent) {
-            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
+            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, null, false));
 
         }
 
@@ -61,29 +61,39 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
          */
         @Override
         public void onCheckInResult(Event event) {
-            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+            FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
-                public void onResult(boolean isUnique, CheckIn checkIn) {
-                    LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
+                public void onResult(Attendee attendee) {
+                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                         @Override
-                        public void onResult(double longitude, double latitude) {
-                            if (isUnique){
-                                //if the user has not yet chcked into the event, we make a new one
-                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
-                                FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
-                            } else{
-                                //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
-                                checkIn.setLongitude(longitude);
-                                checkIn.setLatitude(latitude);
-                                checkIn.incrementCheckIn();
-                                FirebaseDB.getInstance().updateCheckIn(checkIn);
-                            }
+                        public void onResult(boolean isUnique, CheckIn checkIn) {
+                            LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
+                                @Override
+                                public void onResult(double longitude, double latitude) {
+                                    if (isUnique){
+                                        //if the user has not yet chcked into the event, we make a new one
+                                        CheckIn newCheckIn = new CheckIn(attendee.getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                        FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
+                                    } else{
+                                        //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
+                                        checkIn.setLongitude(longitude);
+                                        checkIn.setLatitude(latitude);
+                                        checkIn.incrementCheckIn();
+                                        FirebaseDB.getInstance().updateCheckIn(checkIn);
+                                    }
 
+                                }
+                            });
                         }
                     });
+                    ChangeFragment(EventDetailsFragment.newInstance(event, attendee, true));
+                }
+
+                @Override
+                public void onNoResult() {
+                    Log.d("MainActivity", "problem logging in user to create checkin");
                 }
             });
-            ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
 
         }
 
@@ -95,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         @Override
         public void onNoResult(@Nullable Event event, int errorNumber){
             if (event != null){
-                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false));
+                ChangeFragment(EventDetailsFragment.newInstance(event, null, false));
                 new ErrorDialog(R.string.not_signed_up_error).show(getSupportFragmentManager(), "QR Error Dialog");
             } else{
                 new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
@@ -177,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
                 //create a new instance of the ViewProfileFragment fragment, with the attendee that was obtained by logging in the user
-                ChangeFragment(ViewProfileFragment.newInstance(user[0]));
+                ChangeFragment(ViewProfileFragment.newInstance(null));
             }
 
             return true;
