@@ -66,14 +66,8 @@ public class AnnouncementEditFragment extends Fragment{
     private Button addButton;
     private ListView announcementListView;
     private Button backButton;
-    private Button setTokenButton;
-    private Button broadcastButton;
-    private Button copyTokenButton;
-    private EditText setTokenEditText;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> announcements;
-    private String messageText;
-    private String tokenToSendTo;
     private Event event;
     private FirebaseDB firebaseDB;
 
@@ -126,17 +120,6 @@ public class AnnouncementEditFragment extends Fragment{
             this.firebaseDB = FirebaseDB.getInstance();
         }
 
-        //we should be subscribing the person whenever they sign up/checkin, not here
-        //we should also be creating a unique topic for each event
-        //TODO: find out if we can delete
-//        FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
-        //we amke the notification channel to send notifications to
-        //this can be done in MainActivity, it doesn't really matter
-        //TODO: find out if we can delete
-//        createNotificationChannel();
-        //we ask for permission to send notifcations if they are not yet granted
-        //TODO: find out if we can delete
-//        requestNotificationPermission();
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
         addButton = rootView.findViewById(R.id.button_add);
         backButton = rootView.findViewById(R.id.button_back);
@@ -258,6 +241,10 @@ public class AnnouncementEditFragment extends Fragment{
         AnnouncementEditFragment fragment = new AnnouncementEditFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setFirebaseDB(FirebaseDB firebaseDB) {
+        this.firebaseDB = firebaseDB;
     }
 }
 
