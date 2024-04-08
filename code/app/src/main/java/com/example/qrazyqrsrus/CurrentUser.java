@@ -1,7 +1,9 @@
 package com.example.qrazyqrsrus;
 
 import android.provider.Settings;
-
+/**
+ * This class is used to represent the current user of the app.
+ */
 public class CurrentUser {
 
     private static final CurrentUser instance = new CurrentUser();
