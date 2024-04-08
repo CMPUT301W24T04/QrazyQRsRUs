@@ -25,8 +25,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A {@link Fragment} subclass used for displaying and managing attendees in the admin panel.
+ * It provides functionality to view, navigate through, and delete attendee profiles.
  *
+ * This fragment displays detailed information about attendees, including their name, email,
+ * geolocation status, and profile picture. Admins can navigate through attendees, update their
+ * information, or delete their profiles.
  */
 public class AdminViewAttendeesFragment extends Fragment {
     private ImageView imageView;
@@ -45,15 +49,39 @@ public class AdminViewAttendeesFragment extends Fragment {
     private ArrayList<Attendee> allAttendees;
     private Integer currentPosition;
 
+
+    /**
+     * Required empty public constructor for instantiating the fragment.
+     */
     public AdminViewAttendeesFragment() {
         // Required empty public constructor
     }
 
+
+    /**
+     * Called to do initial creation of the fragment. This is where to perform any
+     * one-time initializations.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this
+     *                           is the state. This value may be {@code null}.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+
+    /**
+     * Called to have the fragment instantiate its user interface view. This is where to inflate
+     * the layout and initialize any components that the view contains.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in
+     *                           the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If the fragment is being re-constructed from a previous saved state, this
+     *                           is the state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

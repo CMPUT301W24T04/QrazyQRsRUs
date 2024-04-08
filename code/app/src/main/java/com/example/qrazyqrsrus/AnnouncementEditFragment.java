@@ -77,25 +77,38 @@ public class AnnouncementEditFragment extends Fragment{
     private Event event;
     private FirebaseDB firebaseDB;
 
-    //TODO: find out if we can delete
-//    private ActivityResultLauncher<String> requestPermissionLauncher =
-//            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-//                if (isGranted) {
-//                    Log.d("Notification Permissions", "user accepted notification permissions");
-//                } else {
-//                    Log.e("Notification Permissions", "user denied notification permissions");
-//                }
-//            });
-
+    /**
+     * Empty constructor for the fragment. Required for instantiation.
+     */
     public AnnouncementEditFragment() {
         // Constructor
     }
 
+    /**
+     * Called to do initial creation of the fragment. This is where to perform any
+     * one-time initializations.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this
+     *                           is the state. This value may be null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view. This method inflates
+     * the layout for the fragment and initializes the UI components involved in announcement
+     * management.
+     *
+     * It retrieves the event details passed to it and sets up listeners for the UI components to handle
+     * user interactions like adding and deleting announcements.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -162,19 +175,6 @@ public class AnnouncementEditFragment extends Fragment{
     }
 
 
-    //TODO: find out if we can delete
-    /**
-     * This function launches a new activity where Android can request notification permissions if they have not yet been granted.
-     */
-//    private void requestNotificationPermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-//            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-//            if (!notificationManager.areNotificationsEnabled()){
-//                //THIS NEEDS TESTING, i don't know if it works, because my notifications were enabled already
-//                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-//            }
-//        }
-//    }
 
     /**
      * Adds an announcement to the local list then updates the Event object's announcements
@@ -243,6 +243,14 @@ public class AnnouncementEditFragment extends Fragment{
         toast.show();
     }
 
+    /**
+     * Factory method to create a new instance of this fragment using the provided {@link Event} object.
+     * This method allows for the passing of event details to the fragment upon creation, enabling
+     * targeted announcement management for that event.
+     *
+     * @param i The {@link Event} object containing details of the event for which announcements are to be managed.
+     * @return A new instance of {@link AnnouncementEditFragment} with event details attached.
+     */
     public static AnnouncementEditFragment newInstance(Event i){
         Bundle args = new Bundle();
         args.putSerializable("event", i);
@@ -251,31 +259,5 @@ public class AnnouncementEditFragment extends Fragment{
         fragment.setArguments(args);
         return fragment;
     }
-
-    public void setFirebaseDB(FirebaseDB instance){
-        this.firebaseDB = instance;
-    }
-
-    //TODO: find out if we can delete
-//    /**
-//     * This function registers a new Android Notification Channel where event announcements will be send to.
-//     * If the channel already exists, this does nothing.
-//     */
-//    private void createNotificationChannel() {
-//        // Create the NotificationChannel, but only on API 26+ because
-//        // the NotificationChannel class is not in the Support Library.
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            CharSequence name = "Event Announcements";
-//            String description = "Receive push notifications from event organizers";
-//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-//            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
-//            channel.setDescription(description);
-//            // Register the channel with the system. You can't change the importance
-//            // or other notification behaviors after this.
-//            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//    }
-
 }
 

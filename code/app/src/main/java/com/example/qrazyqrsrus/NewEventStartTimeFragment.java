@@ -111,6 +111,13 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         toolbar.setOnMenuItemClickListener(this);
     }
 
+    /**
+     * Responds to the clicks on menu items in the toolbar. This method handles navigation based on
+     * the selected menu item, such as navigating back or canceling the event creation process.
+     *
+     * @param item The menu item that was selected.
+     * @return true to indicate that the click was handled.
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
@@ -131,6 +138,13 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         return false;
     }
 
+    /**
+     * Parses a date and time string into a LocalDateTime object. The string should be in a
+     * specific format (e.g., "yyyy-MM-dd HH:mm") that combines both date and time parts.
+     *
+     * @param dateTimeStr The date and time string to parse.
+     * @return A LocalDateTime object representing the specified date and time.
+     */
     private LocalDateTime parseDateTimeString(String dateTimeStr) {
         // Create a DateTimeFormatter with optional parts for day and month
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
@@ -149,7 +163,14 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         return LocalDateTime.parse(dateTimeStr, formatter);
     }
 
-
+    /**
+     * Creates a new bundle with updated start date and time for the event. This method extracts
+     * the date and time selected by the user, formats them, and updates the EventBuilder
+     * within the bundle.
+     *
+     * @param args The original bundle containing the EventBuilder.
+     * @return A new bundle updated with the start date and time.
+     */
     private Bundle makeNewBundle(Bundle args){
         View view = getView();
         if (view == null || args == null) return args; // Safety checks
@@ -175,7 +196,14 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         return args;
     }
 
-
+    /**
+     * Updates the UI with the start date and time if they have already been set. This method
+     * is called when the fragment's view is being created, ensuring that previously input
+     * information is displayed to the user.
+     *
+     * @param args The bundle containing the EventBuilder with the start date and time.
+     * @param view The fragment's root view.
+     */
     private void handleArguments(Bundle args, View view) {
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         if (builder != null && builder.getStartDate() != null) {
@@ -197,8 +225,10 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         }
     }
 
-
-
+    /**
+     * Displays a DatePickerDialog for the user to select the start date of the event. Once
+     * a date is selected, it updates the corresponding text view in the fragment's layout.
+     */
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -220,7 +250,10 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         }
     }
 
-
+    /**
+     * Displays a TimePickerDialog for the user to select the start time of the event. Once
+     * a time is selected, it updates the corresponding text view in the fragment's layout.
+     */
     private void showTimePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);

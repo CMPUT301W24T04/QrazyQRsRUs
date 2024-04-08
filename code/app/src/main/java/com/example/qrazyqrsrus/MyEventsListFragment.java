@@ -18,7 +18,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 /**
- * gets list of attendees
+ * A {@link Fragment} subclass for displaying a list of events that the current user has either created or signed up for.
+ * This fragment is responsible for fetching and displaying the relevant events in a list format, allowing the user
+ * to view details about each event or to navigate to the event creation screen.
+ *
+ * The fragment inflates a layout used for displaying any list of events but customizes it to show only those related
+ * to the current user. It leverages {@link EventListAdapter} to populate the list view with event data.
  */
 public class MyEventsListFragment extends Fragment {
     /**
@@ -31,6 +36,7 @@ public class MyEventsListFragment extends Fragment {
     }
 
     /**
+
      * Shows a list of events when the view is created
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,

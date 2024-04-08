@@ -51,6 +51,9 @@ public class HomeFragment extends Fragment{
 
     FloatingActionButton browseEvents;
 
+    /**
+     * Required empty public constructor for the fragment.
+     */
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -167,12 +170,15 @@ public class HomeFragment extends Fragment{
         this.firebaseDB = firebaseDB;
     }
 
-    /**
-     * Puts the attendee in a bundle to be used
-     * @param attendee
-     * @return fragment
-     */
 
+    /**
+     * Creates and returns a new instance of this fragment, optionally pre-populated with an
+     * {@link Attendee} object through arguments. This method allows for re-creation of the
+     * fragment's state or initialization with specific data.
+     *
+     * @param attendee The {@link Attendee} whose event participation will be displayed.
+     * @return A new instance of {@link HomeFragment} with attendee data if provided.
+     */
     public static HomeFragment newInstance(Attendee attendee){
         Bundle args = new Bundle();
         args.putSerializable("user", attendee);

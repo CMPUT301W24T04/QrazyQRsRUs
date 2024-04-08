@@ -36,68 +36,181 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class FirebaseDB {
 
+    /**
+     * Callback interface for checking uniqueness.
+     */
     public interface UniqueCheckCallBack {
+        /**
+         * Called with the result of the uniqueness check.
+         *
+         * @param isUnique Indicates whether the item checked is unique.
+         */
         void onResult(boolean isUnique);
     }
 
+    /**
+     * Callback interface for checking uniqueness of a check-in.
+     */
     public interface UniqueCheckInCallBack {
+        /**
+         * Called with the result of the check-in uniqueness check.
+         *
+         * @param isUnique Indicates whether the check-in is unique.
+         * @param checkIn  The check-in object being checked.
+         */
         void onResult(boolean isUnique, CheckIn checkIn);
     }
 
     //- we change the callback interface for looking for a matching qr code to have an OnNoResult function that handles the case that no matching qr code exists for either promo or checkin
     //then in qr scanhandler we call findEventWithQR in OnNoResult for the promo qr search
     //then in qr scanhandler we throw error in onNoResult after both qr searches
+    /**
+     * Callback interface for finding an event with a matching QR code.
+     */
     public interface MatchingQRCallBack {
+        /**
+         * Called when a matching event is found.
+         *
+         * @param matchingEvent The event matching the QR code.
+         */
         void onResult(Event matchingEvent);
 
+        /**
+         * Called when no matching event is found.
+         */
         void onNoResult();
     }
 
+    /**
+     * Callback interface for retrieving a String.
+     */
     public interface GetStringCallBack{
+        /**
+         * Called with the result string.
+         *
+         * @param string The result string.
+         */
         void onResult(String string);
     }
 
+    /**
+     * Callback interface for retrieving a Bitmap.
+     */
     public interface GetBitmapCallBack{
+        /**
+         * Called with the result bitmap.
+         *
+         * @param bitmap The result bitmap.
+         */
         void onResult(Bitmap bitmap);
     }
 
+    /**
+     * Callback interface for retrieving an Attendee.
+     */
     public interface GetAttendeeCallBack {
+        /**
+         * Called with the result attendee.
+         *
+         * @param attendee The result attendee.
+         */
         void onResult(Attendee attendee);
 
         void onNoResult();
     }
+
+    /**
+     * Callback interface for retrieving all events.
+     */
     public interface GetAllEventsCallBack {
+        /**
+         * Called with the result list of events.
+         *
+         * @param events The list of retrieved events.
+         */
         void onResult(ArrayList<Event> events);
     }
 
-    // Define a callback interface to handle the result
+    /**
+     * Callback interface for handling event retrieval operations.
+     */
     public interface GetEventCallback {
+        /**
+         * Called on successful retrieval of an event.
+         *
+         * @param event The event successfully retrieved.
+         * @return The retrieved event.
+         */
         Event onSuccess(Event event);
 
+        /**
+         * Called when event retrieval fails.
+         *
+         * @param errorMessage The error message describing the failure.
+         */
         void onFailure(String errorMessage);
     }
 
 
+    /**
+     * Callback interface indicating completion of an operation.
+     */
     public interface OnFinishedCallback{
+        /**
+         * Called when the operation is finished.
+         */
         void onFinished();
     }
 
+    /**
+     * Callback interface for attempting a login operation.
+     */
     public interface AttemptLoginCallback {
+        /**
+         * Called when the login operation results in success.
+         */
         void onResult();
 
+        /**
+         * Called when the login operation does not result in success.
+         */
         void onNoResult();
     }
 
+    /**
+     * Callback interface for retrieving an array of strings.
+     */
     public interface StringArrayCallback {
+        /**
+         * Called with the result array of strings.
+         *
+         * @param array The array of strings.
+         */
         void onResult(ArrayList<String> array);
     }
 
+    /**
+     * Callback interface for retrieving a token.
+     */
     public interface GetTokenCallback{
+        /**
+         * Called with the result token.
+         *
+         * @param token The token string.
+         */
         void onResult(String token);
     }
 
-
+    /**
+     * Callback interface for retrieving map markers.
+     */
     public interface GetMapMarkersCallback {
+        /**
+         * Called with the result of map markers.
+         *
+         * @param checks The list of check-ins.
+         * @param names  The list of names corresponding to the check-ins.
+         */
         void onResult(ArrayList<CheckIn> checks, ArrayList<String> names);
     }
 
@@ -111,58 +224,128 @@ public class FirebaseDB {
     private CollectionReference checkInsCollection;
     private CollectionReference adminLoginsCollection;
 
+    /**
+     * Gets the collection reference for user documents.
+     *
+     * @return The Firestore collection reference for users.
+     */
     public CollectionReference getUsersCollection() {
         return usersCollection;
     }
 
+    /**
+     * Sets the collection reference for user documents.
+     *
+     * @param usersCollection The new Firestore collection reference for users.
+     */
     public void setUsersCollection(CollectionReference usersCollection) {
         this.usersCollection = usersCollection;
     }
 
+    /**
+     * Gets the collection reference for event documents.
+     *
+     * @return The Firestore collection reference for events.
+     */
     public CollectionReference getEventsCollection() {
         return eventsCollection;
     }
 
+    /**
+     * Sets the collection reference for event documents.
+     *
+     * @param eventsCollection The new Firestore collection reference for events.
+     */
     public void setEventsCollection(CollectionReference eventsCollection) {
         this.eventsCollection = eventsCollection;
     }
 
+    /**
+     * Gets the collection reference for check-in documents.
+     *
+     * @return The Firestore collection reference for check-ins.
+     */
     public CollectionReference getCheckInsCollection() {
         return checkInsCollection;
     }
 
+    /**
+     * Sets the collection reference for check-in documents.
+     *
+     * @param checkInsCollection The new Firestore collection reference for check-ins.
+     */
     public void setCheckInsCollection(CollectionReference checkInsCollection) {
         this.checkInsCollection = checkInsCollection;
     }
 
+    /**
+     * Gets the collection reference for admin login documents.
+     *
+     * @return The Firestore collection reference for admin logins.
+     */
     public CollectionReference getAdminLoginsCollection() {
         return adminLoginsCollection;
     }
 
+    /**
+     * Sets the collection reference for admin login documents.
+     *
+     * @param adminLoginsCollection The new Firestore collection reference for admin logins.
+     */
     public void setAdminLoginsCollection(CollectionReference adminLoginsCollection) {
         this.adminLoginsCollection = adminLoginsCollection;
     }
 
+    /**
+     * Gets the instance of the Firestore database.
+     *
+     * @return The Firestore database instance.
+     */
     public FirebaseFirestore getDb() {
         return db;
     }
 
+    /**
+     * Sets the instance of the Firestore database.
+     *
+     * @param db The new Firestore database instance.
+     */
     public void setDb(FirebaseFirestore db) {
         this.db = db;
     }
 
+    /**
+     * Gets the instance of Firebase Storage.
+     *
+     * @return The Firebase Storage instance.
+     */
     public FirebaseStorage getStorage() {
         return storage;
     }
 
+    /**
+     * Sets the instance of Firebase Storage.
+     *
+     * @param storage The new Firebase Storage instance.
+     */
     public void setStorage(FirebaseStorage storage) {
         this.storage = storage;
     }
 
+    /**
+     * Gets the instance of Firebase Messaging.
+     *
+     * @return The Firebase Messaging instance.
+     */
     public FirebaseMessaging getMessaging() {
         return messaging;
     }
 
+    /**
+     * Sets the instance of Firebase Messaging.
+     *
+     * @param messaging The new Firebase Messaging instance.
+     */
     public void setMessaging(FirebaseMessaging messaging) {
         this.messaging = messaging;
     }
@@ -430,6 +613,12 @@ public class FirebaseDB {
         }
     }
 
+    /**
+     * Retrieves an image from the database
+     *
+     * @param event This is the event we're trying to get its poster.
+     * @param callBack This callBack will be used to get back bitmap
+     */
     public void retrieveImage(String path, GetBitmapCallBack callBack) {
         try {
             StorageReference storageRef = storage.getReference(path + ".jpg");
@@ -526,6 +715,19 @@ public class FirebaseDB {
                 });
 
     }
+
+    /**
+     * Retrieves all events from the Firestore database and constructs a list of {@link Event} objects.
+     * Each event document is transformed into an {@link Event} object which is then added to a list. Once all documents
+     * have been processed, this list is passed to the provided {@link GetAllEventsCallBack} callback.
+     * <p>
+     * If the operation is successful, {@link GetAllEventsCallBack#onResult(ArrayList)} is called with the list of events.
+     * In case of failure, an error log is generated and no further action is taken. The callback is not called with a failure indicator,
+     * which means error handling should be managed externally based on application needs.
+     *
+     * @param callBack The {@link GetAllEventsCallBack} callback to handle the result. This callback gets a list of {@link Event}
+     *                 objects on successful retrieval, allowing further processing such as updating UI or handling event data.
+     */
     public void getAllEvents(GetAllEventsCallBack callBack) {
         ArrayList<Event> eventList = new ArrayList<>();
         eventsCollection
@@ -963,6 +1165,14 @@ public class FirebaseDB {
                 });
     }
 
+    /**
+     * Adds a new {@link CheckIn} object to the Firestore database within the `checkInsCollection`.
+     * Upon successful addition, the method assigns the Firestore-generated document ID back to the {@link CheckIn} object
+     * and calls {@code updateCheckIn} to update any necessary information within the database based on the newly added check-in.
+     *
+     * @param checkIn The {@link CheckIn} object to be added to the Firestore database. This object contains all necessary
+     *                information about the check-in, such as attendee ID, event ID, and geolocation coordinates.
+     */
     public void addCheckIn(CheckIn checkIn) {
         checkInsCollection
                 .add(checkIn)
@@ -975,6 +1185,13 @@ public class FirebaseDB {
                 });
     }
 
+    /**
+     * Updates the specified check-in document in the Firestore database with new information from the provided {@link CheckIn} object.
+     * This method updates the check-in document with the latest data, such as attendee document ID, event document ID,
+     * geolocation coordinates, and the number of check-ins.
+     *
+     * @param checkIn The {@link CheckIn} object containing updated information to be stored in the database.
+     */
     public void updateCheckIn(CheckIn checkIn) {
         checkInsCollection
                 .document(checkIn.getDocumentId())
@@ -996,6 +1213,17 @@ public class FirebaseDB {
                 });
     }
 
+    /**
+     * Checks if a check-in already exists for a given attendee and event combination in the Firestore database.
+     * This method queries the `checkInsCollection` to find any existing check-in documents that match the specified
+     * attendee and event document IDs. The result of this query is passed to the provided {@link UniqueCheckInCallBack}.
+     *
+     * @param eventDocId  The document ID of the event to check for an existing check-in.
+     * @param attendeeDocId The document ID of the attendee to check for an existing check-in.
+     * @param callBack    The {@link UniqueCheckInCallBack} callback to handle the result of the check. The callback
+     *                    will be invoked with a boolean indicating whether the check-in is unique (i.e., does not exist)
+     *                    and with the {@link CheckIn} object if an existing check-in is found.
+     */
     public void checkInAlreadyExists(String eventDocId, String attendeeDocId, UniqueCheckInCallBack callBack) {
         checkInsCollection
                 .whereEqualTo("attendeeDocId", attendeeDocId)
@@ -1440,6 +1668,16 @@ public class FirebaseDB {
 
     }
 
+    /**
+     * Checks if a specific user has checked into a specific event.
+     * Queries the check-ins collection to find any check-ins that match both the attendee's document ID
+     * and the event's document ID. The result of the query (whether any check-ins were found) is passed
+     * to the provided {@link UniqueCheckCallBack}.
+     *
+     * @param user      The {@link Attendee} who is being checked.
+     * @param event     The {@link Event} to check the attendee against.
+     * @param callBack  The {@link UniqueCheckCallBack} to handle whether the attendee has checked into the event.
+     */
     public void userCheckedIntoEvent(Attendee user, Event event, UniqueCheckCallBack callBack) {
         checkInsCollection
                 .whereEqualTo("attendeeDocId", user.getDocumentId())
@@ -1453,6 +1691,17 @@ public class FirebaseDB {
                 });
     }
 
+    /**
+     * Retrieves the geolocation data for users who have checked into a specific event.
+     * This method queries the check-ins collection for all check-ins associated with the given event's document ID,
+     * extracting the latitude and longitude for each check-in. These coordinates are added to the provided
+     * latitude and longitude lists. Additional attendee data, such as document IDs, are added to the attendeeDataList.
+     *
+     * @param event              The {@link Event} for which to retrieve checked-in users' geolocations.
+     * @param attendeeDataList   An {@link ArrayList} to hold data of the attendees who have checked in.
+     * @param latitudeList       An {@link ArrayList} to hold the latitude values of the checked-in locations.
+     * @param longitudeList      An {@link ArrayList} to hold the longitude values of the checked-in locations.
+     */
     public void getEventCheckedInUsersGeoLocation(Event event, ArrayList<String> attendeeDataList, ArrayList latitudeList, ArrayList longitudeList) {
         checkInsCollection
                 .whereEqualTo("eventDocId", event.getDocumentId()) //Finds document with the QR code of event clicked on
@@ -1489,6 +1738,13 @@ public class FirebaseDB {
                 });
     }
 
+    /**
+     * Retrieves the current instance's Firebase Cloud Messaging (FCM) token.
+     * This token is used to uniquely identify the app instance for push notifications. The retrieved token
+     * is passed to the provided {@link GetTokenCallback}.
+     *
+     * @param callback The {@link GetTokenCallback} to handle the retrieved FCM token.
+     */
     public void getToken(GetTokenCallback callback){
         messaging
                 .getToken()
@@ -1529,6 +1785,19 @@ public class FirebaseDB {
                 });
     }
 
+    /**
+     * Retrieves an event by its unique identifier from the Firestore database.
+     * This method queries the Firestore database for an event document using the specified event ID. If the
+     * document is successfully retrieved and exists, it constructs an {@link Event} object from the document's
+     * data and invokes the {@link GetEventCallback#onSuccess(Event)} method of the provided callback with the
+     * event object. If the document does not exist or an error occurs during the query, the appropriate failure
+     * method of the callback is invoked.
+     *
+     * @param eventId  The unique identifier of the event to retrieve.
+     * @param callback The {@link GetEventCallback} implementation to handle the response. The onSuccess method is
+     *                 called with the event object if the event is found. The onFailure method is called with an
+     *                 error message if the event is not found or if an error occurs during the database query.
+     */
     public void getEventById(String eventId, GetEventCallback callback) {
         eventsCollection.document(eventId)
                 .get()

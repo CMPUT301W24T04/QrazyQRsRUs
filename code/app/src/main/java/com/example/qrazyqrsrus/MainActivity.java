@@ -132,7 +132,22 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             });
 
-//    qrHandler =
+    /**
+     * Called when the activity is starting. This is where most initialization should go: calling {@code setContentView(int)}
+     * to inflate the activity's UI, using {@code findViewById(int)} to programmatically interact with widgets in the UI,
+     * setting up any static data in lists, binding data to lists, etc.
+     * <p>
+     * In this implementation, {@code onCreate} initializes the activity's binding for view interaction without directly referencing
+     * the UI components by ID, sets up the device ID for future use, and initializes the {@link QRCodeScanHandler} with appropriate
+     * callbacks for handling different outcomes of QR code scanning (promo QR codes, check-in QR codes, and special admin QR codes).
+     * This setup facilitates actions based on QR code scanning, such as navigating to different fragments based on the scan results.
+     * <p>
+     * This method also checks for necessary permissions (if any are needed) and sets up any other initial configurations required for
+     * the app's main activity.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the
+     *                           data it most recently supplied in {@link #onSaveInstanceState(Bundle)}. <b>Note:</b> Otherwise it is null.
+     */
 
     /**
      * Manages notifications in the server
