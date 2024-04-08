@@ -9,8 +9,6 @@ import static org.junit.Assert.*;
 //  This verifies all the assertion checks that the value set by the setter is correctly returned by the getter.
 public class EventTest {
     private Event event;
-    private LocalDateTime testStartDate;
-    private LocalDateTime testEndDate;
 
     @Before
     public void setUp() {
