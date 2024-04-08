@@ -110,23 +110,6 @@ public class AnnouncementEditTests {
         verify(mockNavController).popBackStack();
     }
 
-//    @Test
-//    public void testAnnouncementDeleted() {
-//        // Mocked event
-//        Event event = new Event();
-//        event.setAnnouncements(new ArrayList<>());
-//
-//        // Click on the first item in the list to delete
-//        scenario.onFragment(fragment -> {
-//            fragment.announcements.add("Test Announcement");
-//            fragment.adapter.notifyDataSetChanged();
-//            fragment.announcementListView.performItemClick(null, 0, 0);
-//        });
-//
-//        // Verify that FirebaseDB's updateEvent method is called
-//        verify(mockFirebaseDB).updateEvent(eq(event));
-//    }
-
     @NonNull
     private static Bundle getBundle() {
         Event event = getEvent(1);

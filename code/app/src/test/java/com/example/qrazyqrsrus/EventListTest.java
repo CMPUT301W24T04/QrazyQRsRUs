@@ -3,16 +3,6 @@ package com.example.qrazyqrsrus;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import android.content.Context;
-import android.widget.Button;
-import android.widget.ListView;
-
-import com.google.firebase.Firebase;
-
-import org.junit.Rule;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.mockito.Mockito;
