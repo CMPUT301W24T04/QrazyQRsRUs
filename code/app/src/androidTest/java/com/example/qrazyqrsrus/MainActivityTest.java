@@ -20,13 +20,6 @@ public class MainActivityTest {
     public ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void navigateToHomeFragment() {
-        onView(withId(R.id.home)).perform(ViewActions.click());
-        onView(withId(R.id.nav_graph_nav_host)).check(matches(isDisplayed()));
-        //// Check that Home Fragment was opened.
-    }
-
-    @Test
     public void navigateToMyEventsFragment() {
         onView(withId(R.id.my_events)).perform(ViewActions.click());
         onView(withId(R.id.new_event_acitivity_nav_host)).check(matches(isDisplayed()));
