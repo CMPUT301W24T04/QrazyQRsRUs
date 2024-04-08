@@ -50,6 +50,8 @@ public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
 
         // get textviews from content fragment
         TextView Name = view.findViewById(R.id.checked_in_name);
+        TextView Location = view.findViewById(R.id.checked_in_location);
+        Location.setText(event.getLocation());
 
 
         // set values of textviews based on the object attributes

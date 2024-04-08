@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     /**
      * Uses a callback to do actions when user scans a QR code
      */
-    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
+    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(FirebaseDB.getInstance(), this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
         //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
 
         /**
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
          */
         @Override
         public void onPromoResult(Event matchingEvent) {
-            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
+            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, null, false));
 
         }
 
@@ -61,29 +61,39 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
          */
         @Override
         public void onCheckInResult(Event event) {
-            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+            FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
-                public void onResult(boolean isUnique, CheckIn checkIn) {
-                    LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
+                public void onResult(Attendee attendee) {
+                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
                         @Override
-                        public void onResult(double longitude, double latitude) {
-                            if (isUnique){
-                                //if the user has not yet chcked into the event, we make a new one
-                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
-                                FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
-                            } else{
-                                //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
-                                checkIn.setLongitude(longitude);
-                                checkIn.setLatitude(latitude);
-                                checkIn.incrementCheckIn();
-                                FirebaseDB.getInstance().updateCheckIn(checkIn);
-                            }
+                        public void onResult(boolean isUnique, CheckIn checkIn) {
+                            LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
+                                @Override
+                                public void onResult(double longitude, double latitude) {
+                                    if (isUnique){
+                                        //if the user has not yet chcked into the event, we make a new one
+                                        CheckIn newCheckIn = new CheckIn(attendee.getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                        FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
+                                    } else{
+                                        //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
+                                        checkIn.setLongitude(longitude);
+                                        checkIn.setLatitude(latitude);
+                                        checkIn.incrementCheckIn();
+                                        FirebaseDB.getInstance().updateCheckIn(checkIn);
+                                    }
 
+                                }
+                            });
                         }
                     });
+                    ChangeFragment(EventDetailsFragment.newInstance(event, attendee, true));
+                }
+
+                @Override
+                public void onNoResult() {
+                    Log.d("MainActivity", "problem logging in user to create checkin");
                 }
             });
-            ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
 
         }
 
@@ -95,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         @Override
         public void onNoResult(@Nullable Event event, int errorNumber){
             if (event != null){
-                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false));
+                ChangeFragment(EventDetailsFragment.newInstance(event, null, false));
                 new ErrorDialog(R.string.not_signed_up_error).show(getSupportFragmentManager(), "QR Error Dialog");
             } else{
                 new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
@@ -137,30 +147,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                user[0] = attendee;
-            }
-
-            @Override
-            public void onNoResult() {
-                Log.d("sad face", ":(");
-            }
-        });
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Event Announcements";
-            String description = "Receive push notifications from event organizers";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system. You can't change the importance
-            // or other notification behaviors after this.
-            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         //we don't need to getToken, this is just for testing
         //FirebaseDB.getInstance().getToken();
@@ -178,16 +165,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             notificationManager.createNotificationChannel(channel);
         }
 
-        //Attendee[] user = new Attendee[1];
-
-//        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
-//            @Override
-//            public void onResult(Attendee attendee) {
-//                user[0] = attendee;
-//                ChangeFragment(new HomeEventsFragment());
-//            }
-//        });
-
         ChangeFragment(new HomeEventsFragment());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -197,13 +174,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         }
 
-
-
-//        if (deviceId == null) {
-//            Log.d("deviceId", "super badness");
-//            return;
-//        }
-
         // When the navigation bar is clicked
         binding.BottomNavView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -212,12 +182,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch(user[0]);
+                qrHandler.launch(deviceId);
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
                 //create a new instance of the ViewProfileFragment fragment, with the attendee that was obtained by logging in the user
-                ChangeFragment(ViewProfileFragment.newInstance(user[0]));
+                ChangeFragment(ViewProfileFragment.newInstance(null));
             }
 
             return true;
@@ -237,5 +207,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         fragmentTransaction.commit();
     }
 
-
+    public void setQrHandler(QRCodeScanHandler qrHandler) {
+        this.qrHandler = qrHandler;
+    }
 }

@@ -119,9 +119,37 @@ public class ViewProfileFragment extends Fragment {
                 }
             } else {
                 Log.e("ViewProfileFragment", "Attendee object not found in arguments.");
+
+                FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        loadInitialAttendee(attendee);
+                        if (!Objects.equals(userId, attendee.getId())) {
+                            restrictEdits();
+                        }
+                    }
+
+                    @Override
+                    public void onNoResult() {
+                        Log.d("very bad", "badness!");
+                    }
+                });
             }
         } else {
-            Log.e("ViewProfileFragment", "No arguments found.");
+            FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        loadInitialAttendee(attendee);
+                        if (!Objects.equals(userId, attendee.getId())) {
+                            restrictEdits();
+                        }
+                    }
+
+                    @Override
+                    public void onNoResult() {
+                        Log.d("very bad", "badness!");
+                    }
+                });
         }
     }
 

@@ -27,8 +27,6 @@ public class PushNotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
-        //for further customization
-
         // Extract event ID from the notification data
         String eventId = message.getData().get("eventId");
         Bundle args = new Bundle();
@@ -75,20 +73,6 @@ public class PushNotificationService extends FirebaseMessagingService {
         }else {
             Log.d("NotificationService", "It doesn't:(");
         }
-
-        // Create an intent to open the activity containing the fragment
-        //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-
-        // Include the event ID as an extra in the intent
-        //intent.putExtra("eventId", eventId);
-
-        // Set the intent action
-        //intent.setAction(Intent.ACTION_VIEW);
-
-        // Start the activity when the notification is clicked
-        //PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-
 
     }
 }
