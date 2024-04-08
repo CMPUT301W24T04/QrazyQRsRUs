@@ -1,3 +1,4 @@
+// Holds attributes of an attendee
 package com.example.qrazyqrsrus;
 
 import java.io.Serializable;

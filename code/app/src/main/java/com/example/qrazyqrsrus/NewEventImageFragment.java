@@ -54,6 +54,8 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
 
     private String path;
 
+    private FirebaseDB firebaseDB;
+
     /**
      * save the image as an instance
      * @param param1
@@ -146,6 +148,12 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
                     .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                     .build());
         });
+
+        if (this.firebaseDB == null){
+            setFirebaseDB(FirebaseDB.getInstance());
+        }
+
+
 
         return view;
     }
@@ -312,5 +320,9 @@ public class NewEventImageFragment extends Fragment implements Toolbar.OnMenuIte
             this.initialPath = null;
             this.path = null;
         }
+    }
+
+    public void setFirebaseDB(FirebaseDB instance){
+        this.firebaseDB = instance;
     }
 }

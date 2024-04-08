@@ -57,6 +57,9 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
 
     private String initialQRContent;
     private Toolbar toolbar;
+    private QRCodeGenerator qrCodeGenerator;
+    private QRCodeScanHandler qrCodeScanHandler;
+
 
     private String promoQRContent;
     public static NewEventPromoQrFragment newInstance(String param1, String param2) {
@@ -69,9 +72,13 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
+        if (qrCodeGenerator == null) {
+            qrCodeGenerator = new QRCodeGenerator();
         }
+        if (qrCodeScanHandler == null) {
+            qrCodeScanHandler = new QRCodeScanHandler();
+        }
+
     }
 
     @Override
@@ -174,7 +181,7 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String qrContent = ((Event.EventBuilder) (getArguments().getSerializable("builder"))).getName() + "_" + timeStamp + "_checkin";
         //we check if our qr code is unique
-        QRCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
+        qrCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
                 generateBitmap(qrContent, getView());
@@ -194,10 +201,10 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
     private void tryGenerateNewQR(String content){
         String qrContent = content;
         //we check if our qr code is unique
-        QRCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
+        qrCodeGenerator.checkUnique(qrContent, 0, new QRCodeGenerator.UniqueQRCheckCallBack() {
             @Override
             public void onUnique() {
-                QRCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
+                qrCodeGenerator.checkUnique(qrContent, 1, new QRCodeGenerator.UniqueQRCheckCallBack() {
                     @Override
                     public void onUnique() {
                         generateBitmap(qrContent, getView());
@@ -220,9 +227,9 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
      * @param content
      */
     private void generateBitmap(String content, View view){
-        Bitmap bitmap = QRCodeGenerator.generateBitmap(content);
+        Bitmap bitmap = qrCodeGenerator.generateBitmap(content);
         if (bitmap != null){
-            ((ImageView) view.findViewById(R.id.new_event_display_qr_code)).setImageBitmap(bitmap);
+            ((ImageView) view.findViewById(R.id.new_event_display_qr_code_promo)).setImageBitmap(bitmap);
             promoQRContent = content;
         } else{
             Log.d("generateBitmap", "error generating the bitmap");
@@ -260,7 +267,7 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
      */
     private void imageUploaded(Uri uri){
         //we call the scanImage function to get the content of the uploaded image
-        String content = QRCodeScanHandler.scanImage(getContext().getContentResolver(), uri);
+        String content = qrCodeScanHandler.scanImage(getContext().getContentResolver(), uri);
         if (content == null){
             //if the uploaded image failed to be recognized as a qr code
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
@@ -298,5 +305,13 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         if (builder.getQrCodePromo() != null){
             generateBitmap(builder.getQrCodePromo(), view);
         }
+    }
+
+    public void setQrCodeGenerator(QRCodeGenerator instance){
+        this.qrCodeGenerator = instance;
+    }
+
+    public void setQrCodeScanHandler(QRCodeScanHandler instance){
+        this.qrCodeScanHandler = instance;
     }
 }

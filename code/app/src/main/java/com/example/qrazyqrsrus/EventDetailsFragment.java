@@ -51,6 +51,10 @@ public class EventDetailsFragment extends Fragment {
     private Bitmap promoBitmap;
     private Bitmap checkInBitmap;
     private Boolean isCheckedIn;
+    private FirebaseDB firebaseDB;
+    private QRCodeGenerator qrCodeGenerator;
+    private QRCodeScanHandler qrCodeScanHandler;
+  
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -60,6 +64,9 @@ public class EventDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (qrCodeGenerator == null) {
+            qrCodeGenerator = new QRCodeGenerator();
+        }
     }
 
     /**
@@ -79,7 +86,6 @@ public class EventDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_event_details, container, false);
-
         TextView nameView = rootView.findViewById(R.id.event_detail_name);
         TextView locationView = rootView.findViewById(R.id.event_detail_location);
         TextView descriptionView = rootView.findViewById(R.id.event_detail_details);
@@ -96,6 +102,9 @@ public class EventDetailsFragment extends Fragment {
         Button promoQRShare = rootView.findViewById(R.id.promo_share_button);
         Button checkInQRShare = rootView.findViewById(R.id.check_in_share_button);
 
+        if (this.firebaseDB == null) {
+            this.firebaseDB = FirebaseDB.getInstance();
+        }
 
         //try to get event and attendee from bundle
         //if attendee is not there, that's fine, if event not there, very bad.
@@ -112,12 +121,17 @@ public class EventDetailsFragment extends Fragment {
         //then we update the images that are displayed, and the visibility of the signup button once we have the attendee
         if (this.attendee == null){
             String userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+            firebaseDB.loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
                     setAttendee(attendee);
                     setImages(posterView, promoQRView, checkInQRView);
                     setButtonVisibility(signUpEvent, viewAttendeesButton, viewLocations, EventDetailsFragment.this.event, rootView);
+                }
+
+                @Override
+                public void onNoResult() {
+                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
                 }
             });
         } else{
@@ -147,8 +161,6 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
-
-
         backButton.setOnClickListener(new View.OnClickListener() {
             // need to get attendeeID and eventID first
             @Override
@@ -167,8 +179,8 @@ public class EventDetailsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 event.addSignUp(attendee.getDocumentId());
-                FirebaseDB.getInstance().updateEvent(event);
-                FirebaseDB.getInstance().subscribeAttendeeToEventTopic(event.getDocumentId());
+                firebaseDB.updateEvent(event);
+                firebaseDB.subscribeAttendeeToEventTopic(event.getDocumentId());
                 signUpEvent.setVisibility(View.GONE);
             }
         });
@@ -222,7 +234,7 @@ public class EventDetailsFragment extends Fragment {
 
         String nameString = ""+event.getName();
         //String organizerString = "Organized by: ";
-        FirebaseDB.getInstance().getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
+        firebaseDB.getUserName(event.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
             @Override
             public void onResult(String string) {
                 updateOrganizerString(string, rootView);
@@ -245,6 +257,9 @@ public class EventDetailsFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return rootView;
+    }
+    public void setFirebaseDB(FirebaseDB firebaseDB) {
+        this.firebaseDB = firebaseDB;
     }
     public static EventDetailsFragment newInstance(Event i, Attendee attendee, Boolean isCheckIn){
         Bundle args = new Bundle();
@@ -329,21 +344,21 @@ public class EventDetailsFragment extends Fragment {
      */
     private void setImages(ImageView posterView, ImageView promoQRView, ImageView checkInQRView){
         if (this.event.getPosterPath() != null) {
-            FirebaseDB.getInstance().retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
+            firebaseDB.retrieveImage(this.event, new FirebaseDB.GetBitmapCallBack() {
                 @Override
                 public void onResult(Bitmap bitmap) {
                     posterView.setImageBitmap(bitmap);
                 }
             });
         }
-        this.promoBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCodePromo());
+        this.promoBitmap = qrCodeGenerator.generateBitmap(this.event.getQrCodePromo());
         if (this.promoBitmap == null){
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
         } else{
             promoQRView.setImageBitmap(this.promoBitmap);
         }
 
-        this.checkInBitmap = QRCodeGenerator.generateBitmap(this.event.getQrCode());
+        this.checkInBitmap = qrCodeGenerator.generateBitmap(this.event.getQrCode());
         if (this.checkInBitmap == null){
             Log.d("checkInBitmap", "failure");
             new ErrorDialog(R.string.qr_generation_failed).show(getActivity().getSupportFragmentManager(), "Error Dialog");
@@ -369,6 +384,10 @@ public class EventDetailsFragment extends Fragment {
             Log.e("ShareQRCode", "Failed to create Uri from bitmap");
         }
         return uri;
+    }
+
+    public void setQrCodeGenerator(QRCodeGenerator instance){
+        this.qrCodeGenerator = instance;
     }
 
 }

@@ -1,3 +1,4 @@
+// This class gets the event information and puts it into a content view
 package com.example.qrazyqrsrus;
 
 import android.content.Context;

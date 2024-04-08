@@ -2,6 +2,9 @@
 //currently, no class properly implements onNoResult if there is an error while QR code scanning
 package com.example.qrazyqrsrus;
 
+import static androidx.test.InstrumentationRegistry.getContext;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
@@ -37,12 +40,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * Manages the scanning of QR codes within the application, handling the launch of the scanning activity,
- * processing the scan results, and invoking callbacks based on the outcome of the scan. This class is
- * designed to facilitate QR code scanning for both promotional and check-in purposes within the app, as
- * well as handling special cases such as admin access via a specific QR code.
+ * Executes the actions when a Qr code is scanned
  */
-
 public class QRCodeScanHandler{
 
     //the error if an error occurs
@@ -55,6 +54,10 @@ public class QRCodeScanHandler{
     private ActivityResultLauncher<ScanOptions> barcodeLauncher;
 
     private Attendee user;
+
+    private MultiFormatReader reader = new MultiFormatReader();
+
+    private FirebaseDB firebaseDB;
 
     //other classes (main activity) can invoke QR scan handler with a lambda function that implements this interface
     public interface ScanCompleteCallback{
@@ -86,7 +89,8 @@ public class QRCodeScanHandler{
      * @param userID the AndroidID of the user that is scanning
      * @param callback the function that will handle the results of the scan
      */
-    public QRCodeScanHandler(AppCompatActivity activity, String userID, ScanCompleteCallback callback) {
+    public QRCodeScanHandler(FirebaseDB instance, AppCompatActivity activity, String userID, ScanCompleteCallback callback) {
+        this.firebaseDB = instance;
         barcodeLauncher = activity.registerForActivityResult(new ScanContract(),
                 result -> {
                     //this ActivityResultCallback lambda function handles the results of the scanning activity
@@ -101,7 +105,10 @@ public class QRCodeScanHandler{
                         return;
                     } else {
                         //first we look to see if the qr code we just scanned is an event's promo qr code
-                        FirebaseDB.getInstance().findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
+                        if (this.firebaseDB == null){
+                            this.firebaseDB = FirebaseDB.getInstance();
+                        }
+                        this.firebaseDB.findEventWithQR(result.getContents(), 0, new FirebaseDB.MatchingQRCallBack() {
                             @Override
                             public void onResult(Event matchingEvent) {
                                 //if a promo QR code is successfully found
@@ -113,7 +120,7 @@ public class QRCodeScanHandler{
                             //if there we do not find an event in the DB with a matching promo qr content, we look for a matching check-in qr code
                             @Override
                             public void onNoResult() {
-                                FirebaseDB.getInstance().findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
+                                firebaseDB.findEventWithQR(result.getContents(), 1, new FirebaseDB.MatchingQRCallBack() {
                                     @Override
                                     public void onResult(Event matchingEvent) {
                                         Log.d("findEventWithQR", "callback invoked");
@@ -122,7 +129,7 @@ public class QRCodeScanHandler{
                                             //if so, they can check in normally
                                             callback.onCheckInResult(matchingEvent);
                                         } else{
-                                            FirebaseDB.getInstance().userCheckedIntoEvent(user, matchingEvent, new FirebaseDB.UniqueCheckCallBack() {
+                                            firebaseDB.userCheckedIntoEvent(user, matchingEvent, new FirebaseDB.UniqueCheckCallBack() {
                                                 @Override
                                                 public void onResult(boolean isUnique) {
                                                     if (isUnique) {
@@ -154,13 +161,20 @@ public class QRCodeScanHandler{
     /**
      * Launches the Activity defined in the constructor
      */
-    public void launch(Attendee user){
-        if (user == null){
-            //TODO: use singleton
-            Log.d("QRCodeScanHandler Launch", "user was null");
-        }
-        this.user = user;
-        barcodeLauncher.launch(new ScanOptions());
+    public void launch(String userID){
+        FirebaseDB.getInstance().loginUser(userID, new FirebaseDB.GetAttendeeCallBack() {
+            @Override
+            public void onResult(Attendee attendee) {
+                setUser(attendee);
+                barcodeLauncher.launch(new ScanOptions());
+            }
+
+            @Override
+            public void onNoResult() {
+
+            }
+        });
+
     }
 
     /**
@@ -169,7 +183,7 @@ public class QRCodeScanHandler{
      * @param uri The Uri of the image the user selected to upload
      * @return The content of the uploaded QR code, null if there was a error.
      */
-    public static String scanImage(ContentResolver cr, Uri uri){
+    public String scanImage(ContentResolver cr, Uri uri){
         Bitmap bitmap;
         String contents = null;
         try{
@@ -190,8 +204,6 @@ public class QRCodeScanHandler{
         HybridBinarizer binarizer = new HybridBinarizer(source);
         //we create a new BinaryBitmap, the type that a reader in ZXing can actually decode
         BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
-        //finally, we create a MultiFormatReader, that attempts to find any kind of barcode from an image
-        MultiFormatReader reader = new MultiFormatReader();
         try {
 
             Result result = reader.decode(binaryBitmap);
@@ -205,6 +217,33 @@ public class QRCodeScanHandler{
         return contents;
     }
 
+    /**
+     * Empty required constructor
+     */
+    public QRCodeScanHandler(){
+    }
 
+    /**
+     * Sets the reader to the class attribute reader
+     * @param reader
+     */
+    public void setReader(MultiFormatReader reader) {
+        this.reader = reader;
+    }
 
+    /**
+     * Sets the firebaseDB instance to the class attribute firebaseDB
+     * @param firebaseDB
+     */
+    public void setFirebaseDB(FirebaseDB firebaseDB) {
+        this.firebaseDB = firebaseDB;
+    }
+
+    /**
+     * Sets the current user (Attendee) to the class attribute user
+     * @param attendee
+     */
+    public void setUser(Attendee attendee){
+        this.user = attendee;
+    }
 }

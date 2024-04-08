@@ -41,6 +41,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+//    androidTestImplementation("org.testng:testng:6.9.6")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.4.0")
     debugImplementation("androidx.fragment:fragment-testing:1.6.2")
 
     //Navigation
@@ -71,8 +73,8 @@ dependencies {
     //photo picker
     implementation("androidx.activity:activity:1.8.2")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -99,5 +101,12 @@ dependencies {
     //for converting objects to json
     implementation("com.google.code.gson:gson:2.10.1")
 
-}
+    // ADDED FOR UI TESTING
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+    debugImplementation("androidx.fragment:fragment-ktx:1.6.2")
+    debugImplementation("androidx.test:core:1.5.0")
+    debugImplementation("androidx.test:rules:1.5.0")
+    debugImplementation("androidx.test:runner:1.5.2")
 
+    androidTestImplementation("org.mockito:mockito-android:5.11.0")
+}

@@ -1,3 +1,4 @@
+// This class holds the attributed for checked in attendees
 package com.example.qrazyqrsrus;
 
 import java.util.Map;

@@ -1,3 +1,4 @@
+// This adapter gets the attendee information to be displayed on the sign ups list
 package com.example.qrazyqrsrus;
 
 import android.content.Context;

@@ -1,5 +1,13 @@
+// This class displays a map and pins where users are checked in from
+// Problems:
+//            - If a user has a long name, it may be outside the pin boundaries
+//            - Names might overlap when zoomed out since pins change size depending on how far we are zoomed
 package com.example.qrazyqrsrus;
 
+// This fragment creates a map and sets markers on that map for where users are checked in from
+// Problems:
+//          - Users with long names may have their name extend outside of the marker background
+//          - User names may overlap when zoomed out since markers changes size based on how zoomed out a person it
 import static com.mapbox.maps.plugin.gestures.GesturesUtils.getGestures;
 import static com.mapbox.maps.plugin.locationcomponent.LocationComponentUtils.getLocationComponent;
 
@@ -15,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +65,9 @@ import java.util.ArrayList;
 
 import kotlin.DslMarker;
 
+/**
+ * Creates the map and adds markers to the map
+ */
 public class GeoLocation extends Fragment {
     private MapView mapView;
     ArrayList<Attendee> attendeeDataList;
@@ -99,7 +111,7 @@ public class GeoLocation extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View mapLayout = inflater.inflate(R.layout.fragment_geo_location, container, false);
-
+        FloatingActionButton backButton = mapLayout.findViewById(R.id.back_button);
         mapView = mapLayout.findViewById(R.id.mapView);
 //        mapDelegateProvider = mapLayout.findViewById(R.id.mapView);
 
@@ -108,6 +120,17 @@ public class GeoLocation extends Fragment {
 
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    Navigation.findNavController(mapLayout).popBackStack();
+                } catch (Exception e){
+                    backButton.setVisibility(View.GONE);
+                }
+            }
+        });
         // Load the mapbox map
         mapView.getMapboxMap().loadStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
             @Override

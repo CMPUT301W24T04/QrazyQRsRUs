@@ -1,3 +1,4 @@
+// This fragment displays all users who have checked in to an event
 package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class AttendeeList extends Fragment {
     ListView attendeeList;
     ArrayList<Attendee> attendeeDataList;
     AttendeeListAdapter attendeeListAdapter;
+    private FirebaseDB firebaseDB;
 
     /**
      * When the view is created, retrive the list of attendees for the event from firestore and show it on a list
@@ -58,6 +60,10 @@ public class AttendeeList extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // if not in test use firebase
+        if(firebaseDB == null){
+            firebaseDB = FirebaseDB.getInstance();
+        }
         // DEFINE VIEW
         View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_list, container, false);
 
@@ -72,6 +78,8 @@ public class AttendeeList extends Fragment {
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
         FirebaseDB.getInstance().getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
+
+        firebaseDB.getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
 
         attendeeList.setAdapter(attendeeListAdapter);
 
@@ -110,5 +118,8 @@ public class AttendeeList extends Fragment {
         return attendeeListLayout;
 
 
+    }
+    public void setFirebaseDB(FirebaseDB instance){
+        this.firebaseDB = instance;
     }
 }

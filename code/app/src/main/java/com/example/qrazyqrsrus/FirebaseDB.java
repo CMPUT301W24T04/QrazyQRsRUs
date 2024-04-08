@@ -115,6 +115,8 @@ public class FirebaseDB {
          * @param attendee The result attendee.
          */
         void onResult(Attendee attendee);
+
+        void onNoResult();
     }
 
     /**
@@ -461,7 +463,7 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Log.d(eventsTAG, "event document snapshot written with ID:" + documentReference.getId());
+//                        Log.d(eventsTAG, "event document snapshot written with ID:" + documentReference.getId());
                         event.setDocumentId(documentReference.getId());
                         updateEvent(event);
                     }
@@ -469,7 +471,7 @@ public class FirebaseDB {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Error while adding event document", e);
+//                        Log.w(eventsTAG, "Error while adding event document", e);
                     }
                 });
     }
@@ -516,13 +518,13 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Log.d(eventsTAG, "Event document updated successfully");
+//                        Log.d(eventsTAG, "Event document updated successfully");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w(eventsTAG, "Error while updating event document", e);
+//                        Log.w(eventsTAG, "Error while updating event document", e);
                     }
                 });
     }
@@ -543,13 +545,13 @@ public class FirebaseDB {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d(imagesTAG, "Successful image upload");
+//                        Log.d(imagesTAG, "Successful image upload");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(imagesTAG, "Failed to upload image");
+//                        Log.d(imagesTAG, "Failed to upload image");
                     }
                 });
 
@@ -570,12 +572,12 @@ public class FirebaseDB {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     callBack.onResult(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                    Log.d(imagesTAG, "Successfully retrieved image");
+//                    Log.d(imagesTAG, "Successfully retrieved image");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
+//                    Log.w(imagesTAG, "Failed to retrieve image: " + exception);
                 }
             });
         } catch (IOException exception) {

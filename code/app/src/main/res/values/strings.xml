@@ -23,6 +23,7 @@
     <string name="signed_up_text">Signed up</string>
     <string name="placeholder">Placeholder</string>
     <string name="checked_in_text">Checked In</string>
+    <string name="login_error">Error: There was an error logging the user in</string>
 
 
 

@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// This fragment shows all the images for the users and event posters
 import android.graphics.Bitmap;
 import android.os.Bundle;
 

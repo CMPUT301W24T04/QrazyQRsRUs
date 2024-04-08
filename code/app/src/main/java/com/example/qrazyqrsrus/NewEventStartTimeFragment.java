@@ -35,7 +35,7 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
 
     /**
      * attaches dialog to screen
-     * @param context
+     * @param context used
      */
     //temporarily set listener to be mainActivity. should eventually be adding events to firestore.
     @Override
@@ -51,9 +51,7 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
 
-        }
     }
 
     /**
@@ -69,28 +67,32 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
      * @return
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.new_event_start_time_fragment, container, false);
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
         fab.setOnClickListener(v -> {
-            try {
-                //temporarily messily create a new event, put it in bundle to pass to next navigation destination
-                Bundle args = makeNewBundle(getArguments());
-                Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
-            } catch (Exception e) {
-                new ErrorDialog(R.string.no_s_date).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+            Bundle args = getArguments(); // args might be null, need to handle this
+            if(args != null) {
+                try {
+                     makeNewBundle(args);
+                    Navigation.findNavController(view).navigate(R.id.action_newEventStartTimeFragment_to_newEventEndTimeFragment, args);
+                } catch (Exception e) {
+                    if(getActivity() != null) {
+                        new ErrorDialog(R.string.no_s_date).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    }
+                }
             }
-
         });
         TextView dateButton = view.findViewById(R.id.date_display_textview);
         dateButton.setOnClickListener(v -> showDatePickerDialog());
 
         TextView timeButton = view.findViewById(R.id.time_display_textview);
         timeButton.setOnClickListener(v -> showTimePickerDialog());
+
         Bundle args = getArguments();
-        handleArguments(args, view);
+        if(args != null) {
+            handleArguments(args, view);
+        }
         createToolbar(view);
         return view;
     }
@@ -119,15 +121,19 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.back_button){
-            Bundle args = getArguments();
-            args = makeNewBundle(args);
-            Navigation.findNavController(getView()).navigate(R.id.action_newEventStartTimeFragment_to_newEventTextFragment, args);
-            return true;
-        }  else if (id == R.id.cancel_button){
-            //leave entire new event sequence
-            Navigation.findNavController(getView()).navigate(R.id.action_newEventStartTimeFragment_to_newEventFragment);
-            return true;
+        View currentView = getView(); // Store the view once to avoid multiple calls to getView
+        if (currentView != null) { // Check if the current view is not null
+            if (id == R.id.back_button) {
+                Bundle args = getArguments();
+                if (args == null) args = new Bundle(); // If args is null, create a new Bundle
+                args = makeNewBundle(args); // Assign new value to args from makeNewBundle
+                Navigation.findNavController(currentView).navigate(R.id.action_newEventStartTimeFragment_to_newEventTextFragment, args);
+                return true;
+            } else if (id == R.id.cancel_button) {
+                //leave the entire new event sequence
+                Navigation.findNavController(currentView).navigate(R.id.action_newEventStartTimeFragment_to_newEventFragment);
+                return true;
+            }
         }
         return false;
     }
@@ -229,14 +235,19 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                (view, year1, monthOfYear, dayOfMonth) -> {
-                    // Handle the date chosen by the user
-                    // Example: Update the button text
-                    TextView dateButton = getView().findViewById(R.id.date_display_textview);
-                    dateButton.setText(String.format(Locale.getDefault(), "%d-%d-%d", year1, monthOfYear + 1, dayOfMonth));
-                }, year, month, day);
-        datePickerDialog.show();
+        Context context = getContext(); // Get the context and check if it is not null
+        if (context != null) {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, year1, monthOfYear, dayOfMonth) -> {
+                View rootView = getView(); // Get the current view and check if it is not null
+                if (rootView != null) {
+                    TextView dateButton = rootView.findViewById(R.id.date_display_textview);
+                    // Month is 0-based in Calendar, add 1 for display purposes
+                    dateButton.setText(String.format(Locale.getDefault(), "%d-%02d-%02d", year1, monthOfYear + 1, dayOfMonth));
+                }
+            }, year, month, day);
+
+            datePickerDialog.show();
+        }
     }
 
     /**
@@ -248,14 +259,20 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
-                (view, hourOfDay, minute1) -> {
-                    // Handle the time chosen by the user
-                    // Example: Update the button text
-                    TextView timeButton = getView().findViewById(R.id.time_display_textview);
-                    timeButton.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute1));
-                }, hour, minute, true);
-        timePickerDialog.show();
+        Context context = getContext(); // Check for null context
+        if (context != null) {
+            TimePickerDialog timePickerDialog = new TimePickerDialog(context, (timePickerView, hourOfDay, minute1) -> {
+                View rootView = getView(); // Check for null view
+                if (rootView != null) {
+                    TextView timeButton = rootView.findViewById(R.id.time_display_textview);
+                    if (timeButton != null) { // Check if the TextView was found
+                        timeButton.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute1));
+                    }
+                }
+            }, hour, minute, true);
+            timePickerDialog.show();
+        }
     }
+
 
 }

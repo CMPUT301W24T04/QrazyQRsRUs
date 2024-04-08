@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// This fragment shows all the events created
 import android.graphics.Bitmap;
 import android.os.Bundle;
 

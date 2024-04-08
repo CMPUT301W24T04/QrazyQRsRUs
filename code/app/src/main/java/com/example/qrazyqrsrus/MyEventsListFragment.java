@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class shows a list of events created by the user
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -25,7 +26,9 @@ import java.util.ArrayList;
  * to the current user. It leverages {@link EventListAdapter} to populate the list view with event data.
  */
 public class MyEventsListFragment extends Fragment {
-
+    /**
+     * Saves the bundle passed to the class
+     */
     private Attendee attendee;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,13 +36,17 @@ public class MyEventsListFragment extends Fragment {
     }
 
     /**
-     * Called to have the fragment instantiate its user interface view. Here, it inflates the layout, customizes
-     * the header to indicate these are the user's events, and sets up the list and floating action button.
+
+     * Shows a list of events when the view is created
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
      *
-     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI, or null.
+     * @return rootView
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,13 +74,34 @@ public class MyEventsListFragment extends Fragment {
                     setAttendee(attendee);
 //                    FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
+
+                @Override
+                public void onNoResult() {
+                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                }
             });
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
             setAttendee(attendee);
             FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
 //            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+            if (attendee == null){
+                FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
+                        setAttendee(attendee);
+                    }
+
+                    @Override
+                    public void onNoResult() {
+                        new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    }
+                });
+            }
         }
+
+
 
         eventListView.setAdapter(myEventsListAdapter);
 
@@ -101,11 +129,9 @@ public class MyEventsListFragment extends Fragment {
     }
 
     /**
-     * Factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param attendee The attendee associated with the events to display.
-     * @return A new instance of fragment MyEventsListFragment.
+     * Creates a bundle for the attendee
+     * @param attendee
+     * @return fragment
      */
     public static HomeFragment newInstance(Attendee attendee){
         Bundle args = new Bundle();
@@ -117,11 +143,8 @@ public class MyEventsListFragment extends Fragment {
     }
 
     /**
-     * Sets the {@link Attendee} for whom the events are to be displayed.
-     * This method is utilized to update the fragment with the attendee's information
-     * when it is available after creation or upon successful login.
-     *
-     * @param attendee The {@link Attendee} whose events are to be displayed.
+     * Constructor for the attendee
+     * @param attendee
      */
     private void setAttendee(Attendee attendee){
         this.attendee = attendee;

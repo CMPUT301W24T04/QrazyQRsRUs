@@ -1,5 +1,5 @@
 package com.example.qrazyqrsrus;
-
+// This fragment allows announcements to be edited
 import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.app.NotificationChannel;
@@ -75,6 +75,7 @@ public class AnnouncementEditFragment extends Fragment{
     private String messageText;
     private String tokenToSendTo;
     private Event event;
+    private FirebaseDB firebaseDB;
 
     /**
      * Empty constructor for the fragment. Required for instantiation.
@@ -120,6 +121,10 @@ public class AnnouncementEditFragment extends Fragment{
 
         event = (Event) getArguments().get("event");
         assert event != null;
+
+        if (this.firebaseDB == null) {
+            this.firebaseDB = FirebaseDB.getInstance();
+        }
 
         //we should be subscribing the person whenever they sign up/checkin, not here
         //we should also be creating a unique topic for each event
@@ -183,7 +188,7 @@ public class AnnouncementEditFragment extends Fragment{
             announcements.add(newAnnouncement);
             adapter.notifyDataSetChanged();
             event.setAnnouncements(announcements);
-            FirebaseDB.getInstance().updateEvent(event); // Updates the database with new event
+            firebaseDB.updateEvent(event); // Updates the database with new event
             announcementEditText.setText("");
             showToast("Announcement Added");
 
@@ -220,7 +225,7 @@ public class AnnouncementEditFragment extends Fragment{
         adapter.notifyDataSetChanged();
         event.setAnnouncements(announcements);
         showToast("Announcement Deleted");
-        FirebaseDB.getInstance().updateEvent(event);
+        firebaseDB.updateEvent(event);
 
     }
 
@@ -254,6 +259,5 @@ public class AnnouncementEditFragment extends Fragment{
         fragment.setArguments(args);
         return fragment;
     }
-
 }
 

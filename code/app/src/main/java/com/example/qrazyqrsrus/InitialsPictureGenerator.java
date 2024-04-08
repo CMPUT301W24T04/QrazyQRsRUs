@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// This class generates initials to be displayed on the users default profile picture
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;

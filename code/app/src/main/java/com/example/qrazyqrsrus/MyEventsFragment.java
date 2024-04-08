@@ -1,5 +1,6 @@
 package com.example.qrazyqrsrus;
 
+// THis class displays the events created by the user
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,20 +18,16 @@ import android.view.ViewGroup;
 public class MyEventsFragment extends Fragment {
 
     /**
-     * Required empty public constructor for the fragment. This constructor is necessary for the Android
-     * framework to instantiate the fragment correctly.
+     * Empty constructor for myEvents
      */
     public MyEventsFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Called to do the initial creation of the fragment. This method is called after the fragment is
-     * attached but before it has been presented in the UI. Use this method for initial setup and
-     * configuration of the fragment, such as setting up event listeners, adapters, or other initialization tasks.
-     *
-     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this
-     *                           is the state. This parameter may be null if there is no saved state.
+     * Holds bundle passed to the class
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,14 +35,16 @@ public class MyEventsFragment extends Fragment {
     }
 
     /**
-     * Called to have the fragment instantiate its user interface view. This is the point at which
-     * the fragment's view hierarchy is created and returned to the host activity. The layout for
-     * this fragment's view is defined in an XML layout file, which is inflated here.
+     * Inflates view for the events list
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate views in the fragment.
-     * @param container The parent view that the fragment's UI should be attached to. This may be null.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI.
+     * @return view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
