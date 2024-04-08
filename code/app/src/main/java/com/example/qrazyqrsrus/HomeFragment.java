@@ -49,16 +49,35 @@ public class HomeFragment extends Fragment{
 
     FloatingActionButton browseEvents;
 
+    /**
+     * Required empty public constructor for the fragment.
+     */
     public HomeFragment() {
         // Required empty public constructor
     }
 
 
+    /**
+     * Invoked when the fragment is being created. Handles the initialization of the fragment.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this
+     *                           is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view. This method inflates
+     * the layout for the fragment's view and initializes the list views and adapters for
+     * displaying checked-in and signed-up events. It sets up event handlers for user interactions.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -126,6 +145,14 @@ public class HomeFragment extends Fragment{
         return rootView;
     }
 
+    /**
+     * Creates and returns a new instance of this fragment, optionally pre-populated with an
+     * {@link Attendee} object through arguments. This method allows for re-creation of the
+     * fragment's state or initialization with specific data.
+     *
+     * @param attendee The {@link Attendee} whose event participation will be displayed.
+     * @return A new instance of {@link HomeFragment} with attendee data if provided.
+     */
     public static HomeFragment newInstance(Attendee attendee){
         Bundle args = new Bundle();
         args.putSerializable("user", attendee);
