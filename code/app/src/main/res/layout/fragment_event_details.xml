@@ -32,14 +32,15 @@
                 android:background="@drawable/rounded_corners"
                 android:clipToOutline="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="Poster" />
 
             <TextView
                 android:id="@+id/event_detail_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:text=" "
+                android:text="Placeholder"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:fontFamily="@font/lobster"
@@ -221,12 +222,12 @@
                 android:id="@+id/promo_qr_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="64dp"
                 android:text="Invite your friends:"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.441"
+                app:layout_constraintHorizontal_bias="0.505"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/sign_up_button" />
 
@@ -234,11 +235,11 @@
                 android:id="@+id/promo_qr_view"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 android:src="@drawable/no_image_source"
                 app:layout_constraintEnd_toEndOf="parent"
 
-                app:layout_constraintHorizontal_bias="0.459"
+                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/promo_qr_text" />
 
@@ -258,7 +259,7 @@
                 android:id="@+id/check_in_qr_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 android:text="Scan to Check-In:"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -275,7 +276,7 @@
                 android:src="@drawable/no_image_source"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.459"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/check_in_qr_text"
                 app:layout_constraintVertical_bias="0.0" />

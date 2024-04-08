@@ -63,4 +63,8 @@ public class HomeCheckedInListAdapter extends ArrayAdapter<Event> {
 
         return view;
     }
+
+    public String getEventName(Integer position) {
+        return events.get(position).getName();
+    }
 }

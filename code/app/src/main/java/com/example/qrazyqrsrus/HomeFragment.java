@@ -1,6 +1,6 @@
 package com.example.qrazyqrsrus;
 
-// This fragment allows the user to braows events
+// This fragment allows the user to browse events
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -40,10 +40,11 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment{
     ListView checkedIn;
     ListView signedUp;
+    private FirebaseDB firebaseDB;
     private Attendee[] attendee;
 
-    com.example.qrazyqrsrus.HomeCheckedInListAdapter checkedInListAdapter;
-    com.example.qrazyqrsrus.HomeSignedUpListAdapter signedUpListAdapter;
+    HomeCheckedInListAdapter homeCheckedInListAdapter;
+    HomeSignedUpListAdapter homeSignedUpListAdapter;
 
     ArrayList<Event> checkedInEvents = new ArrayList<>();
     ArrayList<Event> signedUpEvents = new ArrayList<>();
@@ -54,36 +55,54 @@ public class HomeFragment extends Fragment{
         // Required empty public constructor
     }
 
-
+    /**
+     * Saves the bundle passed to the view when view is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Display the events the user to checked in and signed up for
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return rootView
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         // Inflate the layout for this fragment
 
-
-        ListView checkedIn = rootView.findViewById(R.id.checked_in_events_listview);
-        ListView signedUp = rootView.findViewById(R.id.signed_up_events_listview);
+        if (this.firebaseDB == null) {
+            firebaseDB = FirebaseDB.getInstance();
+        }
+        checkedIn = rootView.findViewById(R.id.checked_in_events_listview);
+        signedUp = rootView.findViewById(R.id.signed_up_events_listview);
         browseEvents = rootView.findViewById(R.id.browse_events_button);
 
-        ArrayList<Event> checkedInEvents = new ArrayList<>();
-        ArrayList<Event> signedUpEvents = new ArrayList<>();
-        HomeCheckedInListAdapter homeCheckedInListAdapter = new HomeCheckedInListAdapter(getContext(), checkedInEvents);
-        HomeSignedUpListAdapter homeSignedUpListAdapter = new HomeSignedUpListAdapter(getContext(), signedUpEvents);
+        checkedInEvents = new ArrayList<>();
+        signedUpEvents = new ArrayList<>();
+        homeCheckedInListAdapter = new HomeCheckedInListAdapter(getContext(), checkedInEvents);
+        homeSignedUpListAdapter = new HomeSignedUpListAdapter(getContext(), signedUpEvents);
 
         //if the attendee is not passed, we must get the attendee to display only the events they are in.
         if (getArguments() == null){
 
-            FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+            firebaseDB.loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getInstance().getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
-                    FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+                    firebaseDB.getEventsCheckedIn(attendee, checkedInEvents, homeCheckedInListAdapter);
+                    firebaseDB.getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
                 }
 
                 @Override
@@ -109,8 +128,8 @@ public class HomeFragment extends Fragment{
             } else{
                 this.attendee[0] = attendee;
             }
-            FirebaseDB.getInstance().getEventsCheckedIn(this.attendee[0], checkedInEvents, homeCheckedInListAdapter);
-            FirebaseDB.getInstance().getAttendeeSignedUpEvents(this.attendee[0], signedUpEvents, homeSignedUpListAdapter);
+            firebaseDB.getEventsCheckedIn(this.attendee[0], checkedInEvents, homeCheckedInListAdapter);
+            firebaseDB.getAttendeeSignedUpEvents(this.attendee[0], signedUpEvents, homeSignedUpListAdapter);
         }
 
         checkedIn.setAdapter(homeCheckedInListAdapter);
@@ -144,6 +163,15 @@ public class HomeFragment extends Fragment{
 
         return rootView;
     }
+    public void setFirebaseDB(FirebaseDB firebaseDB) {
+        this.firebaseDB = firebaseDB;
+    }
+
+    /**
+     * Puts the attendee in a bundle to be used
+     * @param attendee
+     * @return fragment
+     */
 
     public static HomeFragment newInstance(Attendee attendee){
         Bundle args = new Bundle();
