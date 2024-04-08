@@ -28,17 +28,22 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 
-
+// This function tests the HomeFragment UI
 public class HomeFragmentTest {
 
     FirebaseDB mockFirebaseDB = Mockito.mock(FirebaseDB.class);
     NavController mockNavController;
     FragmentScenario<HomeFragment> scenario;
-
+    /**
+     * Create a new Activity
+     */
     @Rule
     public ActivityScenarioRule<MainActivity> rule =
             new ActivityScenarioRule<>(MainActivity.class);
 
+    /**
+     * Setup generating a mock firebase when starting view
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -83,15 +88,29 @@ public class HomeFragmentTest {
         scenario.onFragment(homeFragment -> scenario.moveToState(Lifecycle.State.RESUMED));
         scenario.onFragment((FragmentScenario.FragmentAction<HomeFragment>) homeFragment -> Navigation.setViewNavController(homeFragment.requireView(), mockNavController));
     }
+
+    /**
+     * Create a mock Attendee to add to the list
+     * @return
+     */
     public Attendee mockAttendee() {
         return new Attendee("1", "doc123", "John Doe", "john@example.com", null, true);
     }
 
+    /**
+     * Create a test event
+     * @param count
+     * @return
+     */
     public Event getEvent(Integer count) {
 
         return new Event(null, "Event" + count, "OrganizerID", "Event Details", "Event Location",
                 "testStartDate", "testEndDate", true, null, "DIFWDSADW", "DIFWDWDSSADW", null, null, null, null, 2);
     }
+
+    /**
+     * Check if the fragment is displayed and it contents are correct
+     */
     @Test
     public void testFragmentDisplayed() {
         onView(withId(R.id.browse_events_button)).check(matches(isDisplayed()));
@@ -103,6 +122,9 @@ public class HomeFragmentTest {
         onView(withId(R.id.signed_up_events_listview)).check(matches(hasChildCount(2)));
     }
 
+    /**
+     * Check if BrowseButton works
+     */
     @Test
     public void testBrowseButton() {
         onView(withId(R.id.browse_events_button)).perform(click());
@@ -110,6 +132,10 @@ public class HomeFragmentTest {
         verify(mockNavController).navigate(eq(R.id.action_homeFragment_to_eventList3));
     }
 
+    /**
+     * Creates a bundle of the attendee
+     * @return bundle
+     */
     @NonNull
     private Bundle getBundle() {
         Attendee attendee = mockAttendee();

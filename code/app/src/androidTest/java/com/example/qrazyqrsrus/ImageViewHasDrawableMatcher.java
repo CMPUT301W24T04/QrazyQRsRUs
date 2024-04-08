@@ -44,7 +44,6 @@ public class ImageViewHasDrawableMatcher {
             }
         };
     }
-
     public static Matcher<View> hasNoDrawable() {
         return new BoundedDiagnosingMatcher<View, ImageView>(ImageView.class) {
             @Override
