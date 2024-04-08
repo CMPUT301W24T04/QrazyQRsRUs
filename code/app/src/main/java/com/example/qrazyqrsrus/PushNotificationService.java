@@ -16,14 +16,38 @@ import com.google.firebase.messaging.RemoteMessage;
 //this class is required by FirebaseMessaging to generate unique tokens for users
 //this idea was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
 //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
+
+/**
+ * A service that extends {@link FirebaseMessagingService} to handle the creation and management
+ * of push notifications for the app. It receives notifications sent from Firebase Cloud Messaging (FCM)
+ * and acts upon them, such as generating unique tokens for users and handling incoming notification messages.
+ * This service is crucial for implementing FCM push notifications within the app, allowing for real-time
+ * event updates and alerts to be sent to users.
+ */
+
 public class PushNotificationService extends FirebaseMessagingService {
 
     Context context = this;
+
+    /**
+     * Called when a new token for the default Firebase project is generated. This is where you would send the token
+     * to your app server to send notifications to this device.
+     *
+     * @param token The new token.
+     */
+
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
     }
 
+    /**
+     * Called when a message is received. This method is invoked when the app is in the foreground or background.
+     * It handles the received FCM message, extracts data such as the event ID, and constructs a notification with
+     * a deep link that navigates to the relevant event details within the app.
+     *
+     * @param message Instance of {@link RemoteMessage} containing the message data as key/value pairs.
+     */
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
