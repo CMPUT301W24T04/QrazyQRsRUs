@@ -11,6 +11,13 @@ public class SendMessageDto {
     private String topic;
     private String eventId;
 
+    /**
+     * Passes the notification between the server and the app
+     * @param to
+     * @param notification
+     * @param topic
+     * @param eventId
+     */
     public SendMessageDto(String to, NotificationBody notification, String topic, String eventId) {
         this.to = to;
         this.notification = notification;

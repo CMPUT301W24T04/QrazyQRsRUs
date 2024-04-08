@@ -37,7 +37,7 @@ import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 
-
+// This function tests all UI functionalities for the AttendeeList class
 public class AttendeeListUITest {
 
     FirebaseDB mockFirebaseDB = Mockito.mock(FirebaseDB.class);
@@ -47,9 +47,17 @@ public class AttendeeListUITest {
     @Mock
     NavController mockNavController = Mockito.mock(NavController.class);
 
+    /**
+     * Creates an attendee class with attributes to test
+     * @return
+     */
     private Attendee mockAttendee(){
         return new Attendee("1", "DocumentId", "John", "john@ualberta.ca", "111111111111111", true,8);
     }
+
+    /**
+     * Checks if the function can be displayed
+     */
     @Test
     public void canDisplay() {
 
@@ -96,6 +104,10 @@ public class AttendeeListUITest {
         onView(withId(R.id.attendee_list_view)).check(matches(isDisplayed()));
         onView(withId(R.id.attendee_list_view)).check(matches(hasChildCount(0)));
     }
+
+    /**
+     * Checks adding an attendee to the list
+     */
     @Test
     public void testFragmentDisplayedAddAttendee() {
 
@@ -145,6 +157,10 @@ public class AttendeeListUITest {
         onView(withText("# Check Ins: 8")).check(matches(isDisplayed()));
         onView(withId(R.id.attendee_list_view)).check(matches(hasChildCount(1)));
     }
+
+    /**
+     * Checks function of back button
+     */
     @Test
     public void TestSwapViewBackButton(){
         Bundle bundle = getBundle();
@@ -188,6 +204,10 @@ public class AttendeeListUITest {
         );
 //        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
     }
+
+    /**
+     * Checks function of signups button
+     */
     @Test
     public void TestSwapViewSignupsButton(){
         Bundle bundle = getBundle();
@@ -232,50 +252,10 @@ public class AttendeeListUITest {
 //        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
     }
 
-//    @Test
-//    public void TestSwapViewProfileFragment(){
-//        Bundle bundle = getBundle();
-//        Mockito.doAnswer(new Answer() {
-//            @Override
-//            public Object answer(InvocationOnMock invocation) throws Throwable {
-//                Object[] args = invocation.getArguments();
-//                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
-//                AttendeeListAdapter attendeeListAdapter = (AttendeeListAdapter) args[2];
-//
-//                attendeeDataList.add(mockAttendee());
-//                attendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
-//                attendeeListAdapter.notifyDataSetChanged();
-//                return null;
-//            }
-//        }).when(mockFirebaseDB).getEventCheckedInUsers(Mockito.any(),Mockito.any(),Mockito.any());
-//        Mockito.doAnswer(new Answer() {
-//            @Override
-//            public Object answer(InvocationOnMock invocation) throws Throwable {
-//                Object[] args = invocation.getArguments();
-//                FirebaseDB.GetStringCallBack callBack = (FirebaseDB.GetStringCallBack) args[1];
-//                callBack.onResult("Name");
-//                return null;
-//            }
-//        }).when(mockFirebaseDB).getUserName(Mockito.any(),Mockito.any());
-//        FragmentScenario<AttendeeList> scenario =  FragmentScenario.launchInContainer(AttendeeList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
-//        scenario.onFragment(fragment ->
-//                fragment.setFirebaseDB(mockFirebaseDB)
-//        );
-//        scenario.onFragment(fragment ->
-//                scenario.moveToState(Lifecycle.State.RESUMED)
-//        );
-//
-//        scenario.onFragment(fragment ->
-//                Navigation.setViewNavController(fragment.requireView(), mockNavController)
-//        );
-//        onView(withId(R.id.button_view_signups)).perform(click());
-//        verify(mockNavController).navigate(
-//                eq(R.id.action_attendeeList2_to_viewProfileFragment),
-//                Mockito.any(Bundle.class)
-//        );
-////        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
-//    }
-
+    /**
+     * Creates a bundle that holds the event passed to the class
+     * @return
+     */
     @NonNull
     private static Bundle getBundle() {
         ArrayList<String> announcements = new ArrayList<>();
@@ -290,14 +270,6 @@ public class AttendeeListUITest {
         // Create a bundle with necessary data
         Bundle bundle = new Bundle();
         bundle.putSerializable("event", event);
-        return bundle;
-    }
-    @NonNull
-    private static Bundle getAttendeeBundle() {
-        Attendee attendee = new Attendee("1", "DocumentId", "John", "john@ualberta.ca", "111111111111111", true,8);
-        // Create a bundle with necessary data
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("attendee", attendee);
         return bundle;
     }
 

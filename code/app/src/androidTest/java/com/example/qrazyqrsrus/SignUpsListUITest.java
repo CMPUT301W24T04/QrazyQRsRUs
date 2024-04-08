@@ -34,7 +34,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
-
+// This class tests the functionality of the SignUpsList UI
 public class SignUpsListUITest {
 
     FirebaseDB mockFirebaseDB = Mockito.mock(FirebaseDB.class);
@@ -43,6 +43,10 @@ public class SignUpsListUITest {
     @Mock
     NavController mockNavController = Mockito.mock(NavController.class);
 
+    /**
+     * Create an attendee to add to the list
+     * @return Attendee
+     */
     private Attendee mockAttendee(){
         return new Attendee("1", "DocumentId", "John", "john@ualberta.ca", "111111111111111", true);
     }
@@ -50,46 +54,53 @@ public class SignUpsListUITest {
 //    @Rule
 //    public ActivityScenarioRule<MainActivity> rule =
 //            new ActivityScenarioRule<>(MainActivity.class);
-@Test
-public void canDisplay() {
+
+    /**
+     * Checks if the list can be displayes
+     */
+    @Test
+    public void canDisplay() {
 
 
-    Bundle bundle = getBundle();
-    Mockito.doAnswer(new Answer() {
-        @Override
-        public Object answer(InvocationOnMock invocation) throws Throwable {
-            Object[] args = invocation.getArguments();
-            ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
-            AttendeeSignUpsListAdapter attendeeListAdapter = (AttendeeSignUpsListAdapter) args[2];
+        Bundle bundle = getBundle();
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                ArrayList<Attendee> attendeeDataList = (ArrayList<Attendee>) args[1];
+                AttendeeSignUpsListAdapter attendeeListAdapter = (AttendeeSignUpsListAdapter) args[2];
 
-//            attendeeDataList.add(mockAttendee());
-//                MockAttendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
-            attendeeListAdapter.notifyDataSetChanged();
-            return null;
-        }
-    }).when(mockFirebaseDB).getEventSignedUpUsers(Mockito.any(),Mockito.any(),Mockito.any());
+    //            attendeeDataList.add(mockAttendee());
+    //                MockAttendeeListAdapter.setAdapterFirebaseDB(mockFirebaseDB);
+                attendeeListAdapter.notifyDataSetChanged();
+                return null;
+            }
+        }).when(mockFirebaseDB).getEventSignedUpUsers(Mockito.any(),Mockito.any(),Mockito.any());
 
-    // Launch the fragment with the provided bundle
-    FragmentScenario<AttendeeSignupsList> scenario =  FragmentScenario.launchInContainer(AttendeeSignupsList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
+        // Launch the fragment with the provided bundle
+        FragmentScenario<AttendeeSignupsList> scenario =  FragmentScenario.launchInContainer(AttendeeSignupsList.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
 
-    scenario.onFragment(fragment ->
-            fragment.setFirebaseDB(mockFirebaseDB)
-    );
-    scenario.onFragment(fragment ->
-            scenario.moveToState(Lifecycle.State.RESUMED)
-    );
+        scenario.onFragment(fragment ->
+                fragment.setFirebaseDB(mockFirebaseDB)
+        );
+        scenario.onFragment(fragment ->
+                scenario.moveToState(Lifecycle.State.RESUMED)
+        );
 
-    onView(withId(R.id.button_back_signups)).check(matches(isDisplayed()));
-    onView(withId(R.id.app_title)).check(matches(isDisplayed()));
-    onView(withId(R.id.attendee_signups_list_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_back_signups)).check(matches(isDisplayed()));
+        onView(withId(R.id.app_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.attendee_signups_list_view)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.attendee_signups_list_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.attendee_signups_list_view)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.attendee_signups_list_view)).check(matches(hasChildCount(0)));
+        onView(withId(R.id.attendee_signups_list_view)).check(matches(hasChildCount(0)));
 
 
-}
+    }
 
+    /**
+     * Checks if attendees can be added
+     */
     @Test
     public void testFragmentDisplayedAddAttendee() {
 
@@ -131,6 +142,9 @@ public void canDisplay() {
 
     }
 
+    /**
+     * Checks if back button has correct function
+     */
     @Test
     public void TestSwapViewBackButton(){
         Bundle bundle = getBundle();
@@ -166,6 +180,10 @@ public void canDisplay() {
         );
 //        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
     }
+
+    /**
+     * Checjs uf vuew checkins function has correct function
+     */
     @Test
     public void TestSwapViewCheckinsButton(){
         Bundle bundle = getBundle();
@@ -202,6 +220,10 @@ public void canDisplay() {
 //        onView(withId(R.id.eventDetailsFragment)).check(matches(isDisplayed()));
     }
 
+    /**
+     * Adds an event to the bundle
+     * @return
+     */
     @NonNull
     private static Bundle getBundle() {
         ArrayList<String> announcements = new ArrayList<>();
