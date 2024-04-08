@@ -24,7 +24,6 @@ import java.util.Locale;
  * shows the new event text
  */
 public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItemClickListener{
-    private Toolbar toolbar;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -62,15 +61,13 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         View view = inflater.inflate(R.layout.new_event_text_fragment, container, false);
 
         FloatingActionButton fab = view.findViewById(R.id.next_screen_button);
-        fab.setOnClickListener(v -> {
-            FirebaseDB.getInstance().getToken(token -> {
-                Log.d("newEventTextFragment", token);
-                Bundle bundle = makeNewBundle(token);
-                if (bundle != null) {
-                    Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
-                }
-            });
-        });
+        fab.setOnClickListener(v -> FirebaseDB.getInstance().getToken(token -> {
+            Log.d("newEventTextFragment", token);
+            Bundle bundle = makeNewBundle(token);
+            if (bundle != null) {
+                Navigation.findNavController(view).navigate(R.id.action_newEventTextFragment_to_newEventImageFragment2, bundle);
+            }
+        }));
 
         SwitchCompat limitAttendeesToggle = view.findViewById(R.id.limit_attendees_toggle);
         EditText maxAttendeesEditText = view.findViewById(R.id.max_attendees_edit_text);
@@ -99,7 +96,7 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
         //it was posted by the user Faisal Naseer (https://stackoverflow.com/users/2641848/faisal-naseer) in the post https://stackoverflow.com/a/45653449
-        toolbar = (Toolbar) view.findViewById(R.id.text_screen_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.text_screen_toolbar);
         toolbar.inflateMenu(R.menu.menu_no_back_button);
         //the fragment implements the Toolbar.OnMenuItemClick interface, pass itself.
         toolbar.setOnMenuItemClickListener(this);

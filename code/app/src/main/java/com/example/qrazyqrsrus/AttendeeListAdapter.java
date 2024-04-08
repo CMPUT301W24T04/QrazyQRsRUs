@@ -19,14 +19,12 @@ import java.util.ArrayList;
  */
 public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
-    private ArrayList<Attendee> attendees;
-    private Context context;
+    private final ArrayList<Attendee> attendees;
+    private final Context context;
     private FirebaseDB firebaseDB;
 
     /**
      * Constructor to hold the attendee content
-     * @param context
-     * @param attendees
      */
     public AttendeeListAdapter(Context context, ArrayList<Attendee> attendees){
         super(context,0, attendees);
@@ -45,7 +43,6 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
      *        always of the right type (see {@link #getViewTypeCount()} and
      *        {@link #getItemViewType(int)}).
      * @param parent The parent that this view will eventually be attached to
-     * @return
      */
     @NonNull
     @Override
@@ -75,9 +72,9 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
                 attendee.setName(string);
                 Name.setText(attendee.getName());
 
-                String checkins_string = "" + attendee.getCheckins();
+            String checkins_string = "" + attendee.getCheckins();
 
-                //concatnate number of checkins to the sentence using .concat()
+                //concatenate number of checkins to the sentence using .concat()
                 checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
             }
         });

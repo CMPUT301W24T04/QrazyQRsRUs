@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,17 +61,11 @@ public class AdminHomeFragment extends Fragment {
         Button imagesButton = view.findViewById(R.id.admin_images_button);
 
 
-        eventsButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewEventsFragment);
-        });
+        eventsButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewEventsFragment));
 
-        profilesButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewAttendeesFragment);
-        });
+        profilesButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewAttendeesFragment));
 
-        imagesButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewImagesFragment);
-        });
+        imagesButton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_adminHomeFragment_to_adminViewImagesFragment));
 
 
         return view;
@@ -84,7 +77,6 @@ public class AdminHomeFragment extends Fragment {
      * @return A new instance of {@link AdminHomeFragment}.
      */
     public static AdminHomeFragment newInstance(){
-        AdminHomeFragment fragment = new AdminHomeFragment();
-        return fragment;
+        return new AdminHomeFragment();
     }
 }

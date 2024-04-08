@@ -62,9 +62,8 @@ public class AdminHost extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_admin_host, container, false);
         // Inflate the layout for this fragment
-        return view;
+        return inflater.inflate(R.layout.fragment_admin_host, container, false);
     }
 
 
@@ -79,7 +78,6 @@ public class AdminHost extends Fragment {
      * @return A new instance of fragment {@code AdminHost}.
      */
     public static AdminHost newInstance(){
-        AdminHost fragment = new AdminHost();
-        return fragment;
+        return new AdminHost();
     }
 }

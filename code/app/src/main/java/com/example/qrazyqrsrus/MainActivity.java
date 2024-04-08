@@ -4,7 +4,6 @@ package com.example.qrazyqrsrus;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,39 +13,25 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
-
-import java.util.ArrayList;
-
-
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private static final int LOCATION_PERMISSION_GRANTED = 1;
-    private ActivityMainBinding binding;
     private String deviceId;
-    private Activity activity = this;
-
-    Attendee[] user = new Attendee[1];
+    private final Activity activity = this;
     /**
      * Uses a callback to do actions when user scans a QR code
      */
     private QRCodeScanHandler qrHandler = new QRCodeScanHandler(FirebaseDB.getInstance(), this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
-        //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
 
         /**
          * Holds logic for when a promo QR code is scanned
@@ -67,34 +52,26 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
-                        @Override
-                        public void onResult(boolean isUnique, CheckIn checkIn) {
-                            LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
-                                @Override
-                                public void onResult(double longitude, double latitude) {
-                                    if (isUnique){
-                                        //if the user has not yet chcked into the event, we make a new one
-                                        CheckIn newCheckIn = new CheckIn(attendee.getDocumentId(), event.getDocumentId(), longitude, latitude);
-                                        FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
-                                    } else{
-                                        //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
-                                        checkIn.setLongitude(longitude);
-                                        checkIn.setLatitude(latitude);
-                                        checkIn.incrementCheckIn();
-                                        FirebaseDB.getInstance().updateCheckIn(checkIn);
-                                    }
-
-                                }
-                            });
+                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), (isUnique, checkIn) -> LocationSingleton.getInstance().getLocation(activity, (longitude, latitude) -> {
+                        if (isUnique){
+                            //if the user has not yet checked into the event, we make a new one
+                            CheckIn newCheckIn = new CheckIn(attendee.getDocumentId(), event.getDocumentId(), longitude, latitude);
+                            FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
+                        } else{
+                            //if the user has already checked into the event, we update their check in with their latest location, and increment the # of checkins
+                            checkIn.setLongitude(longitude);
+                            checkIn.setLatitude(latitude);
+                            checkIn.incrementCheckIn();
+                            FirebaseDB.getInstance().updateCheckIn(checkIn);
                         }
-                    });
+
+                    }));
                     ChangeFragment(EventDetailsFragment.newInstance(event, attendee, true));
                 }
 
                 @Override
                 public void onNoResult() {
-                    Log.d("MainActivity", "problem logging in user to create checkin");
+                    Log.d("MainActivity", "problem logging in user to create check in");
                 }
             });
 
@@ -124,9 +101,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     });
     /**
-     * Ask for permission for the user to recieve push notification
+     * Ask for permission for the user to receive push notification
      */
-    private ActivityResultLauncher<String> requestPermissionLauncher =
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     Log.d("Notification Permissions", "user accepted notification permissions");
@@ -151,18 +128,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
      * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the
      *                           data it most recently supplied in {@link #onSaveInstanceState(Bundle)}. <b>Note:</b> Otherwise it is null.
      */
-
-    /**
-     * Manages notifications in the server
-     * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     *
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        com.example.qrazyqrsrus.databinding.ActivityMainBinding binding = com.example.qrazyqrsrus.databinding.ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -171,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         //FirebaseDB.getInstance().getToken();
         //we shouldn't subscribe the user here, this is just for testing
         //FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        {
             CharSequence name = "Event Announcements";
             String description = "Receive push notifications from event organizers";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;

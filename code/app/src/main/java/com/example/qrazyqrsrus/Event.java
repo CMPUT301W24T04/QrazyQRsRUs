@@ -2,14 +2,10 @@ package com.example.qrazyqrsrus;
 // Holds the attributes for an event created
 import android.net.Uri;
 
-import android.util.Log;
-
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 
 public class Event implements Serializable {
@@ -26,9 +22,9 @@ public class Event implements Serializable {
     private String posterPath;
     private String qrCode;
     private String qrCodePromo;
-    private ArrayList<String> announcements = new ArrayList<String>();
-    private ArrayList<String> signUps= new ArrayList<String>();
-    private ArrayList<String> checkIns= new ArrayList<String>();
+    private ArrayList<String> announcements = new ArrayList<>();
+    private ArrayList<String> signUps= new ArrayList<>();
+    private ArrayList<String> checkIns= new ArrayList<>();
     private String organizerToken;
 
 
@@ -49,9 +45,9 @@ public class Event implements Serializable {
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
         this.geolocationOn = true;
-        this.announcements = new ArrayList<String>();
-        this.signUps = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
+        this.announcements = new ArrayList<>();
+        this.signUps = new ArrayList<>();
+        this.checkIns = new ArrayList<>();
         this.maxAttendees = maxAttendees;
     }
 
@@ -457,9 +453,9 @@ public class Event implements Serializable {
         this.qrCode = builder.qrCode;
         this.qrCodePromo = builder.qrCodePromo;
         this.organizerToken = builder.organizerToken;
-        this.announcements = new ArrayList<String>();
-        this.signUps = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
+        this.announcements = new ArrayList<>();
+        this.signUps = new ArrayList<>();
+        this.checkIns = new ArrayList<>();
     }
 
     public static class EventBuilder implements Serializable{

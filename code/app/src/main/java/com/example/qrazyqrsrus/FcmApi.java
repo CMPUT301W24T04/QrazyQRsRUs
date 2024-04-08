@@ -27,7 +27,7 @@ public interface FcmApi {
      *         the send operation.
      */
     @POST("/send")
-    public Call<MessageSentResponse> sendMessage(@Body SendMessageDto body);
+    Call<MessageSentResponse> sendMessage(@Body SendMessageDto body);
 
 
     /**
@@ -40,5 +40,5 @@ public interface FcmApi {
      *         the broadcast operation.
      */
     @POST("/broadcast")
-    public Call<MessageSentResponse> broadcast(@Body SendMessageDto body);
+    Call<MessageSentResponse> broadcast(@Body SendMessageDto body);
 }

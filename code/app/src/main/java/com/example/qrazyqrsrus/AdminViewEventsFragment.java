@@ -1,16 +1,13 @@
 package com.example.qrazyqrsrus;
 // This fragment shows all the events created
-import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +16,6 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * The {@code AdminViewEventsFragment} class is responsible for displaying a list of events
@@ -41,9 +37,6 @@ public class AdminViewEventsFragment extends Fragment {
     private Button cancelButton;
     private Button confirmButton;
     private TextView confirmTextView;
-    private Button nextButton;
-    private Button previousButton;
-
 
 
     private ArrayList<Event> allEvents = new ArrayList<>();
@@ -95,83 +88,52 @@ public class AdminViewEventsFragment extends Fragment {
         cancelButton = rootView.findViewById(R.id.cancel_button);
         confirmButton = rootView.findViewById(R.id.confirm_button);
         confirmTextView = rootView.findViewById(R.id.confirm_text_view);
-        nextButton = rootView.findViewById(R.id.next_event_button);
-        previousButton = rootView.findViewById(R.id.previous_event_button);
+        Button nextButton = rootView.findViewById(R.id.next_event_button);
+        Button previousButton = rootView.findViewById(R.id.previous_event_button);
 
         currentPosition = 0;
-        FirebaseDB.getInstance().getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
-            @Override
-            public void onResult(ArrayList<Event> events) {
+        FirebaseDB.getInstance().getAllEvents(events -> {
+            allEvents = new ArrayList<>(events);
+            updateView();
+        });
+
+        backButton.setOnClickListener(view -> {
+            try{
+                Navigation.findNavController(rootView).popBackStack();
+            } catch (Exception e){
+                backButton.setVisibility(View.GONE);
+            }
+        });
+        viewAnnouncementsButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putSerializable("event", allEvents.get(currentPosition));
+            Navigation.findNavController(rootView).navigate(R.id.action_adminViewEventsFragment_to_announcementsFragment2, args);
+        });
+
+        deleteButton.setOnClickListener(v -> changeState());
+        cancelButton.setOnClickListener(v -> changeState());
+        confirmButton.setOnClickListener(v -> {
+            FirebaseDB.getInstance().deleteEvent(allEvents.get(currentPosition));
+            FirebaseDB.getInstance().getAllEvents(events -> {
                 allEvents = new ArrayList<>(events);
+                updateView();
+                Toast.makeText(getContext(), "Event successfully deleted", Toast.LENGTH_SHORT).show();
+                changeState();
+            });
+            if (currentPosition != 0) {
+                currentPosition -= 1;
+            }
+        });
+        nextButton.setOnClickListener(v -> {
+            if (currentPosition != allEvents.size() - 1) {
+                currentPosition += 1;
                 updateView();
             }
         });
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try{
-                    Navigation.findNavController(rootView).popBackStack();
-                } catch (Exception e){
-                    backButton.setVisibility(View.GONE);
-                }
-            }
-        });
-        viewAnnouncementsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putSerializable("event", allEvents.get(currentPosition));
-                Navigation.findNavController(rootView).navigate(R.id.action_adminViewEventsFragment_to_announcementsFragment2, args);
-            }
-        });
-
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeState();
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeState();
-            }
-        });
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseDB.getInstance().deleteEvent(allEvents.get(currentPosition));
-                FirebaseDB.getInstance().getAllEvents(new FirebaseDB.GetAllEventsCallBack() {
-                    @Override
-                    public void onResult(ArrayList<Event> events) {
-                        allEvents = new ArrayList<>(events);
-                        updateView();
-                        Toast.makeText(getContext(), "Event successfully deleted", Toast.LENGTH_SHORT).show();
-                        changeState();
-                    }
-                });
-                if (currentPosition != 0) {
-                    currentPosition -= 1;
-                }
-            }
-        });
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentPosition != allEvents.size() - 1) {
-                    currentPosition += 1;
-                    updateView();
-                }
-            }
-        });
-        previousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentPosition != 0) {
-                    currentPosition -= 1;
-                    updateView();
-                }
+        previousButton.setOnClickListener(v -> {
+            if (currentPosition != 0) {
+                currentPosition -= 1;
+                updateView();
             }
         });
 
@@ -192,12 +154,7 @@ public class AdminViewEventsFragment extends Fragment {
         String descriptionString = "Description: "+currentEvent.getDetails();
         String startDateString = "Starts: "+currentEvent.getStartDate();
         String endDateString = "Ends: "+currentEvent.getEndDate();
-        FirebaseDB.getInstance().getUserName(currentEvent.getOrganizerId(), new FirebaseDB.GetStringCallBack() {
-            @Override
-            public void onResult(String string) {
-                organizerView.setText(organizerString + string);
-            }
-        });
+        FirebaseDB.getInstance().getUserName(currentEvent.getOrganizerId(), string -> organizerView.setText(organizerString + string));
         nameView.setText(nameString);
         locationView.setText(locationString);
         descriptionView.setText(descriptionString);
@@ -205,12 +162,7 @@ public class AdminViewEventsFragment extends Fragment {
         endDateView.setText(endDateString);
 
         if (currentEvent.getPosterPath() != null) {
-            FirebaseDB.getInstance().retrieveImage(currentEvent, new FirebaseDB.GetBitmapCallBack() {
-                @Override
-                public void onResult(Bitmap bitmap) {
-                    posterView.setImageBitmap(bitmap);
-                }
-            });
+            FirebaseDB.getInstance().retrieveImage(currentEvent, bitmap -> posterView.setImageBitmap(bitmap));
         }
         else {
             posterView.setImageResource(R.drawable.no_image_source);
