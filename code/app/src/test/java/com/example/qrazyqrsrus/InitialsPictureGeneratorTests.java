@@ -14,13 +14,4 @@ public class InitialsPictureGeneratorTests {
         assertEquals(expectedInitials, actualInitials);
     }
 
-//    @Test
-//    public void testCreateInitialsImage() {
-//        String initials = "JD";
-//        Bitmap image = InitialsPictureGenerator.createInitialsImage(initials);
-//        assertNotNull(image);
-//        assertEquals(100, image.getWidth());
-//        assertEquals(100, image.getHeight());
-//    }
-
 }
