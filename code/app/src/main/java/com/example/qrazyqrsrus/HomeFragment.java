@@ -28,7 +28,7 @@ public class HomeFragment extends Fragment{
     ListView checkedIn;
     ListView signedUp;
     private FirebaseDB firebaseDB;
-    private Attendee[] attendee;
+    private Attendee[] attendee = new Attendee[1];
 
     HomeCheckedInListAdapter homeCheckedInListAdapter;
     HomeSignedUpListAdapter homeSignedUpListAdapter;
