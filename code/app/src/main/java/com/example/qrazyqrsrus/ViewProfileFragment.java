@@ -1,14 +1,11 @@
 package com.example.qrazyqrsrus;
 
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,132 +52,79 @@ public class ViewProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userId = getUserId(requireContext());
+        initializeGalleryLauncher();
+    }
 
-        storage = FirebaseStorage.getInstance();
-
-        galleryActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null) {
-                        //we update the state to communicate the user has uploaded an image, that may need to be stored to firebase
-                        imgProfilePicture.setImageURI(uri);
-                        newImageUri = uri;
-                        imageDeleted = false;
-                    }
-                }
-        );
-        Context context = getContext();
-        if (context != null) {
-            ContentResolver resolver = context.getContentResolver();
-            if (resolver != null) {
-                userId = Settings.Secure.getString(resolver, Settings.Secure.ANDROID_ID);
-            } else {
-                // The resolver was null, handle this case, perhaps by assigning a default value or logging an error
-                Log.e("ViewProfileFragment", "ContentResolver was null.");
-            }
-        } else {
-            // The context was null, handle this case
-            Log.e("ViewProfileFragment", "Context was null in onCreate.");
-        }
-        userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
+    private static String getUserId(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.update_profile, container, false);
+        initializeViews(view);
+        loadInitialData();
+        return view;
+    }
 
+    private void initializeGalleryLauncher() {
+        galleryActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                this::onImageSelected
+        );
+    }
+
+    private void onImageSelected(Uri uri) {
+        if (uri != null) {
+            imgProfilePicture.setImageURI(uri);
+            newImageUri = uri;
+            imageDeleted = false;
+        }
+    }
+
+    private void initializeViews(View view) {
         btnDone = view.findViewById(R.id.btnDone);
         btnCancel = view.findViewById(R.id.btnCancel);
-
         etFullName = view.findViewById(R.id.etFullName);
         etEmailAddress = view.findViewById(R.id.etEmailAddress);
-
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);
-        imgProfilePicture.setOnClickListener(v -> {
-            //only open the dialog if we are in the edit mode
-            if (imageUpdates){
-                showProfilePictureOptionsDialog();
-            }
-        });
         switchGeolocation = view.findViewById(R.id.switchGeolocation);
 
+        setInitialViewState();
 
-        // Set the EditTexts to non-editable initially
-        etFullName.setEnabled(false);
-        etEmailAddress.setEnabled(false);
-        // Set the buttons to invisible initially
+        imgProfilePicture.setOnClickListener(v -> showProfilePictureOptionsDialog());
+        btnUpdateProfile.setOnClickListener(v -> enterEditMode());
+        btnDone.setOnClickListener(v -> saveChanges());
+        btnCancel.setOnClickListener(v -> revertChanges());
+    }
+
+    private void setInitialViewState() {
         btnDone.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
+        etFullName.setEnabled(false);
+        etEmailAddress.setEnabled(false);
+    }
 
-        //TextWatcher
-        etFullName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing needed here
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing needed here
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //don't make any updates until the user presses the confirm button
-            }
-        });
-
-
-
+    private void loadInitialData() {
         Bundle args = getArguments();
-
-
         if (args != null && args.containsKey("attendee")) {
-            Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
-            if (attendeeClicked != null) {
-                Log.d("profile_error", "User ID: " + userId);
-                Log.d("profile_error", "Attendee ID: " + attendeeClicked.getId());
-
-                if (!Objects.equals(userId, attendeeClicked.getId())) {
+            attendee = (Attendee) args.getSerializable("attendee");
+            if (attendee != null) {
+                loadInitialAttendee(attendee);
+                if (!Objects.equals(userId, attendee.getId())) {
                     restrictEdits();
                 }
-                // Load initial attendee data
-                loadInitialAttendee(attendeeClicked);
             } else {
                 Log.e("ViewProfileFragment", "Attendee object not found in arguments.");
-
-
             }
         } else {
             Log.e("ViewProfileFragment", "No arguments found.");
-            // Handle the case when no arguments were set for this fragment
-            // Show error dialog or toast
         }
-
-        // In onCreateView after initializing views
-        btnUpdateProfile.setOnClickListener(v -> enterEditMode());
-        Button btnDone = view.findViewById(R.id.btnDone);
-        Button btnCancel = view.findViewById(R.id.btnCancel);
-
-        btnDone.setOnClickListener(v -> saveChanges());
-        btnCancel.setOnClickListener(v -> revertChanges());
-
-
-        if (((String) args.getSerializable("userId")) != null && ((Attendee) args.getSerializable("attendee")) != null){
-            if(userId != ((Attendee) args.getSerializable("attendee")).getId()){
-                restrictEdits();
-            }
-        }
-        loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
-
-
-
-        return view;
     }
+
 
     private void loadInitialAttendee(Attendee attendee){
         this.attendee = attendee;
