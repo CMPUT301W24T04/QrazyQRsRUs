@@ -25,6 +25,7 @@ import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Allows user to choose the start time of the event
@@ -180,12 +181,17 @@ public class NewEventStartTimeFragment extends Fragment implements Toolbar.OnMen
             String dateString = dateButton.getText().toString();
             String timeString = timeButton.getText().toString();
 
-            // Combine the date and time strings
-            String dateTimeString = dateString + " " + timeString;
-            LocalDateTime startDate = parseDateTimeString(dateTimeString);
+            if (Objects.equals(dateString, "YYYY-MM-DD") || Objects.equals(timeString, "HH:mm")){
+                //do nothing
+            } else{
+                // Combine the date and time strings
+                String dateTimeString = dateString + " " + timeString;
+                LocalDateTime startDate = parseDateTimeString(dateTimeString);
 
-            // Update the builder with the new start date and time
-            builder.setStartDate(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+                // Update the builder with the new start date and time
+                builder.setStartDate(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            }
+
             args.putSerializable("builder", builder);
         }
 

@@ -45,8 +45,8 @@ public class ViewProfileFragmentTest {
 
         scenario = FragmentScenario.launchInContainer(ViewProfileFragment.class, null, R.style.Base_Theme_QrazyQRsRUs);
         scenario.onFragment(fragment -> {
-            fragment.setFirebaseStorage(mockFirebaseStorage);
-            fragment.setFirebaseFirestore(mockFirebaseFirestore);
+//            fragment.setFirebaseStorage(mockFirebaseStorage);
+//            fragment.setFirebaseFirestore(mockFirebaseFirestore);
         });
 
     }
