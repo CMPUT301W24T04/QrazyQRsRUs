@@ -79,22 +79,23 @@ public class MyEventsListFragment extends Fragment {
             setAttendee(attendee);
             FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
 //            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+            if (attendee == null){
+                FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
+                        setAttendee(attendee);
+                    }
+
+                    @Override
+                    public void onNoResult() {
+                        new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    }
+                });
+            }
         }
 
-        if (attendee == null){
-            FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
-                @Override
-                public void onResult(Attendee attendee) {
-                    FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
-                    setAttendee(attendee);
-                }
 
-                @Override
-                public void onNoResult() {
-                    new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
-                }
-            });
-        }
 
         eventListView.setAdapter(myEventsListAdapter);
 
