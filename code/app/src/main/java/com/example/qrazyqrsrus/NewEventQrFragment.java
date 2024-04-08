@@ -108,6 +108,13 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
         return view;
     }
 
+    /**
+     * Initializes the toolbar for the fragment, including setting up the menu and handling menu item clicks.
+     * This method is responsible for configuring navigation actions such as going back to the previous fragment
+     * or cancelling the QR code creation process.
+     *
+     * @param view The current view of the fragment in which the toolbar is located.
+     */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
@@ -118,6 +125,14 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
         toolbar.setOnMenuItemClickListener(this);
     }
 
+    /**
+     * Handles action bar item clicks. This method is invoked when any item in the toolbar's menu is selected.
+     * Depending on the item clicked, it may navigate to a previous screen, cancel the QR code creation process,
+     * or perform other actions as defined.
+     *
+     * @param item The menu item that was clicked.
+     * @return true if the menu item click was handled, false otherwise.
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
@@ -264,6 +279,13 @@ public class NewEventQrFragment extends Fragment implements Toolbar.OnMenuItemCl
         return bundle;
     }
 
+    /**
+     * Processes the arguments provided to the fragment, specifically looking for the check-in QR code content. If available,
+     * it generates and displays the QR code on the screen.
+     *
+     * @param args The bundle containing fragment arguments.
+     * @param view The fragment's view for UI updates.
+     */
     private void handleArguments(Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         assert builder != null;

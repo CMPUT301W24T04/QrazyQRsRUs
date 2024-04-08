@@ -198,17 +198,32 @@ public class QRCodeScanHandler{
         return contents;
     }
 
+    /**
+     * Empty required constructor
+     */
     public QRCodeScanHandler(){
     }
 
+    /**
+     * Sets the reader to the class attribute reader
+     * @param reader
+     */
     public void setReader(MultiFormatReader reader) {
         this.reader = reader;
     }
 
+    /**
+     * Sets the firebaseDB instance to the class attribute firebaseDB
+     * @param firebaseDB
+     */
     public void setFirebaseDB(FirebaseDB firebaseDB) {
         this.firebaseDB = firebaseDB;
     }
 
+    /**
+     * Sets the current user (Attendee) to the class attribute user
+     * @param attendee
+     */
     public void setUser(Attendee attendee){
         this.user = attendee;
     }

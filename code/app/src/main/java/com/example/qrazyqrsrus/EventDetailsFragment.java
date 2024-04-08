@@ -229,17 +229,35 @@ public class EventDetailsFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Updates the text of the organizer field in the fragment's view with the provided string.
+     *
+     * @param string The name of the organizer to display.
+     * @param view   The current view of the fragment where the organizer's name will be updated.
+     */
     private void updateOrganizerString(String string, View view){
         ((TextView) view.findViewById(R.id.event_detail_organizer)).setText("Organizer:     " + string);
     }
 
+    /**
+     * Sets the attendee object for this fragment. This is called after successfully logging in an attendee.
+     *
+     * @param attendee The attendee object to set.
+     */
     private void setAttendee(Attendee attendee){
         this.attendee = attendee;
     }
 
     /**
-     * This function hides the signup button if the user is the organizer of the event, or has already signed up for the event
-     * @param signUpButton The button to hide
+     * Determines and sets the visibility of the sign-up button based on the event and attendee information.
+     * The sign-up button is hidden for the event organizer, attendees who have already signed up or checked in,
+     * and when the maximum number of attendees for the event has been reached.
+     *
+     * @param signUpButton    The sign-up button to modify the visibility of.
+     * @param viewAttendees   Button to view attendees, made visible for event organizers.
+     * @param viewLocations   Button to view locations, made visible if geolocation is enabled for the event.
+     * @param event           The current event being viewed.
+     * @param view            The current view of the fragment.
      */
     private void setButtonVisibility(Button signUpButton, Button viewAttendees, Button viewLocations, Event event, View view){
         if (Objects.equals(this.attendee.getDocumentId(), event.getOrganizerId())) {
@@ -302,6 +320,12 @@ public class EventDetailsFragment extends Fragment {
 
     }
 
+    /**
+     * Retrieves a URI for sharing a bitmap image. This is used for sharing QR codes via external intents.
+     *
+     * @param bitmap The bitmap image to share.
+     * @return The URI of the image stored in the device's media store, ready to be shared.
+     */
     private Uri getUriToShare(Bitmap bitmap){
         Uri uri = null;
         String localFilePath = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, "QrToBeShared", "the qr we are sharing");

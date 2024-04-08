@@ -18,8 +18,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A {@link Fragment} subclass designed for the admin panel to view and manage images.
+ * It allows navigation between images, deletion of selected images, and provides
+ * an interface for image management tasks within the admin panel.
  *
+ * The fragment displays images one at a time with navigation options to cycle through all available
+ * images. Administrators can delete images if needed. The UI updates dynamically to reflect the current
+ * selection and available actions.
  */
 public class AdminViewImagesFragment extends Fragment {
     private ImageView imageView;
@@ -32,15 +37,35 @@ public class AdminViewImagesFragment extends Fragment {
     private ArrayList<String> allImagePaths;
     private Integer currentPosition;
 
+    /**
+     * Constructs a new instance of {@link AdminViewImagesFragment}.
+     * This is the required empty public constructor.
+     */
     public AdminViewImagesFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Called to do the initial creation of the fragment.
+     * This method is where you should perform any one-time initializations.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this
+     *                           is the state. This value may be null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * This method inflates the layout for the fragment and initializes the UI components.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -108,7 +133,8 @@ public class AdminViewImagesFragment extends Fragment {
     }
 
     /**
-     * This function updates the screen with the new currently viewed image
+     * Updates the display with the currently selected image.
+     * It retrieves the image from a list of image paths and sets it to the ImageView.
      */
     public void updateView() {
         Log.d("image test", allImagePaths.get(currentPosition));
@@ -117,7 +143,9 @@ public class AdminViewImagesFragment extends Fragment {
     }
 
     /**
-     * This function will change the browse screen to and from the mode where the Confirm and Cancel deletion button are shown
+     * Toggles the visibility of the confirm, cancel, and delete buttons.
+     * This function changes the UI to a state that requires confirmation for image deletion,
+     * offering an additional step to prevent accidental deletions.
      */
     public void changeState() {
         deleteButton.setVisibility(deleteButton.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);

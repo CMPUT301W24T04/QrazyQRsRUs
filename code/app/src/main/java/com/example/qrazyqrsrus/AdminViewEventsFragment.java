@@ -18,8 +18,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 /**
- * A simple {@link Fragment} subclass.
- *
+ * The {@code AdminViewEventsFragment} class is responsible for displaying a list of events
+ * in the admin panel, allowing administrators to view details, delete, and navigate through events.
+ * <p>
+ * Administrators can interact with the events through a series of buttons that allow for navigation
+ * between events, deletion of an event, and viewing further announcements related to an event.
  */
 public class AdminViewEventsFragment extends Fragment {
 
@@ -39,15 +42,34 @@ public class AdminViewEventsFragment extends Fragment {
     private ArrayList<Event> allEvents = new ArrayList<>();
     private Integer currentPosition;
 
+    /**
+     * Default constructor. Required for instantiating the fragment.
+     */
     public AdminViewEventsFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Called to do the initial creation of the fragment. This is where you should perform any
+     * one-time initializations.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this
+     *                           is the state. This value may be null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view. This method inflates
+     * the layout for the fragment and initializes the UI components.
+     *
+     * @param inflater           LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return Return the View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -119,6 +141,11 @@ public class AdminViewEventsFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Updates the UI with the details of the current event in the list.
+     * This includes setting text views for the event's name, organizer, location, description,
+     * start date, end date, and loading the event's poster image if available.
+     */
     public void updateView() {
         Event currentEvent = allEvents.get(currentPosition);
         String nameString = "Name: "+currentEvent.getName();
@@ -142,6 +169,11 @@ public class AdminViewEventsFragment extends Fragment {
         }
     }
 
+    /**
+     * Toggles the visibility of the confirm, cancel, and delete buttons to allow
+     * for confirmation of event deletion. This method is called when an admin
+     * initiates the delete action.
+     */
     public void changeState() {
         deleteButton.setVisibility(deleteButton.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
         cancelButton.setVisibility(cancelButton.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);

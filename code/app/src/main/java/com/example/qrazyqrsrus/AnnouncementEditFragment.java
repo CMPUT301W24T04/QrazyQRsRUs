@@ -1,10 +1,19 @@
 package com.example.qrazyqrsrus;
 // This fragment allows announcements to be edited
+import static androidx.core.content.ContextCompat.getSystemService;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,11 +21,36 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.compose.ui.text.AnnotatedString;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Firebase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.HttpException;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.moshi.MoshiConverterFactory;
+
+import android.Manifest;
 
 /**
  * Fragment to display the Announcement Edit section which
@@ -29,6 +63,9 @@ import java.util.ArrayList;
 public class AnnouncementEditFragment extends Fragment{
 
     private EditText announcementEditText;
+    private Button addButton;
+    private ListView announcementListView;
+    private Button backButton;
     private Button setTokenButton;
     private Button broadcastButton;
     private Button copyTokenButton;
@@ -38,18 +75,40 @@ public class AnnouncementEditFragment extends Fragment{
     private String messageText;
     private String tokenToSendTo;
     private Event event;
+    private FirebaseDB firebaseDB;
 
-    //TODO: find out if we can delete
-
+    /**
+     * Empty constructor for the fragment. Required for instantiation.
+     */
     public AnnouncementEditFragment() {
         // Constructor
     }
 
+    /**
+     * Called to do initial creation of the fragment. This is where to perform any
+     * one-time initializations.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this
+     *                           is the state. This value may be null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view. This method inflates
+     * the layout for the fragment and initializes the UI components involved in announcement
+     * management.
+     *
+     * It retrieves the event details passed to it and sets up listeners for the UI components to handle
+     * user interactions like adding and deleting announcements.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,33 +122,59 @@ public class AnnouncementEditFragment extends Fragment{
         event = (Event) getArguments().get("event");
         assert event != null;
 
+        if (this.firebaseDB == null) {
+            this.firebaseDB = FirebaseDB.getInstance();
+        }
+
+        //we should be subscribing the person whenever they sign up/checkin, not here
+        //we should also be creating a unique topic for each event
+        //TODO: find out if we can delete
+//        FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
+        //we amke the notification channel to send notifications to
+        //this can be done in MainActivity, it doesn't really matter
+        //TODO: find out if we can delete
+//        createNotificationChannel();
+        //we ask for permission to send notifcations if they are not yet granted
+        //TODO: find out if we can delete
+//        requestNotificationPermission();
         announcementEditText = rootView.findViewById(R.id.edit_announcement);
-        Button addButton = rootView.findViewById(R.id.button_add);
-        Button backButton = rootView.findViewById(R.id.button_back);
-        ListView announcementListView = rootView.findViewById(R.id.list_announcements);
+        addButton = rootView.findViewById(R.id.button_add);
+        backButton = rootView.findViewById(R.id.button_back);
+        announcementListView = rootView.findViewById(R.id.list_announcements);
 
         announcements = event.getAnnouncements();
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, announcements);
         announcementListView.setAdapter(adapter);
 
-        addButton.setOnClickListener(v -> {
-            NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString(), event.getDocumentId());
-            addAnnouncement(event);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotificationSender.getInstance().sendMessage(true, null, event.getDocumentId(), event.getName(), announcementEditText.getText().toString(), event.getDocumentId());
+                addAnnouncement(event);
 
+            }
         });
 
-        announcementListView.setOnItemLongClickListener((parent, view, position, id) -> {
-            showDeleteConfirmationDialog(position, event);
+        announcementListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                showDeleteConfirmationDialog(position, event);
 
-            return true;
+                return true;
+            }
         });
 
-        backButton.setOnClickListener(v -> {
-            Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(rootView).popBackStack(); // Not sure how to do this (Used john's implementation from elsewhere
+            }
         });
 
         return rootView;
     }
+
+
 
     /**
      * Adds an announcement to the local list then updates the Event object's announcements
@@ -103,7 +188,7 @@ public class AnnouncementEditFragment extends Fragment{
             announcements.add(newAnnouncement);
             adapter.notifyDataSetChanged();
             event.setAnnouncements(announcements);
-            FirebaseDB.getInstance().updateEvent(event); // Updates the database with new event
+            firebaseDB.updateEvent(event); // Updates the database with new event
             announcementEditText.setText("");
             showToast("Announcement Added");
 
@@ -119,7 +204,12 @@ public class AnnouncementEditFragment extends Fragment{
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Announcement")
                 .setMessage("Are you sure you want to delete this announcement?")
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> deleteAnnouncement(position, event))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteAnnouncement(position, event);
+                    }
+                })
                 .setNegativeButton(android.R.string.no, null)
                 .show();
     }
@@ -135,7 +225,7 @@ public class AnnouncementEditFragment extends Fragment{
         adapter.notifyDataSetChanged();
         event.setAnnouncements(announcements);
         showToast("Announcement Deleted");
-        FirebaseDB.getInstance().updateEvent(event);
+        firebaseDB.updateEvent(event);
 
     }
 
@@ -153,6 +243,14 @@ public class AnnouncementEditFragment extends Fragment{
         toast.show();
     }
 
+    /**
+     * Factory method to create a new instance of this fragment using the provided {@link Event} object.
+     * This method allows for the passing of event details to the fragment upon creation, enabling
+     * targeted announcement management for that event.
+     *
+     * @param i The {@link Event} object containing details of the event for which announcements are to be managed.
+     * @return A new instance of {@link AnnouncementEditFragment} with event details attached.
+     */
     public static AnnouncementEditFragment newInstance(Event i){
         Bundle args = new Bundle();
         args.putSerializable("event", i);
@@ -161,7 +259,5 @@ public class AnnouncementEditFragment extends Fragment{
         fragment.setArguments(args);
         return fragment;
     }
-
-
 }
 

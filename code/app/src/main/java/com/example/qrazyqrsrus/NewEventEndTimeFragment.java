@@ -161,6 +161,17 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         // Parse the date and time string
         return LocalDateTime.parse(dateTimeStr, formatter);
     }
+
+    /**
+     * Updates the provided Bundle with the end date and time selected by the user.
+     * This method reads the end date and time from UI components, combines them into a single
+     * {@link LocalDateTime} object, and stores it back into the provided Bundle.
+     *
+     * @param args The Bundle containing the {@link Event.EventBuilder} object to be updated.
+     * @return The updated Bundle with the new end date and time set in the EventBuilder.
+     * If either the view is not accessible or the initial arguments are null, the original
+     * arguments are returned without modification.
+     */
     private Bundle makeNewBundle(Bundle args) {
         View view = getView();
         if (view == null || args == null) return args; // Safety checks
@@ -183,6 +194,17 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         }
         return args;
     }
+
+    /**
+     * Populates UI components with the end date and time from the provided arguments.
+     * This method extracts the end date and time from the {@link Event.EventBuilder} within
+     * the provided Bundle, formats them according to specified patterns, and sets them on
+     * corresponding TextViews for display.
+     *
+     * @param args The Bundle containing the {@link Event.EventBuilder} from which to extract
+     *             the end date and time.
+     * @param view The view containing the TextViews to be updated with the date and time.
+     */
     private void handleArguments (Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         if (builder != null && builder.getEndDate() != null) {
@@ -203,6 +225,12 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
             timeButton.setText(formattedTime);
         }
     }
+
+    /**
+     * Displays a date picker dialog to the user for selecting the event's end date.
+     * The selected date is formatted and displayed in a TextView. The dialog is initialized
+     * with today's date as the default selection.
+     */
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -224,6 +252,11 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         }
     }
 
+    /**
+     * Displays a time picker dialog to the user for selecting the event's end time.
+     * The selected time is formatted in 24-hour format and displayed in a TextView. The dialog
+     * is initialized with the current time as the default selection.
+     */
     private void showTimePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);

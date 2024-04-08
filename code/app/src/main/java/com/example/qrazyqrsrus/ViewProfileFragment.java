@@ -1,14 +1,11 @@
 package com.example.qrazyqrsrus;
 
-// This fragment contains the profile information to be displayed on the profile view
-
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,12 +32,14 @@ import java.util.Objects;
 
 public class ViewProfileFragment extends Fragment {
     private Attendee attendee;
-    private EditText etFullName, etAge, etEmailAddress;
+    private EditText etFullName, etEmailAddress;
     private ImageView imgProfilePicture;
+    private FirebaseStorage storage;
     private StorageReference storageRef;
     private Button btnUpdateProfile;
     private Switch switchGeolocation;
     private FirebaseFirestore db;
+    private boolean isProfileLoaded = false;
     private Button btnDone, btnCancel;
     private Boolean imageUpdates = false;
     private Uri newImageUri;
@@ -53,92 +52,81 @@ public class ViewProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userId = getUserId(requireContext());
+        initializeGalleryLauncher();
+    }
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-
-        galleryActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null) {
-                        //we update the state to communicate the user has uploaded an image, that may need to be stored to firebase
-                        imgProfilePicture.setImageURI(uri);
-                        newImageUri = uri;
-                        imageDeleted = false;
-                    }
-                }
-        );
+    private static String getUserId(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.update_profile, container, false);
+        initializeViews(view);
+        loadInitialData();
+        return view;
+    }
 
+    private void initializeGalleryLauncher() {
+        galleryActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                this::onImageSelected
+        );
+    }
+
+    private void onImageSelected(Uri uri) {
+        if (uri != null) {
+            imgProfilePicture.setImageURI(uri);
+            newImageUri = uri;
+            imageDeleted = false;
+        }
+    }
+
+    private void initializeViews(View view) {
         btnDone = view.findViewById(R.id.btnDone);
         btnCancel = view.findViewById(R.id.btnCancel);
-
         etFullName = view.findViewById(R.id.etFullName);
         etEmailAddress = view.findViewById(R.id.etEmailAddress);
-
         btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         imgProfilePicture = view.findViewById(R.id.imgProfilePicture);
-        imgProfilePicture.setOnClickListener(v -> {
-            //only open the dialog if we are in the edit mode
-            if (imageUpdates){
-                showProfilePictureOptionsDialog();
-            }
-        });
         switchGeolocation = view.findViewById(R.id.switchGeolocation);
 
+        setInitialViewState();
 
-        // Set the EditTexts to non-editable initially
-        etFullName.setEnabled(false);
-        etEmailAddress.setEnabled(false);
-        // Set the buttons to invisible initially
+        imgProfilePicture.setOnClickListener(v -> showProfilePictureOptionsDialog());
+        btnUpdateProfile.setOnClickListener(v -> enterEditMode());
+        btnDone.setOnClickListener(v -> saveChanges());
+        btnCancel.setOnClickListener(v -> revertChanges());
+    }
+
+    private void setInitialViewState() {
         btnDone.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
+        etFullName.setEnabled(false);
+        etEmailAddress.setEnabled(false);
+    }
 
-        //TextWatcher
-        etFullName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing needed here
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing needed here
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //don't make any updates until the user presses the confirm button
-            }
-        });
-
-
-
-        userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
+    private void loadInitialData() {
         Bundle args = getArguments();
-
-
         if (args != null && args.containsKey("attendee")) {
-            Attendee attendeeClicked = (Attendee) args.getSerializable("attendee");
-            if (attendeeClicked != null) {
-
-                if (!Objects.equals(userId, attendeeClicked.getId())) {
+            attendee = (Attendee) args.getSerializable("attendee");
+            if (attendee != null) {
+                loadInitialAttendee(attendee);
+                if (!Objects.equals(userId, attendee.getId())) {
                     restrictEdits();
                 }
-                // Load initial attendee data
-                loadInitialAttendee(attendeeClicked);
             } else {
                 Log.e("ViewProfileFragment", "Attendee object not found in arguments.");
+
                 FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
                     @Override
                     public void onResult(Attendee attendee) {
                         loadInitialAttendee(attendee);
+                        if (!Objects.equals(userId, attendee.getId())) {
+                            restrictEdits();
+                        }
                     }
 
                     @Override
@@ -146,45 +134,25 @@ public class ViewProfileFragment extends Fragment {
                         Log.d("very bad", "badness!");
                     }
                 });
-                // Handle the case when attendee is not passed in arguments
-                // Show error dialog or toast
-
-//         Attendee attendeeClicked;
-// //        Log.d("profile_error", userId);
-// //        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
-//         if (args != null){
-//             if(!Objects.equals(userId, ((Attendee) args.getSerializable("attendee")).getId())){
-//                 restrictEdits();
-
             }
         } else {
-            Log.e("ViewProfileFragment", "No arguments found.");
-            // Handle the case when no arguments were set for this fragment
-            // Show error dialog or toast
+            FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        loadInitialAttendee(attendee);
+                        if (!Objects.equals(userId, attendee.getId())) {
+                            restrictEdits();
+                        }
+                    }
+
+                    @Override
+                    public void onNoResult() {
+                        Log.d("very bad", "badness!");
+                    }
+                });
         }
-
-        // In onCreateView after initializing views
-        btnUpdateProfile.setOnClickListener(v -> enterEditMode());
-        Button btnDone = view.findViewById(R.id.btnDone);
-        Button btnCancel = view.findViewById(R.id.btnCancel);
-
-        btnDone.setOnClickListener(v -> saveChanges());
-        btnCancel.setOnClickListener(v -> revertChanges());
-
-
-        assert args != null;
-        if (args.getSerializable("userId") != null && args.getSerializable("attendee") != null){
-            if(!userId.equals(((Attendee) args.getSerializable("attendee")).getId())){
-                restrictEdits();
-            }
-        }
-        if (args.getSerializable("attendee") != null){
-            loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
-        }
-
-
-        return view;
     }
+
 
     private void loadInitialAttendee(Attendee attendee){
         this.attendee = attendee;
@@ -205,9 +173,14 @@ public class ViewProfileFragment extends Fragment {
             }
             imgProfilePicture.setImageBitmap(profileBitmap);
         } else{
-            FirebaseDB.getInstance().retrieveImage(attendee, bitmap -> imgProfilePicture.setImageBitmap(bitmap));
+            FirebaseDB.getInstance().retrieveImage(attendee, new FirebaseDB.GetBitmapCallBack() {
+                @Override
+                public void onResult(Bitmap bitmap) {
+                    imgProfilePicture.setImageBitmap(bitmap);
+                }
+            });
         }
-        boolean isProfileLoaded = true;
+        isProfileLoaded = true;
     }
 
     private void updateUserProfile(Attendee attendee){
@@ -255,8 +228,14 @@ public class ViewProfileFragment extends Fragment {
 
     private String generatePathName(String attendeeName){
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        return "profile/" + attendeeName + timeStamp;
+        String pathName = "profile/" + attendeeName + timeStamp;
+        return pathName;
     }
+
+    /**
+     * Prepares the fragment for profile editing by enabling text fields, making the save and cancel buttons visible,
+     * hiding the update profile button, and allowing for profile picture updates.
+     */
 
     private void enterEditMode() {
         // Make EditTexts editable
@@ -274,6 +253,11 @@ public class ViewProfileFragment extends Fragment {
         imageUpdates = true;
     }
 
+    /**
+     * Saves the changes made to the user's profile information to Firebase, including name, email, geolocation preference,
+     * and potentially a new profile picture if one has been selected. Exits edit mode upon successful update.
+     */
+
     private void saveChanges() {
         updateUserProfile(this.attendee);
     }
@@ -281,6 +265,10 @@ public class ViewProfileFragment extends Fragment {
 
 
 
+    /**
+     * Reverts any changes made in the edit mode by reloading the initial attendee information and resetting the UI
+     * to view mode, disabling text fields, and hiding save and cancel buttons.
+     */
 
     private void revertChanges() {
         // Reset information to the last saved state
@@ -289,6 +277,12 @@ public class ViewProfileFragment extends Fragment {
         // Make fields non-editable and update UI back to view mode
         exitEditMode();
     }
+
+    /**
+     * Resets the UI to view mode after editing is complete or cancelled, disabling text fields and making the update profile
+     * button visible again. Also resets the flag for profile picture updates and clears any new image URI.
+     */
+
     private void exitEditMode() {
         // Make EditTexts non-editable
         etFullName.setEnabled(false);
@@ -307,6 +301,13 @@ public class ViewProfileFragment extends Fragment {
         newImageUri = null;
     }
 
+    /**
+     * Factory method to create a new instance of ViewProfileFragment with attendee details passed as arguments.
+     *
+     * @param attendee The attendee whose profile is to be viewed or edited.
+     * @return A new instance of ViewProfileFragment with attendee data.
+     */
+
     public static ViewProfileFragment newInstance(Attendee attendee){
         Bundle args = new Bundle();
         args.putSerializable("attendee", attendee);
@@ -315,6 +316,11 @@ public class ViewProfileFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    /**
+     * Restricts the user from editing their profile by disabling input fields and hiding the update profile button.
+     * This method is typically called when viewing another user's profile where edits are not permitted.
+     */
 
     private void restrictEdits(){
         etEmailAddress.setInputType(0);
@@ -362,9 +368,9 @@ public class ViewProfileFragment extends Fragment {
      * This function updates the state to communicate the user has deleted their profile picture
      */
     private void deleteProfileImage() {
-        //we tell the state that the user has deleted their profile pciture, so it can delete the old one from firebase if needed
+        //we tell the state that the user has deleted their profile picture, so it can delete the old one from firebase if needed
         imageDeleted = true;
-        //we remove the user's uploaded profile pciture, and change it to the geneerated one
+        //we remove the user's uploaded profile picture, and change it to the generated one
         Bitmap profileBitmap = InitialsPictureGenerator.createInitialsImage(InitialsPictureGenerator.getInitials(etFullName.getText().toString()));
         imgProfilePicture.setImageBitmap(profileBitmap);
         //we clear any previously uploaded image (during this edit)

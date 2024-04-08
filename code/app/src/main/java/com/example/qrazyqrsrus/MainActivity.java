@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,19 +18,20 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
+    private static final int LOCATION_PERMISSION_GRANTED = 1;
     private String deviceId;
     private final Activity activity = this;
     /**
      * Uses a callback to do actions when user scans a QR code
      */
     private QRCodeScanHandler qrHandler = new QRCodeScanHandler(FirebaseDB.getInstance(), this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
-        //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
 
         /**
          * Holds logic for when a promo QR code is scanned
@@ -110,14 +112,21 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             });
 
-//    qrHandler =
-
     /**
-     * Manages notifications in the server
-     * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * Called when the activity is starting. This is where most initialization should go: calling {@code setContentView(int)}
+     * to inflate the activity's UI, using {@code findViewById(int)} to programmatically interact with widgets in the UI,
+     * setting up any static data in lists, binding data to lists, etc.
+     * <p>
+     * In this implementation, {@code onCreate} initializes the activity's binding for view interaction without directly referencing
+     * the UI components by ID, sets up the device ID for future use, and initializes the {@link QRCodeScanHandler} with appropriate
+     * callbacks for handling different outcomes of QR code scanning (promo QR codes, check-in QR codes, and special admin QR codes).
+     * This setup facilitates actions based on QR code scanning, such as navigating to different fragments based on the scan results.
+     * <p>
+     * This method also checks for necessary permissions (if any are needed) and sets up any other initial configurations required for
+     * the app's main activity.
      *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the
+     *                           data it most recently supplied in {@link #onSaveInstanceState(Bundle)}. <b>Note:</b> Otherwise it is null.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +150,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             // or other notification behaviors after this.
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+
+        //we check if we have permissions to access the user's location
+        //this implementation fo checking for permissions is from Stack Overflow (https://stackoverflow.com/a/33070595), Accessed Mar. 28th, 2024
+        //the post was made by the user keshav.bahadoor (https://stackoverflow.com/users/1535115/keshav-bahadoor)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
+            //if not, we launch a dialog in main activity that asks the user to grant permissions
+            ActivityCompat.requestPermissions( activity, new String[] {  Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION  },
+                    LOCATION_PERMISSION_GRANTED );
         }
 
         ChangeFragment(new HomeEventsFragment());

@@ -99,6 +99,12 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         return view;
     }
 
+    /**
+     * Sets up the toolbar for the fragment, including inflating its menu and setting a click listener for menu items.
+     * Provides navigation options such as going back or canceling the promotional QR code creation process.
+     *
+     * @param view The fragment's root view containing the toolbar.
+     */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
@@ -109,6 +115,13 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         toolbar.setOnMenuItemClickListener(this);
     }
 
+    /**
+     * Handles clicks on toolbar menu items. Depending on the item clicked, navigates to the previous screen, cancels the QR code creation,
+     * or performs other navigation actions as defined.
+     *
+     * @param item The clicked menu item.
+     * @return true if the click event was handled, false otherwise.
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
@@ -256,6 +269,13 @@ public class NewEventPromoQrFragment extends Fragment implements Toolbar.OnMenuI
         return bundle;
     }
 
+    /**
+     * Processes the arguments passed to the fragment, particularly looking for a promotional QR code content.
+     * If available, generates and displays the QR code based on this content.
+     *
+     * @param args The Bundle containing fragment arguments.
+     * @param view The fragment's root view for UI updates.
+     */
     private void handleArguments(Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         assert builder != null;

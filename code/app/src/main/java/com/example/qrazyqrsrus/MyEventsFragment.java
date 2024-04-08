@@ -16,6 +16,7 @@ import android.view.ViewGroup;
  */
 
 public class MyEventsFragment extends Fragment {
+
     /**
      * Empty constructor for myEvents
      */

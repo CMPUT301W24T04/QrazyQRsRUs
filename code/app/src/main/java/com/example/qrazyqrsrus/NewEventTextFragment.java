@@ -87,6 +87,11 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         createToolbar(view);
         return view;
     }
+
+    /**
+     * Has the toolbar functionality to change views
+     * @param view
+     */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
@@ -97,6 +102,13 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         toolbar.setOnMenuItemClickListener(this);
     }
 
+    /**
+     * Responds to the clicks on menu items in the toolbar. This method handles navigation based on
+     * the selected menu item, such as navigating back or canceling the event creation process.
+     *
+     * @param item The menu item that was selected.
+     * @return true to indicate that the click was handled.
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.cancel_button) {
@@ -154,6 +166,15 @@ public class NewEventTextFragment extends Fragment implements Toolbar.OnMenuItem
         return bundle;
     }
 
+
+    /**
+     * Populates the fragment's views with data from the EventBuilder if the user has previously
+     * entered information. This method ensures that when navigating back to this fragment, the
+     * user's inputs are restored, maintaining the continuity of the event creation process.
+     *
+     * @param args The bundle containing the EventBuilder, which holds the event's preliminary data.
+     * @param view The current view of the fragment, used to find and update UI elements.
+     */
     private void handleArguments(Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         if (builder != null && builder.getName() != null){
