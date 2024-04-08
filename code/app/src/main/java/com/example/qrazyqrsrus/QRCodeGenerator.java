@@ -1,19 +1,10 @@
 package com.example.qrazyqrsrus;
 
 // This class generates new QR codes in the event creation sequence
-import android.app.Activity;
 import android.graphics.Bitmap;
-import android.widget.ImageView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.Result;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Generates a QR code for an event
@@ -24,7 +15,7 @@ public class QRCodeGenerator {
 
     private BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
-    private static Bitmap bitmap = null;
+    private static final Bitmap bitmap = null;
 
     public interface UniqueQRCheckCallBack {
         void onUnique();
@@ -41,15 +32,12 @@ public class QRCodeGenerator {
         if (firebaseDB == null){
             firebaseDB = FirebaseDB.getInstance();
         }
-        firebaseDB.checkUnique(content, mode, new FirebaseDB.UniqueCheckCallBack() {
-            @Override
-            public void onResult(boolean isUnique) {
-                //if the qr code is not unique,
-                if (!isUnique) {
-                    callback.onNotUnique();
-                } else{
-                    callback.onUnique();
-                }
+        firebaseDB.checkUnique(content, mode, isUnique -> {
+            //if the qr code is not unique,
+            if (!isUnique) {
+                callback.onNotUnique();
+            } else{
+                callback.onUnique();
             }
         });
     }

@@ -44,8 +44,7 @@ public class HomeEventsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home_events, container, false);
         // Inflate the layout for this fragment
-        return view;
+        return inflater.inflate(R.layout.fragment_home_events, container, false);
     }
 }

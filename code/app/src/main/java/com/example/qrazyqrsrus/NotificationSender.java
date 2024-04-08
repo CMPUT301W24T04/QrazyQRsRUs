@@ -7,20 +7,38 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
+/**
+ * Manages the sending of notifications through a Firebase Cloud Messaging (FCM) API. This class utilizes Retrofit to
+ * interact with a backend server that communicates with FCM to send push notifications. It supports both direct
+ * messages to individual devices and broadcast messages to topics.
+ *
+ * Adapted from Philipp Lackner's tutorial on sending notifications with Firebase.
+ */
+
 public class NotificationSender implements Callback<MessageSentResponse> {
     //we use Retrofit to create our Java interface out of the HTTP Api defined on the backend
     //this definition was taken from Phillipp Lackner (https://www.youtube.com/@PhilippLackner)
     //this was adapted from his video https://www.youtube.com/watch?v=q6TL2RyysV4&ab_channel=PhilippLackner, Accessed Mar. 23rd, 2024
-    private FcmApi api = new Retrofit.Builder()
+    private final FcmApi api = new Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(FcmApi.class);
     private static NotificationSender instance = null;
 
+    /**
+     * Protected constructor to prevent direct instantiation from outside the class. Use {@link #getInstance()} to get an instance of this class.
+     */
+
     protected NotificationSender(){
 
     }
+
+    /**
+     * Singleton pattern implementation to ensure only one instance of NotificationSender exists throughout the application lifecycle.
+     *
+     * @return The single instance of NotificationSender.
+     */
 
     public static NotificationSender getInstance(){
         if (instance == null){
@@ -61,9 +79,25 @@ public class NotificationSender implements Callback<MessageSentResponse> {
         }
     }
 
+    /**
+     * Callback method triggered when the Retrofit call to the server succeeds. This method is empty and can be customized
+     * to handle response data or perform further actions upon successful notification delivery.
+     *
+     * @param call The executed Retrofit call.
+     * @param response The response received from the server.
+     */
+
     @Override
     public void onResponse(Call<MessageSentResponse> call, Response<MessageSentResponse> response) {
     }
+
+    /**
+     * Callback method triggered when the Retrofit call to the server fails. This method is empty and can be customized
+     * to handle errors or perform cleanup actions upon failure.
+     *
+     * @param call The executed Retrofit call.
+     * @param t The throwable that caused the failure.
+     */
 
     @Override
     public void onFailure(Call<MessageSentResponse> call, Throwable t) {

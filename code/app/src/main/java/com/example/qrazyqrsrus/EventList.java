@@ -3,19 +3,14 @@ package com.example.qrazyqrsrus;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 //import com.example.crazyqrtest.Attendee;
 //import com.example.crazyqrtest.AttendeeListAdapter;
@@ -28,26 +23,16 @@ import android.widget.Toast;
 //import com.google.firebase.firestore.QueryDocumentSnapshot;
 //import com.google.firebase.firestore.QuerySnapshot;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 /**
  * Gets database information about events an attendee is signed up for and displays it
  */
-public class EventList extends Fragment {  // FIX LATER
+public class EventList extends Fragment {
 
     ListView eventList;
     ArrayList<Event> eventDataList;
@@ -107,28 +92,16 @@ public class EventList extends Fragment {  // FIX LATER
         fab.setVisibility(View.GONE);
 
         // When list is clicked, go to event view with event information
-        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // pass event in a bundle
-                //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
-                Bundle bundle = new Bundle();
-                Event current_event = eventListAdapter.getItem(i);
-                bundle.putSerializable("event", current_event);
-//
-//                //turn the textviews into the desired names based on the name lists
-//                Name.setText(attendee_value);
-                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList3_to_eventDetailsFragment3, bundle);
-            }
+        eventList.setOnItemClickListener((adapterView, view, i, l) -> {
+            // pass event in a bundle
+            //https://stackoverflow.com/questions/42266436/passing-objects-between-fragments
+            Bundle bundle = new Bundle();
+            Event current_event = eventListAdapter.getItem(i);
+            bundle.putSerializable("event", current_event);
+            Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList3_to_eventDetailsFragment3, bundle);
         });
 
         // back button
-//        eventListLayout.findViewById(R.id.event_button_back).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Navigation.findNavController(eventListLayout).navigate(R.id.action_eventList_to_mainMenu);
-//            }
-//        });
         return eventListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
 
 

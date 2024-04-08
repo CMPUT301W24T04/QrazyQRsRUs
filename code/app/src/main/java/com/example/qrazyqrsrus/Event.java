@@ -2,14 +2,10 @@ package com.example.qrazyqrsrus;
 // Holds the attributes for an event created
 import android.net.Uri;
 
-import android.util.Log;
-
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 
 public class Event implements Serializable {
@@ -26,9 +22,9 @@ public class Event implements Serializable {
     private String posterPath;
     private String qrCode;
     private String qrCodePromo;
-    private ArrayList<String> announcements = new ArrayList<String>();
-    private ArrayList<String> signUps= new ArrayList<String>();
-    private ArrayList<String> checkIns= new ArrayList<String>();
+    private ArrayList<String> announcements = new ArrayList<>();
+    private ArrayList<String> signUps= new ArrayList<>();
+    private ArrayList<String> checkIns= new ArrayList<>();
     private String organizerToken;
 
 
@@ -49,9 +45,9 @@ public class Event implements Serializable {
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
         this.geolocationOn = true;
-        this.announcements = new ArrayList<String>();
-        this.signUps = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
+        this.announcements = new ArrayList<>();
+        this.signUps = new ArrayList<>();
+        this.checkIns = new ArrayList<>();
         this.maxAttendees = maxAttendees;
     }
 
@@ -105,28 +101,32 @@ public class Event implements Serializable {
         this.checkIns = checkIns;
     }
 
-    /** get
+    /**
+     * Retrieves the document ID of the event.
      *
-     * @return String
+     * @return A string representing the unique document ID of the event.
      */
     public String getDocumentId() { return documentId; }
-    /** get
+    /**
+     * Sets the document ID for the event.
      *
-     * @return String
+     * @param documentId A string representing the unique document ID to set for the event.
      */
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
-    /** get
+    /**
+     * Retrieves the name of the event.
      *
-     * @return String
+     * @return The name of the event.
      */
     public String getName() {
         return name;
     }
-    /** get
+    /**
+     * Sets the name of the event. If the provided name is null or empty, defaults to "Common Event".
      *
-     * @return String
+     * @param eventName The name to set for the event.
      */
     public void setName(String eventName) {
         if (eventName == null || eventName.isEmpty()) {
@@ -136,30 +136,35 @@ public class Event implements Serializable {
             this.name = eventName;
         }
     }
-    /** get
+    /**
+     * Retrieves the organizer's ID for the event.
      *
-     * @return String
+     * @return The organizer's ID as a string.
      */
     public String getOrganizerId() {
         return organizerId;
     }
-    /** set
+    /**
+     * Sets the organizer's ID for the event.
      *
-     * @return String
+     * @param organizerId The organizer's ID as a string.
      */
     public void setOrganizerId(String organizerId) {
         this.organizerId = organizerId;
     }
-    /** get
+    /**
+     * Retrieves the details or description of the event.
      *
-     * @return String
+     * @return The details of the event.
      */
     public String getDetails() {
         return details;
     }
-    /** set
+    /**
+     * Sets the details or description of the event. If the provided details are null or empty,
+     * defaults to "No Description Available".
      *
-     * @return String
+     * @param details The details or description to set for the event.
      */
     public void setDetails(String details) {
         if (details == null || details.isEmpty()) {
@@ -169,16 +174,18 @@ public class Event implements Serializable {
             this.details = details;
         }
     }
-    /** get
+    /**
+     * Retrieves the location of the event.
      *
-     * @return String
+     * @return The location of the event.
      */
     public String getLocation() {
         return location;
     }
-    /** set
+    /**
+     * Sets the location of the event. If the provided location is null or empty, defaults to "N/A".
      *
-     * @return String
+     * @param location The location to set for the event.
      */
     public void setLocation(String location) {
         if (location == null || location.isEmpty()) {
@@ -188,50 +195,58 @@ public class Event implements Serializable {
             this.location = location;
         }
     }
-    /** get
+    /**
+     * Retrieves the start date of the event.
      *
-     * @return String
+     * @return The start date of the event in "yyyy-MM-dd HH:mm" format.
      */
     public String getStartDate() {
         return startDate;
     }
-    /** get
+    /**
+     * Retrieves the end date of the event.
      *
-     * @return String
+     * @return The end date of the event in "yyyy-MM-dd HH:mm" format.
      */
     public String getEndDate() {
         return endDate;
     }
-    /** get
+    /**
+     * Retrieves the status of geolocation for the event.
      *
-     * @return String
+     * @return A Boolean indicating if geolocation is enabled for the event.
      */
     public Boolean getGeolocationOn() {
         return geolocationOn;
     }
-    /** set
+    /**
+     * Sets the status of geolocation for the event.
      *
-     * @return String
+     * @param geolocationOn A Boolean indicating if geolocation should be enabled for the event.
      */
     public void setGeolocationOn(Boolean geolocationOn) {
         this.geolocationOn = geolocationOn;
     }
-    /** get
+    /**
+     * Retrieves the path of the poster image for the event.
      *
-     * @return String
+     * @return The file path or URL of the event's poster image.
      */
     public String getPosterPath() {
         return posterPath;
     }
-    /** Sets the path of the image for the poster
+    /**
+     * Sets the path of the poster image for the event.
      *
-     * @return String
+     * @param posterPath The file path or URL of the event's poster image.
      */
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
-    /** Gets the QR code to check in
+    /**
+     * Retrieves the QR code for the event.
      *
+     * @return A string representing the QR code for the event.
      */
     public String getQrCode() {
         return qrCode;
@@ -249,50 +264,60 @@ public class Event implements Serializable {
     public String getQrCodePromo() {
         return qrCodePromo;
     }
-    /** set
+    /**
+     * Sets the promotional QR code for the event.
      *
-     * @return
+     * @param qrCodePromo A string representing the promotional QR code for the event.
      */
     public void setQrCodePromo(String qrCodePromo) {
         this.qrCodePromo = qrCodePromo;
     }
-    /** Gets the announcements
+    /**
+     * Retrieves the list of announcements associated with the event.
      *
-     * @return ArrayList<String>
+     * @return An ArrayList of strings representing the announcements for the event.
      */
     public ArrayList<String> getAnnouncements() {
         return announcements;
     }
-    /** Sets the announcements
+    /**
+     * Sets the list of announcements for the event.
+     *
+     * @param announcements An ArrayList of strings representing the announcements for the event.
      */
     public void setAnnouncements(ArrayList<String> announcements) {
         this.announcements = announcements;
     }
-    /** adds announcement
+    /**
+     * Adds a new announcement to the list of announcements for the event.
      *
+     * @param announcement A string representing the new announcement to add.
      */
     public void addAnnouncement(String announcement) {
         if (announcement != null && !announcement.isEmpty()) {
             this.announcements.add(announcement);
         }
     }
-    /** get
+    /**
+     * Retrieves the list of sign-ups for the event.
      *
-     * @return ArrayList<String>
+     * @return An ArrayList of strings representing the sign-ups for the event.
      */
     public ArrayList<String> getSignUps() {
         return signUps;
     }
-    /** set
+    /**
+     * Sets the list of sign-ups for the event.
      *
-     * @return ArrayList<String>
+     * @param signUps An ArrayList of strings representing the sign-ups for the event.
      */
     public void setSignUps(ArrayList<String> signUps) {
         this.signUps = signUps;
     }
-    /** adds user
+    /**
+     * Adds a new sign-up to the list of sign-ups for the event.
      *
-     * @return
+     * @param signUp A string representing the new sign-up to add.
      */
     public void addSignUp(String signUp) {
         if (this.maxAttendees == null || (this.getAttendeeCount() < this.maxAttendees)){
@@ -308,9 +333,11 @@ public class Event implements Serializable {
         }
     }
 
-    /** removes user
+    /**
+     * Deletes a sign-up from the list of sign-ups for the event.
      *
-     * @return
+     * @param userId A string representing the ID of the user to delete from the sign-ups.
+     * @return A boolean indicating if the sign-up was successfully deleted.
      */
     public boolean deleteSignUp(String userId) {
         if (signUps.contains(userId)){
@@ -319,23 +346,26 @@ public class Event implements Serializable {
         }
         return false;
     }
-    /** get
+    /**
+     * Retrieves the list of check-ins for the event.
      *
-     * @return ArrayList<String>
+     * @return An ArrayList of strings representing the check-ins for the event.
      */
     public ArrayList<String> getCheckIns() {
         return checkIns;
     }
-    /** get
+    /**
+     * Sets the list of check-ins for the event.
      *
-     * @return ArrayList<String>
+     * @param checkIns An ArrayList of strings representing the check-ins for the event.
      */
     public void setCheckIns(ArrayList<String> checkIns) {
         this.checkIns = checkIns;
     }
-    /** adds checkin
+    /**
+     * Adds a new check-in to the list of check-ins for the event.
      *
-     * @return
+     * @param checkIn A string representing the new check-in to add.
      */
     public void addCheckIn(String checkIn) {
         this.checkIns.add(checkIn);
@@ -350,41 +380,56 @@ public class Event implements Serializable {
         }
     }
 
-    /** removes checkin
+    /**
+     * Deletes a check-in from the list of check-ins for the event.
      *
-     * @return
+     * @param checkIn A string representing the check-in to delete.
      */
     public void deleteCheckIn(String checkIn) {
         this.checkIns.remove(checkIn);
     }
 
-    /** get
+    /**
+     * Retrieves the maximum number of attendees allowed for the event.
      *
-     * @return integer of maximum number of attendees this event can have
+     * @return An Integer representing the maximum number of attendees.
      */
 
     public Integer getMaxAttendees(){
         return this.maxAttendees;
     }
 
+    /**
+     * Sets the maximum number of attendees allowed for the event.
+     *
+     * @param maxAttendees An Integer representing the maximum number of attendees to set.
+     */
     public void setMaxAttendees(Integer maxAttendees){
         this.maxAttendees = maxAttendees;
     }
 
+    /**
+     * Retrieves the current number of attendees for the event, including both sign-ups and check-ins.
+     *
+     * @return An Integer representing the current total number of attendees.
+     */
     public Integer getAttendeeCount(){
         return (this.signUps == null ? 0 : this.signUps.size()) + (this.checkIns == null ? 0 : this.checkIns.size());
     }
-    /** get
+
+    /**
+     * Retrieves the Firebase Cloud Messaging token of the organizer.
      *
-     * @return string of the organizers FCM token
+     * @return A string representing the FCM token of the organizer.
      */
     public String getOrganizerToken() {
         return organizerToken;
     }
 
-    /** set
+    /**
+     * Sets the Firebase Cloud Messaging token of the organizer.
      *
-     *
+     * @param organizerToken A string representing the FCM token to set for the organizer.
      */
     public void setOrganizerToken(String organizerToken) {
         this.organizerToken = organizerToken;
@@ -408,9 +453,9 @@ public class Event implements Serializable {
         this.qrCode = builder.qrCode;
         this.qrCodePromo = builder.qrCodePromo;
         this.organizerToken = builder.organizerToken;
-        this.announcements = new ArrayList<String>();
-        this.signUps = new ArrayList<String>();
-        this.checkIns = new ArrayList<String>();
+        this.announcements = new ArrayList<>();
+        this.signUps = new ArrayList<>();
+        this.checkIns = new ArrayList<>();
     }
 
     public static class EventBuilder implements Serializable{

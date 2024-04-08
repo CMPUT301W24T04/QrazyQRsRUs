@@ -34,8 +34,6 @@ import java.util.Locale;
  */
 public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
-    private androidx.appcompat.widget.Toolbar toolbar;
-
     //temporarily set listener to be mainActivity. should eventually be adding events to firestore.
     @Override
     public void onAttach(@NonNull Context context) {
@@ -99,22 +97,21 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
     /**
      * Toolbar functionality
-     * @param view
      */
     private void createToolbar(View view){
         //once we have made the view, we create the toolbar and inflate it's menu, in order to set and onclicklistener from the fragment
         //the idea to access the toolbar by using the Fragment's host View was taken from https://stackoverflow.com/questions/29020935/using-toolbar-with-fragments on February 21st, 2024
         //it was posted by the user Faisal Naseer (https://stackoverflow.com/users/2641848/faisal-naseer) in the post https://stackoverflow.com/a/45653449
-        toolbar = (androidx.appcompat.widget.Toolbar) view.findViewById(R.id.end_time_screen_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.end_time_screen_toolbar);
         toolbar.inflateMenu(R.menu.menu_with_back_button);
         //the fragment implements the Toolbar.OnMenuItemClick interface, pass itself.
-        toolbar.setOnMenuItemClickListener((androidx.appcompat.widget.Toolbar.OnMenuItemClickListener) this);
+        toolbar.setOnMenuItemClickListener(this);
     }
 
     /**
      * switch views when menu is clicked
      * @param item {@link MenuItem} that was clicked
-     * @return
+     * @return a boolean indicating whether or not back or cancel button were clicked
      */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -140,8 +137,6 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
 
     /**
      * Save the local time
-     * @param datePicker
-     * @param timePicker
      * @return LocalDateTime
      */
     //we must convert the date that was picked by the user into an LocalDateTime (java.time.LocalDateTime)
@@ -166,6 +161,17 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         // Parse the date and time string
         return LocalDateTime.parse(dateTimeStr, formatter);
     }
+
+    /**
+     * Updates the provided Bundle with the end date and time selected by the user.
+     * This method reads the end date and time from UI components, combines them into a single
+     * {@link LocalDateTime} object, and stores it back into the provided Bundle.
+     *
+     * @param args The Bundle containing the {@link Event.EventBuilder} object to be updated.
+     * @return The updated Bundle with the new end date and time set in the EventBuilder.
+     * If either the view is not accessible or the initial arguments are null, the original
+     * arguments are returned without modification.
+     */
     private Bundle makeNewBundle(Bundle args) {
         View view = getView();
         if (view == null || args == null) return args; // Safety checks
@@ -188,6 +194,17 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         }
         return args;
     }
+
+    /**
+     * Populates UI components with the end date and time from the provided arguments.
+     * This method extracts the end date and time from the {@link Event.EventBuilder} within
+     * the provided Bundle, formats them according to specified patterns, and sets them on
+     * corresponding TextViews for display.
+     *
+     * @param args The Bundle containing the {@link Event.EventBuilder} from which to extract
+     *             the end date and time.
+     * @param view The view containing the TextViews to be updated with the date and time.
+     */
     private void handleArguments (Bundle args, View view){
         Event.EventBuilder builder = (Event.EventBuilder) args.getSerializable("builder");
         if (builder != null && builder.getEndDate() != null) {
@@ -208,6 +225,12 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
             timeButton.setText(formattedTime);
         }
     }
+
+    /**
+     * Displays a date picker dialog to the user for selecting the event's end date.
+     * The selected date is formatted and displayed in a TextView. The dialog is initialized
+     * with today's date as the default selection.
+     */
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -229,6 +252,11 @@ public class NewEventEndTimeFragment extends Fragment implements Toolbar.OnMenuI
         }
     }
 
+    /**
+     * Displays a time picker dialog to the user for selecting the event's end time.
+     * The selected time is formatted in 24-hour format and displayed in a TextView. The dialog
+     * is initialized with the current time as the default selection.
+     */
     private void showTimePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);

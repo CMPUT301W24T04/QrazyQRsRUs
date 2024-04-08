@@ -6,7 +6,6 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,7 +17,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 /**
- * gets list of attendees
+ * A {@link Fragment} subclass for displaying a list of events that the current user has either created or signed up for.
+ * This fragment is responsible for fetching and displaying the relevant events in a list format, allowing the user
+ * to view details about each event or to navigate to the event creation screen.
+ *
+ * The fragment inflates a layout used for displaying any list of events but customizes it to show only those related
+ * to the current user. It leverages {@link EventListAdapter} to populate the list view with event data.
  */
 public class MyEventsListFragment extends Fragment {
     /**
@@ -31,6 +35,7 @@ public class MyEventsListFragment extends Fragment {
     }
 
     /**
+
      * Shows a list of events when the view is created
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
@@ -77,21 +82,35 @@ public class MyEventsListFragment extends Fragment {
         } else{
             Attendee attendee = (Attendee) getArguments().getSerializable("attendee");
             setAttendee(attendee);
+            assert attendee != null;
             FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
 //            FirebaseDB.getInstance().getAttendeeSignedUpEvents(attendee, signedUpEvents, homeSignedUpListAdapter);
+            if (attendee == null){
+                FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
+                    @Override
+                    public void onResult(Attendee attendee) {
+                        FirebaseDB.getInstance().getEventsMadeByUser(attendee, myEvents, myEventsListAdapter);
+                        setAttendee(attendee);
+                    }
+
+                    @Override
+                    public void onNoResult() {
+                        new ErrorDialog(R.string.login_error).show(getActivity().getSupportFragmentManager(), "Error Dialog");
+                    }
+                });
+            }
         }
+
+
 
         eventListView.setAdapter(myEventsListAdapter);
 
 
-        eventListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Bundle args = new Bundle();
-                args.putSerializable("event", myEvents.get(i));
+        eventListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Bundle args = new Bundle();
+            args.putSerializable("event", myEvents.get(i));
 //                args.putSerializable("attendee", attendee);
-                Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_eventDetailsFragment, args);
-            }
+            Navigation.findNavController(rootView).navigate(R.id.action_myEventsListFragment_to_eventDetailsFragment, args);
         });
 
         FloatingActionButton fab = rootView.findViewById(R.id.new_event_button);
@@ -108,7 +127,6 @@ public class MyEventsListFragment extends Fragment {
 
     /**
      * Creates a bundle for the attendee
-     * @param attendee
      * @return fragment
      */
     public static HomeFragment newInstance(Attendee attendee){
@@ -122,7 +140,6 @@ public class MyEventsListFragment extends Fragment {
 
     /**
      * Constructor for the attendee
-     * @param attendee
      */
     private void setAttendee(Attendee attendee){
         this.attendee = attendee;

@@ -4,46 +4,34 @@ package com.example.qrazyqrsrus;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.example.qrazyqrsrus.databinding.ActivityMainBinding;
-
-import java.util.ArrayList;
-
-
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
-    private ActivityMainBinding binding;
+    private static final int LOCATION_PERMISSION_GRANTED = 1;
     private String deviceId;
-    private Activity activity = this;
-
-    Attendee[] user = new Attendee[1];
+    private final Activity activity = this;
     /**
      * Uses a callback to do actions when user scans a QR code
      */
-    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
-        //TODO: these callbacks only work on the first time a QR code is scanned after the app is launched
+    private QRCodeScanHandler qrHandler = new QRCodeScanHandler(FirebaseDB.getInstance(), this, deviceId, new QRCodeScanHandler.ScanCompleteCallback() {
 
         /**
          * Holds logic for when a promo QR code is scanned
@@ -51,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
          */
         @Override
         public void onPromoResult(Event matchingEvent) {
-            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, user[0], false));
+            ChangeFragment(EventDetailsFragment.newInstance(matchingEvent, null, false));
 
         }
 
@@ -61,29 +49,31 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
          */
         @Override
         public void onCheckInResult(Event event) {
-            FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), user[0].getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+            FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
-                public void onResult(boolean isUnique, CheckIn checkIn) {
-                    LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
-                        @Override
-                        public void onResult(double longitude, double latitude) {
-                            if (isUnique){
-                                //if the user has not yet chcked into the event, we make a new one
-                                CheckIn newCheckIn = new CheckIn(user[0].getDocumentId(), event.getDocumentId(), longitude, latitude);
-                                FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
-                            } else{
-                                //if the user has already checked into the event, we update their checkin with their latest location, and increment the # of checkins
-                                checkIn.setLongitude(longitude);
-                                checkIn.setLatitude(latitude);
-                                checkIn.incrementCheckIn();
-                                FirebaseDB.getInstance().updateCheckIn(checkIn);
-                            }
-
+                public void onResult(Attendee attendee) {
+                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), (isUnique, checkIn) -> LocationSingleton.getInstance().getLocation(activity, (longitude, latitude) -> {
+                        if (isUnique){
+                            //if the user has not yet checked into the event, we make a new one
+                            CheckIn newCheckIn = new CheckIn(attendee.getDocumentId(), event.getDocumentId(), longitude, latitude);
+                            FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
+                        } else{
+                            //if the user has already checked into the event, we update their check in with their latest location, and increment the # of checkins
+                            checkIn.setLongitude(longitude);
+                            checkIn.setLatitude(latitude);
+                            checkIn.incrementCheckIn();
+                            FirebaseDB.getInstance().updateCheckIn(checkIn);
                         }
-                    });
+
+                    }));
+                    ChangeFragment(EventDetailsFragment.newInstance(event, attendee, true));
+                }
+
+                @Override
+                public void onNoResult() {
+                    Log.d("MainActivity", "problem logging in user to create check in");
                 }
             });
-            ChangeFragment(EventDetailsFragment.newInstance(event, user[0], true));
 
         }
 
@@ -95,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         @Override
         public void onNoResult(@Nullable Event event, int errorNumber){
             if (event != null){
-                ChangeFragment(EventDetailsFragment.newInstance(event, user[0], false));
+                ChangeFragment(EventDetailsFragment.newInstance(event, null, false));
                 new ErrorDialog(R.string.not_signed_up_error).show(getSupportFragmentManager(), "QR Error Dialog");
             } else{
                 new ErrorDialog(R.string.no_args).show(getSupportFragmentManager(), "QR Error Dialog");
@@ -111,9 +101,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     });
     /**
-     * Ask for permission for the user to recieve push notification
+     * Ask for permission for the user to receive push notification
      */
-    private ActivityResultLauncher<String> requestPermissionLauncher =
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     Log.d("Notification Permissions", "user accepted notification permissions");
@@ -122,51 +112,35 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             });
 
-//    qrHandler =
-
     /**
-     * Manages notifications in the server
-     * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * Called when the activity is starting. This is where most initialization should go: calling {@code setContentView(int)}
+     * to inflate the activity's UI, using {@code findViewById(int)} to programmatically interact with widgets in the UI,
+     * setting up any static data in lists, binding data to lists, etc.
+     * <p>
+     * In this implementation, {@code onCreate} initializes the activity's binding for view interaction without directly referencing
+     * the UI components by ID, sets up the device ID for future use, and initializes the {@link QRCodeScanHandler} with appropriate
+     * callbacks for handling different outcomes of QR code scanning (promo QR codes, check-in QR codes, and special admin QR codes).
+     * This setup facilitates actions based on QR code scanning, such as navigating to different fragments based on the scan results.
+     * <p>
+     * This method also checks for necessary permissions (if any are needed) and sets up any other initial configurations required for
+     * the app's main activity.
      *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the
+     *                           data it most recently supplied in {@link #onSaveInstanceState(Bundle)}. <b>Note:</b> Otherwise it is null.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        com.example.qrazyqrsrus.databinding.ActivityMainBinding binding = com.example.qrazyqrsrus.databinding.ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        FirebaseDB.getInstance().loginUser(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID), new FirebaseDB.GetAttendeeCallBack() {
-            @Override
-            public void onResult(Attendee attendee) {
-                user[0] = attendee;
-            }
-
-            @Override
-            public void onNoResult() {
-                Log.d("sad face", ":(");
-            }
-        });
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Event Announcements";
-            String description = "Receive push notifications from event organizers";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("EVENTS", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system. You can't change the importance
-            // or other notification behaviors after this.
-            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         //we don't need to getToken, this is just for testing
         //FirebaseDB.getInstance().getToken();
         //we shouldn't subscribe the user here, this is just for testing
         //FirebaseDB.getInstance().subscribeAttendeeToEventTopic("EVENT");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        {
             CharSequence name = "Event Announcements";
             String description = "Receive push notifications from event organizers";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -178,15 +152,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             notificationManager.createNotificationChannel(channel);
         }
 
-        //Attendee[] user = new Attendee[1];
-
-//        FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
-//            @Override
-//            public void onResult(Attendee attendee) {
-//                user[0] = attendee;
-//                ChangeFragment(new HomeEventsFragment());
-//            }
-//        });
+        //we check if we have permissions to access the user's location
+        //this implementation fo checking for permissions is from Stack Overflow (https://stackoverflow.com/a/33070595), Accessed Mar. 28th, 2024
+        //the post was made by the user keshav.bahadoor (https://stackoverflow.com/users/1535115/keshav-bahadoor)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
+            //if not, we launch a dialog in main activity that asks the user to grant permissions
+            ActivityCompat.requestPermissions( activity, new String[] {  Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION  },
+                    LOCATION_PERMISSION_GRANTED );
+        }
 
         ChangeFragment(new HomeEventsFragment());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
@@ -197,13 +170,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         }
 
-
-
-//        if (deviceId == null) {
-//            Log.d("deviceId", "super badness");
-//            return;
-//        }
-
         // When the navigation bar is clicked
         binding.BottomNavView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -212,12 +178,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (id == R.id.home) {
                 ChangeFragment(new HomeEventsFragment());
             } else if (id == R.id.scan) {
-                qrHandler.launch(user[0]);
+                qrHandler.launch(deviceId);
             } else if (id == R.id.my_events) {
                 ChangeFragment(new MyEventsFragment());
             } else if (id == R.id.profile) {
                 //create a new instance of the ViewProfileFragment fragment, with the attendee that was obtained by logging in the user
-                ChangeFragment(ViewProfileFragment.newInstance(user[0]));
+                ChangeFragment(ViewProfileFragment.newInstance(null));
             }
 
             return true;
@@ -237,5 +203,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         fragmentTransaction.commit();
     }
 
-
+    public void setQrHandler(QRCodeScanHandler qrHandler) {
+        this.qrHandler = qrHandler;
+    }
 }
