@@ -60,12 +60,9 @@ public class AttendeeList extends Fragment {
                              Bundle savedInstanceState) {
         // DEFINE VIEW
         View attendeeListLayout = inflater.inflate(R.layout.fragment_attendee_list, container, false);
-        //**************************************************************************************************************
-        //INITIAL LIST FOR TESTING
+
         attendeeDataList = new ArrayList<>();
 
-        // call getData from the firestore to populate the list
-//        getData(collectionReference);
 
         // update attendee list and shows it on the listview
         attendeeList = attendeeListLayout.findViewById(R.id.attendee_list_view);
@@ -75,19 +72,7 @@ public class AttendeeList extends Fragment {
         Bundle bundle = getArguments();
         Event event = (Event) bundle.getSerializable("event");
         FirebaseDB.getInstance().getEventCheckedInUsers(event, attendeeDataList, attendeeListAdapter);
-//        for(int i = 0; i < attendeeDataList.size();i++){
-//            Attendee current_attendee = attendeeDataList.get(i);
-//            FirebaseDB.getInstance().getUserName(current_attendee.getDocumentId(), new FirebaseDB.GetStringCallBack() {
-//                @Override
-//                public void onResult(String string) {
-//                    current_attendee.setName(string);
-//                }
-//            });
-//        }
-        //FirebaseDB.getInstance().getEventCheckedIn(event, attendeeDataList, attendeeListAdapter);
 
-        // populate the attendees list
-        //FirebaseDB.getInstance().getAllUsers(attendeeDataList, attendeeListAdapter);
         attendeeList.setAdapter(attendeeListAdapter);
 
         // When the list is clicked, reveal the attendee profile information
@@ -99,12 +84,7 @@ public class AttendeeList extends Fragment {
                 Bundle bundle = new Bundle();
                 Attendee current_attendee = attendeeListAdapter.getItem(i);
                 bundle.putSerializable("attendee", current_attendee);
-//                attendee_info.setArguments(bundle);
 
-//                startActivity(i);
-//
-//                //turn the textviews into the desired names based on the name lists
-//                Name.setText(attendee_value);
                 Navigation.findNavController(attendeeListLayout).navigate(R.id.action_attendeeList2_to_viewProfileFragment,bundle);
             }
         });
@@ -127,7 +107,7 @@ public class AttendeeList extends Fragment {
             }
         });
 
-        return attendeeListLayout; //inflater.inflate(R.layout.fragment_attendee_list, container, false);
+        return attendeeListLayout;
 
 
     }

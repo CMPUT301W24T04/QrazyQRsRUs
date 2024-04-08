@@ -63,5 +63,5 @@ public class AttendeeSignUpsListAdapter extends ArrayAdapter<Attendee> {
 
         return view;
     }
-    //
+
 }

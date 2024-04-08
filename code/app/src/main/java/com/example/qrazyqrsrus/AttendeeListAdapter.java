@@ -46,7 +46,6 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//        return super.getView(position, convertView, parent);
         View view = convertView;
 
         if(view == null){
@@ -58,7 +57,7 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
         // get name and num_checkins from the content fragment
         TextView Name = view.findViewById(R.id.name_attendee);
         TextView checkins = view.findViewById(R.id.number_check_ins);
-        //TextView num_checkins = view.findViewById(R.id.number_check_ins); // = view.findViewById(R.id.number_check_ins);
+
 
         // change value of name and num_checkins from content value
         FirebaseDB.getInstance().getUserName(attendee.getId(), new FirebaseDB.GetStringCallBack() {
@@ -69,16 +68,11 @@ public class AttendeeListAdapter extends ArrayAdapter<Attendee> {
 
                 String checkins_string = "" + attendee.getCheckins();
 
-//        String num_checkins = attendee.getCheckins().toString();
                 //concatnate number of checkins to the sentence using .concat()
                 checkins.setText("# Check Ins: ".concat(checkins_string)); // https://www.w3schools.com/jsref/jsref_concat_string.asp
             }
         });
 
-
-
-
         return view;
     }
-    //
 }
