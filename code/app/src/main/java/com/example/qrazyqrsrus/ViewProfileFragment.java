@@ -1,20 +1,11 @@
 package com.example.qrazyqrsrus;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -35,27 +25,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 public class ViewProfileFragment extends Fragment {
     private Attendee attendee;
-    private EditText etFullName, etAge, etEmailAddress;
+    private EditText etFullName, etEmailAddress;
     private ImageView imgProfilePicture;
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -89,6 +69,21 @@ public class ViewProfileFragment extends Fragment {
                     }
                 }
         );
+        Context context = getContext();
+        if (context != null) {
+            ContentResolver resolver = context.getContentResolver();
+            if (resolver != null) {
+                userId = Settings.Secure.getString(resolver, Settings.Secure.ANDROID_ID);
+            } else {
+                // The resolver was null, handle this case, perhaps by assigning a default value or logging an error
+                Log.e("ViewProfileFragment", "ContentResolver was null.");
+            }
+        } else {
+            // The context was null, handle this case
+            Log.e("ViewProfileFragment", "Context was null in onCreate.");
+        }
+        userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
     }
 
     @Nullable
@@ -141,8 +136,6 @@ public class ViewProfileFragment extends Fragment {
 
 
 
-        userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
         Bundle args = getArguments();
 
 
@@ -159,15 +152,7 @@ public class ViewProfileFragment extends Fragment {
                 loadInitialAttendee(attendeeClicked);
             } else {
                 Log.e("ViewProfileFragment", "Attendee object not found in arguments.");
-                // Handle the case when attendee is not passed in arguments
-                // Show error dialog or toast
 
-//         Attendee attendeeClicked;
-// //        Log.d("profile_error", userId);
-// //        Log.d("profile_error", ((Attendee) args.getSerializable("attendee")).getId());
-//         if (args != null){
-//             if(!Objects.equals(userId, ((Attendee) args.getSerializable("attendee")).getId())){
-//                 restrictEdits();
 
             }
         } else {
@@ -191,18 +176,8 @@ public class ViewProfileFragment extends Fragment {
             }
         }
         loadInitialAttendee(((Attendee) args.getSerializable("attendee")));
-        //loadUserProfile(userId);
-//        FirebaseDB.getInstance().loginUser(userId, new FirebaseDB.GetAttendeeCallBack() {
-//            @Override
-//            public void onResult(Attendee attendee) {
-//
-//            }
-//        });
 
 
-//        btnUpdateProfile.setOnClickListener(v -> {
-//            updateUserProfile(this.attendee);
-//        });
 
         return view;
     }
@@ -389,9 +364,9 @@ public class ViewProfileFragment extends Fragment {
      * This function updates the state to communicate the user has deleted their profile picture
      */
     private void deleteProfileImage() {
-        //we tell the state that the user has deleted their profile pciture, so it can delete the old one from firebase if needed
+        //we tell the state that the user has deleted their profile picture, so it can delete the old one from firebase if needed
         imageDeleted = true;
-        //we remove the user's uploaded profile pciture, and change it to the geneerated one
+        //we remove the user's uploaded profile picture, and change it to the generated one
         Bitmap profileBitmap = InitialsPictureGenerator.createInitialsImage(InitialsPictureGenerator.getInitials(etFullName.getText().toString()));
         imgProfilePicture.setImageBitmap(profileBitmap);
         //we clear any previously uploaded image (during this edit)
