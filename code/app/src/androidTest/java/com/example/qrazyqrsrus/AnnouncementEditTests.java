@@ -69,7 +69,7 @@ public class AnnouncementEditTests {
 
         // Launch the fragment with the provided bundle
         scenario = FragmentScenario.launchInContainer(AnnouncementEditFragment.class, bundle, R.style.Base_Theme_QrazyQRsRUs, Lifecycle.State.INITIALIZED);
-        scenario.onFragment(announcementEditFragment -> announcementEditFragment.setFirebaseDB(mockFirebaseDB));
+//        scenario.onFragment(announcementEditFragment -> announcementEditFragment.setFirebaseDB(mockFirebaseDB));
         scenario.onFragment(announcementEditFragment -> scenario.moveToState(Lifecycle.State.RESUMED));
         scenario.onFragment((FragmentScenario.FragmentAction<AnnouncementEditFragment>) announcementEditFragment -> Navigation.setViewNavController(announcementEditFragment.requireView(), mockNavController));
 

@@ -44,6 +44,7 @@ public class ViewProfileFragmentTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
 
+
     }
     @Test
     public void testFragmentInitialization_WithAttendee() {
