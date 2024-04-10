@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment{
         checkedIn.setOnItemClickListener((adapterView, view, i, l) -> {
             Bundle args = new Bundle();
             args.putSerializable("event", checkedInEvents.get(i));
-            args.putSerializable("attendee", attendee);
+            args.putSerializable("attendee", attendee[0]);
             args.putSerializable("isCheckedIn", true);
             Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
         });
@@ -136,7 +136,7 @@ public class HomeFragment extends Fragment{
         signedUp.setOnItemClickListener((adapterView, view, i, l) -> {
             Bundle args = new Bundle();
             args.putSerializable("event", signedUpEvents.get(i));
-            args.putSerializable("attendee", attendee);
+            args.putSerializable("attendee", attendee[0]);
             args.putSerializable("isCheckedIn", false);
             Navigation.findNavController(rootView).navigate(R.id.action_homeFragment_to_eventDetailsFragment3, args);
         });
