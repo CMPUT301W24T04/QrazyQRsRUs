@@ -52,20 +52,37 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             FirebaseDB.getInstance().loginUser(deviceId, new FirebaseDB.GetAttendeeCallBack() {
                 @Override
                 public void onResult(Attendee attendee) {
-                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), (isUnique, checkIn) -> LocationSingleton.getInstance().getLocation(activity, (longitude, latitude) -> {
-                        if (isUnique){
-                            //if the user has not yet checked into the event, we make a new one
-                            CheckIn newCheckIn = new CheckIn(attendee.getDocumentId(), event.getDocumentId(), longitude, latitude);
-                            FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
-                        } else{
-                            //if the user has already checked into the event, we update their check in with their latest location, and increment the # of checkins
-                            checkIn.setLongitude(longitude);
-                            checkIn.setLatitude(latitude);
-                            checkIn.incrementCheckIn();
-                            FirebaseDB.getInstance().updateCheckIn(checkIn);
-                        }
+                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), new FirebaseDB.UniqueCheckInCallBack() {
+                        @Override
+                        public void onResult(boolean isUnique, CheckIn checkIn) {
+                            LocationSingleton.getInstance().getLocation(activity, new LocationSingleton.LongitudeLatitudeCallback() {
 
-                    }));
+                                @Override
+                                public void onResult(double longitude, double latitude) {
+                                    if (isUnique){
+                                        //if the user has not yet checked into the event, we make a new one
+                                        CheckIn newCheckIn = new CheckIn(attendee.getDocumentId(), event.getDocumentId(), longitude, latitude);
+                                        FirebaseDB.getInstance().addCheckInToEvent(newCheckIn, event);
+                                    } else{
+                                        //if the user has already checked into the event, we update their check in with their latest location, and increment the # of checkins
+                                        checkIn.setLongitude(longitude);
+                                        checkIn.setLatitude(latitude);
+                                        checkIn.incrementCheckIn();
+                                        FirebaseDB.getInstance().updateCheckIn(checkIn);
+                                    }
+
+                                }
+                            });
+
+
+                        }
+                    });
+
+
+//                    FirebaseDB.getInstance().checkInAlreadyExists(event.getDocumentId(), attendee.getDocumentId(), (isUnique, checkIn) -> LocationSingleton.getInstance().getLocation(activity, (longitude, latitude) -> {
+//
+//
+//                    }));
                     ChangeFragment(EventDetailsFragment.newInstance(event, attendee, true));
                 }
 
